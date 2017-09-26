@@ -45,7 +45,7 @@ public class ExperimentFactory {
     List<SimAgent> simAgents = new ArrayList<SimAgent>();
     for (int j = 0; j < numberOfAgents; j++) {
       // Walrasian Agents
-      simAgents.add(new WEAgent("WEAgent" + j, 0.0));
+      simAgents.add(new WEAgent("WEAgent" + j));
     }
     return simAgents;
   }
@@ -137,7 +137,8 @@ public class ExperimentFactory {
     List<SimAgent> simAgents = ExperimentFactory.listOfSIAgents(numberSI);
     simAgents.addAll(ExperimentFactory.listOfWEAgents(numberWE));
     simAgents.addAll(ExperimentFactory.listOfWFAgents(numberWF));
-    return new Experiment(ExperimentFactory.resultsDirectory + "/SIWEWF(" + numberSI + "-" + numberWE + "-" + numberWF + ")" + ".csv", simAgents, ExperimentFactory.numberOfGames);
+    return new Experiment(ExperimentFactory.resultsDirectory + "/SIWEWF(" + numberSI + "-" + numberWE + "-" + numberWF + ")" + ".csv", simAgents,
+        ExperimentFactory.numberOfGames);
   }
 
 }

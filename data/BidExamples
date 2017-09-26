@@ -1,0 +1,16 @@
+{MALE_YOUNG_LOW_INCOME=
+, MALE_OLD_HIGH_INCOME=
+	(SIAgent0, [Campaign id = 37, query = OLD, bid = 1.0, limit = 2164.0])
+	(WEAgent0, [Campaign id = 38, query = MALE_OLD_HIGH_INCOME, bid = 1.0, limit = 2164.0])
+, FEMALE_YOUNG_HIGH_INCOME=
+, FEMALE_OLD_LOW_INCOME=
+	(SIAgent0, [Campaign id = 37, query = OLD, bid = 1.0, limit = 2164.0])
+, FEMALE_OLD_HIGH_INCOME=
+	(SIAgent0, [Campaign id = 37, query = OLD, bid = 1.0, limit = 2164.0])
+	(WEAgent0, [Campaign id = 38, query = FEMALE_OLD_HIGH_INCOME, bid = 1.0, limit = 2164.0])
+, FEMALE_YOUNG_LOW_INCOME=
+, MALE_YOUNG_HIGH_INCOME=
+, MALE_OLD_LOW_INCOME=
+	(SIAgent0, [Campaign id = 37, query = OLD, bid = 1.0, limit = 2164.0])
+	(WEAgent0, [Campaign id = 38, query = MALE_OLD_LOW_INCOME, bid = 1.0, limit = 2164.0])
+}

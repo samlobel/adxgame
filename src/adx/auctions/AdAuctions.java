@@ -14,7 +14,6 @@ import adx.structures.BidEntry;
 import adx.structures.MarketSegment;
 import adx.structures.Query;
 import adx.util.Pair;
-import adx.util.Parameters;
 import adx.util.Sampling;
 
 public class AdAuctions {
@@ -92,9 +91,13 @@ public class AdAuctions {
    * @param adStatistics
    * @throws AdXException
    */
-  public static void runAllAuctions(int day, Map<String, BidBundle> bidBundles, Statistics adStatistics) throws AdXException {
-    AdAuctions.runAllAuctions(day, bidBundles, adStatistics, 0.0);
-  }
+  /*
+   * public static void runAllAuctions(int day, Map<String, BidBundle> bidBundles, Statistics adStatistics) throws AdXException { AdAuctions.runAllAuctions(day,
+   * bidBundles, adStatistics, 0.0); }
+   */
+
+  // public static void runAllAuctions(int day, Map<String, BidBundle> bidBundles, Statistics adStatistics)
+
   /**
    * Runs all the auctions for a given day.
    * 
@@ -103,27 +106,30 @@ public class AdAuctions {
    * @param adStatistics
    * @throws AdXException
    */
-  public static void runAllAuctions(int day, Map<String, BidBundle> bidBundles, Statistics adStatistics, double reserve) throws AdXException {
+  public static void runAllAuctions(int day, Map<String, BidBundle> bidBundles, Statistics adStatistics, double reserve, int numberOfImpressions)
+      throws AdXException {
     // Get the daily limits
     Map<Integer, Double> dailyLimits = AdAuctions.getCampaingsDailyLimit(day, bidBundles);
     // Collect bids.
-    Map<Query, StandingBids> allQueriesStandingBids = new HashMap<Query, StandingBids>();
+    Map<Query, StandingBidsForQuery> allQueriesStandingBids = new HashMap<Query, StandingBidsForQuery>();
     for (MarketSegment marketSegment : Sampling.segmentsToSample.keySet()) {
       Query query = new Query(marketSegment);
-      allQueriesStandingBids.put(query, new StandingBids(AdAuctions.filterBids(query, bidBundles), reserve));
+      allQueriesStandingBids.put(query, new StandingBidsForQuery(AdAuctions.filterBids(query, bidBundles), reserve));
     }
+    // Logging.log(allQueriesStandingBids);
     // Sample user population.
-    List<Query> samplePopulation = Sampling.samplePopulation(Parameters.POPULATION_SIZE);
+    List<Query> samplePopulation = Sampling.samplePopulation(numberOfImpressions);
     // Debug print.
+    // Logging.log("NumberOfImpressions = " + numberOfImpressions);
     // Logging.log(allQueriesStandingBids);
     // Logging.log(dailyLimits);
     // Logging.log(samplePopulation);
     // For each user sampled, run the auction.
     for (Query query : samplePopulation) {
-      StandingBids bidsForCurrentQuery = allQueriesStandingBids.get(query);
+      StandingBidsForQuery bidsForCurrentQuery = allQueriesStandingBids.get(query);
       // Logging.log("Auction: \t " + query);
       // Logging.log("\t -> " + bidsForCurrentQuery);
-      // Attempt to allocate the user.
+      // Attempt to allocate the user. It could happen that the winner hits it limit and we need to find another winner.
       while (true) {
         Pair<String, BidEntry> winner = bidsForCurrentQuery.getWinner();
         if (winner == null) {
@@ -140,7 +146,7 @@ public class AdAuctions {
 
         if (totalSpendSoFar + winCost > dailyLimit) {
           // In case the campaign already hit its daily limit, delete all bid entries matching this campaigns from ALL standing bids in ALL queries.
-          for (StandingBids queryStandingBids : allQueriesStandingBids.values()) {
+          for (StandingBidsForQuery queryStandingBids : allQueriesStandingBids.values()) {
             queryStandingBids.deleteBidFromCampaign(winnerBidEntry.getCampaignId());
           }
           // Logging.log("DELETED BID FROM ALL QUERIES");
@@ -155,6 +161,6 @@ public class AdAuctions {
         }
       }
     }
-    //Logging.log(adStatistics.getStatisticsAds().printNiceAdStatisticsTable());
+    // Logging.log(adStatistics.getStatisticsAds().printNiceAdStatisticsTable());
   }
 }

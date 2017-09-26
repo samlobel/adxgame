@@ -32,12 +32,12 @@ public enum MarketSegment {
 
   static {
     HashMap<MarketSegment, Integer> initMap = new HashMap<MarketSegment, Integer>();
-    initMap.put(MALE, 4956);
+    /*initMap.put(MALE, 4956);
     initMap.put(FEMALE, 5044);
     initMap.put(YOUNG, 4589);
     initMap.put(OLD, 5411);
     initMap.put(LOW_INCOME, 8012);
-    initMap.put(HIGH_INCOME, 1988);
+    initMap.put(HIGH_INCOME, 1988);*/
     initMap.put(MALE_YOUNG, 2353);
     initMap.put(MALE_OLD, 2603);
     initMap.put(MALE_LOW_INCOME, 3631);

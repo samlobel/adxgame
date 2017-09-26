@@ -8,11 +8,11 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import adx.exceptions.AdXException;
 import adx.sim.agents.SimAgent;
 import adx.sim.agents.SimpleSimAgent;
-import adx.sim.agents.WE.WEAgent;
 import adx.sim.agents.waterfall.WFAgent;
 import adx.statistics.Statistics;
 import adx.util.Logging;
 import adx.util.Pair;
+import adx.util.Parameters;
 
 /**
  * Class to handle experiments in the simulator.
@@ -39,7 +39,7 @@ public class Experiments {
         simAgents.add(new SimpleSimAgent("OneDayAgent" + i));
         break;
       case "WEAgent":
-        simAgents.add(new WEAgent("WEAgent" + i, reserve));
+        //simAgents.add(new WEAgent("WEAgent" + i, reserve));
         break;
       case "WFAgent":
         simAgents.add(new WFAgent("WFAgent" + i));
@@ -50,7 +50,7 @@ public class Experiments {
     }
 
     // Create the simulator and run it.
-    Simulator simulator = new Simulator(simAgents, reserve);
+    Simulator simulator = new Simulator(simAgents, reserve, Parameters.POPULATION_SIZE);
     Statistics statistics = simulator.run();
 
     // Compute total Profit of the simulation.

@@ -283,7 +283,7 @@ public class AdAuctionsTest {
     stats.getStatisticsCampaign().registerCampaign(1, new Campaign(2, 1, 1, MarketSegment.FEMALE, 300), "agent1");
     stats.getStatisticsCampaign().registerCampaign(1, new Campaign(3, 1, 1, MarketSegment.FEMALE, 300), "agent2");
 
-    AdAuctions.runAllAuctions(1, bidBundles, stats);
+    //AdAuctions.runAllAuctions(1, bidBundles, stats);
   }
 
 }

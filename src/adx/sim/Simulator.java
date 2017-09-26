@@ -10,6 +10,7 @@ import adx.statistics.Statistics;
 import adx.structures.BidBundle;
 import adx.structures.Campaign;
 import adx.util.Pair;
+import adx.util.Parameters;
 import adx.util.Sampling;
 
 /**
@@ -33,6 +34,11 @@ public class Simulator {
    * Reserve price
    */
   private final double reserve;
+  
+  /**
+   * Number of impressions
+   */
+  private final int numberOfImpressions;
 
   /**
    * Constructor.
@@ -40,13 +46,14 @@ public class Simulator {
    * @param agents
    * @throws AdXException
    */
-  public Simulator(List<SimAgent> agents, double reserve) throws AdXException {
+  public Simulator(List<SimAgent> agents, double reserve, int numberOfImpressions) throws AdXException {
     this.agents = agents;
     this.serverState = new ServerState(0);
     for (SimAgent simAgent : agents) {
       this.serverState.registerAgent(simAgent.getName());
     }
     this.reserve = reserve;
+    this.numberOfImpressions = numberOfImpressions;
   }
   
   /**
@@ -56,7 +63,7 @@ public class Simulator {
    * @throws AdXException
    */
   public Simulator(List<SimAgent> agents) throws AdXException {
-    this(agents, 0.0);
+    this(agents, 0.0, Parameters.POPULATION_SIZE);
   }
 
   /**
@@ -95,7 +102,7 @@ public class Simulator {
     }
     this.serverState.advanceDay();
     // Run auctions
-    this.serverState.runAdAuctions(this.reserve);
+    this.serverState.runAdAuctions(this.reserve, this.numberOfImpressions);
     this.serverState.updateDailyStatistics();
     // Report results
     //this.serverState.printServerState();

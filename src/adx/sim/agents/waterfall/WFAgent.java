@@ -26,10 +26,6 @@ import adx.variants.onedaygame.OneDayBidBundle;
  *
  */
 public class WFAgent extends SimAgent {
-  /**
-   * Additive factor for the bids.
-   */
-  private static final double epsilon = 0.001;
 
   /**
    * Constructor.
@@ -47,31 +43,32 @@ public class WFAgent extends SimAgent {
       MarketModel marketModel = SimAgentModel.constructModel(this.myCampaign, this.othersCampaigns);
       Market<GameGoods, Bidder<GameGoods>> market = marketModel.market;
       // Print some useful info
-      //this.printInfo("WF AGENT", market);
+      // this.printInfo("WF AGENT", market);
       Bidder<GameGoods> myCampaignBidder = marketModel.mybidder;
       Set<GameGoods> myDemandSet = marketModel.mybidder.getDemandSet();
 
       Waterfall<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> waterfall = new Waterfall<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>>(market);
       WaterfallSolution<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> waterfallSolution = waterfall.run();
-      //waterfallSolution.printAllocationTable();
-      //waterfallSolution.printPricesTable();
+      // waterfallSolution.printAllocationTable();
+      // waterfallSolution.printPricesTable();
       // Back-up bid from waterfall allocation and prices
       Set<SimpleBidEntry> bidEntries = new HashSet<SimpleBidEntry>();
       for (GameGoods demandedGood : myDemandSet) {
-        //Logging.log("Price for: " + demandedGood + " for bidder: " + myCampaignBidder + " is " + waterfallSolution.getPrice(demandedGood, myCampaignBidder));
+        // Logging.log("Price for: " + demandedGood + " for bidder: " + myCampaignBidder + " is " + waterfallSolution.getPrice(demandedGood, myCampaignBidder));
         if (waterfallSolution.getAllocation(demandedGood, myCampaignBidder) > 0) {
-          bidEntries.add(new SimpleBidEntry(demandedGood.getMarketSegment(), waterfallSolution.getPrice(demandedGood, myCampaignBidder) + WFAgent.epsilon, waterfallSolution.getAllocation(demandedGood, myCampaignBidder) * (waterfallSolution.getPrice(demandedGood, myCampaignBidder) + WFAgent.epsilon)));
+          // bidEntries.add(new SimpleBidEntry(demandedGood.getMarketSegment(), waterfallSolution.getPrice(demandedGood, myCampaignBidder),
+          // waterfallSolution.getAllocation(demandedGood, myCampaignBidder) * waterfallSolution.getPrice(demandedGood, myCampaignBidder)));
+          bidEntries.add(new SimpleBidEntry(demandedGood.getMarketSegment(), waterfallSolution.getPrice(demandedGood, myCampaignBidder), this.myCampaign.getBudget()));
         }
       }
       // The bid bundle indicates the campaign id, the limit across all auctions, and the bid entries.
       OneDayBidBundle WEBidBundle = new OneDayBidBundle(this.myCampaign.getId(), this.myCampaign.getBudget(), bidEntries);
-      //Logging.log("\n:::::::WEBidBundle = " + WEBidBundle);
+      // Logging.log("\n:::::::WEBidBundle = " + WEBidBundle);
       return WEBidBundle;
-      
+
     } catch (BidderCreationException | AdXException | MarketCreationException | GoodsException e) {
       e.printStackTrace();
+      return null;
     }
-    return null;
   }
-
 }
