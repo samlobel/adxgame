@@ -80,7 +80,7 @@ public class TwoDaysTwoCampaignsGameServer extends GameServer {
         this.serverState.saveProfit();
         this.serverState.initServerState(this.gameNumber);
         this.serverState.initStatistics();
-        Sampling.campaignId = 0;
+        Sampling.resetUniqueCampaignId();
       }
       Logging.log("\nGame ended, played " + (this.gameNumber - 1) + " games, final results are: ");
       Logging.log(Printer.getNiceProfitTable(

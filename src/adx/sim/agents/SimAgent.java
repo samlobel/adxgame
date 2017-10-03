@@ -2,8 +2,6 @@ package adx.sim.agents;
 
 import java.util.List;
 
-import structures.Bidder;
-import structures.Market;
 import adx.structures.BidBundle;
 import adx.structures.Campaign;
 import adx.util.Logging;
@@ -29,14 +27,21 @@ public abstract class SimAgent {
    * The other agent's campaigns.
    */
   protected List<Campaign> othersCampaigns;
+  
+  /**
+   * The reserve price.
+   */
+  protected final double reserve;
 
   /**
    * Constructor.
    * 
    * @param simAgentName
    */
-  public SimAgent(String simAgentName) {
+  public SimAgent(String simAgentName, double reserve) {
     this.simAgentName = simAgentName;
+    this.reserve = reserve;
+    Logging.log("[Agent] " + simAgentName + ", with reserve = " + reserve);
   }
 
   /**
@@ -67,22 +72,5 @@ public abstract class SimAgent {
    * @return a BidBundle
    */
   public abstract BidBundle getBidBundle();
-
-  /**
-   * Helper method to print information, mainly about the model.
-   */
-  protected void printInfo(String name, Market<GameGoods, Bidder<GameGoods>> market) {
-    Logging.log("***********" + name + "************");
-    Logging.log("My Campaign: \n\t " + this.myCampaign);
-    Logging.log("Others Campaigns: ");
-    for (Campaign c : this.othersCampaigns) {
-      Logging.log("\t " + c);
-    }
-    Logging.log("List of Goods = ");
-    for (GameGoods gameGood : SimAgentModel.listOfGameGoods) {
-      Logging.log("\t " + gameGood);
-    }
-    Logging.log("\n ------ Model: \n" + market + "\n ---------");
-  }
-
+  
 }

@@ -59,8 +59,7 @@ public enum MarketSegment {
     initMap.put(FEMALE_OLD_LOW_INCOME, 2401);
     initMap.put(FEMALE_OLD_HIGH_INCOME, 407);
     proportionsMap = Collections.unmodifiableMap(initMap);
-    proportionsList = new ArrayList<Entry<MarketSegment, Integer>>(
-        proportionsMap.entrySet());
+    proportionsList = new ArrayList<Entry<MarketSegment, Integer>>(proportionsMap.entrySet());
   }
 
   /**

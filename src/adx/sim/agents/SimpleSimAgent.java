@@ -16,8 +16,8 @@ import adx.variants.onedaygame.OneDayBidBundle;
  */
 public class SimpleSimAgent extends SimAgent {
 
-  public SimpleSimAgent(String simAgentName) {
-    super(simAgentName);
+  public SimpleSimAgent(String simAgentName, double reserve) {
+    super(simAgentName, reserve);
   }
 
   @Override

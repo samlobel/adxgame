@@ -32,8 +32,8 @@ public class WFAgent extends SimAgent {
    * 
    * @param simAgentName
    */
-  public WFAgent(String simAgentName) {
-    super(simAgentName);
+  public WFAgent(String simAgentName, double reserve) {
+    super(simAgentName, reserve);
   }
 
   @Override
@@ -47,10 +47,10 @@ public class WFAgent extends SimAgent {
       Bidder<GameGoods> myCampaignBidder = marketModel.mybidder;
       Set<GameGoods> myDemandSet = marketModel.mybidder.getDemandSet();
 
-      Waterfall<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> waterfall = new Waterfall<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>>(market);
+      Waterfall<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> waterfall = new Waterfall<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>>(market, this.reserve);
       WaterfallSolution<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> waterfallSolution = waterfall.run();
-      // waterfallSolution.printAllocationTable();
-      // waterfallSolution.printPricesTable();
+      //waterfallSolution.printAllocationTable();
+      //waterfallSolution.printPricesTable();
       // Back-up bid from waterfall allocation and prices
       Set<SimpleBidEntry> bidEntries = new HashSet<SimpleBidEntry>();
       for (GameGoods demandedGood : myDemandSet) {

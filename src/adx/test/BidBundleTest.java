@@ -107,7 +107,7 @@ public class BidBundleTest {
 
     BidBundle bidBundle1 = BidBundleTest.getBidBundle1();
     assertEquals(bidBundle1.getBidEntries().size(), 1);
-    assertEquals(bidBundle1.getCampaignLimit(2), new Double(300.0));
+    assertEquals(bidBundle1.getCampaignLimit(2), new Double(3000.0));
 
     BidBundle bidBundle2 = BidBundleTest.getBidBundle2();
     assertEquals(bidBundle2.getBidEntries().size(), 1);

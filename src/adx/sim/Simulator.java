@@ -9,6 +9,7 @@ import adx.sim.agents.SimAgent;
 import adx.statistics.Statistics;
 import adx.structures.BidBundle;
 import adx.structures.Campaign;
+import adx.structures.MarketSegment;
 import adx.util.Pair;
 import adx.util.Parameters;
 import adx.util.Sampling;
@@ -29,16 +30,21 @@ public class Simulator {
    * Keep a server state
    */
   private final ServerState serverState;
-  
+
   /**
    * Reserve price
    */
   private final double reserve;
-  
+
   /**
    * Number of impressions
    */
   private final int numberOfImpressions;
+
+  /**
+   * Discount factor on the reach of each sampled campaign.
+   */
+  private final double demandDiscountFactor;
 
   /**
    * Constructor.
@@ -46,7 +52,7 @@ public class Simulator {
    * @param agents
    * @throws AdXException
    */
-  public Simulator(List<SimAgent> agents, double reserve, int numberOfImpressions) throws AdXException {
+  public Simulator(List<SimAgent> agents, double reserve, int numberOfImpressions, double demandDiscountFactor) throws AdXException {
     this.agents = agents;
     this.serverState = new ServerState(0);
     for (SimAgent simAgent : agents) {
@@ -54,21 +60,24 @@ public class Simulator {
     }
     this.reserve = reserve;
     this.numberOfImpressions = numberOfImpressions;
+    this.demandDiscountFactor = demandDiscountFactor;
+    Sampling.resetUniqueCampaignId();
   }
-  
+
   /**
-   * Constructor. 
+   * Constructor. No reserve and default number of impressions.
    * 
    * @param agents
    * @throws AdXException
    */
   public Simulator(List<SimAgent> agents) throws AdXException {
-    this(agents, 0.0, Parameters.POPULATION_SIZE);
+    this(agents, 0.0, Parameters.POPULATION_SIZE, 1.0);
   }
 
   /**
    * Run the simulation.
-   * @return 
+   * 
+   * @return the statistics of the simulation.
    * 
    * @throws AdXException
    */
@@ -79,8 +88,9 @@ public class Simulator {
     // Sample and distribute campaigns
     List<Campaign> allCampaigns = new ArrayList<Campaign>();
     for (int j = 0; j < this.agents.size(); j++) {
-      allCampaigns.add(Sampling.sampleInitialCampaign());
+      allCampaigns.add(this.sampleSimulatorCampaign());
     }
+    // Logging.log(allCampaigns);
     int i = 0;
     for (SimAgent agent : this.agents) {
       List<Campaign> otherCampaigns = new ArrayList<Campaign>(allCampaigns);
@@ -91,23 +101,41 @@ public class Simulator {
       agent.setCampaigns(agentCampaign, otherCampaigns);
     }
     // this.serverState.printServerState();
-
     // Ask for bids
     for (SimAgent agent : this.agents) {
       BidBundle bidBundle = agent.getBidBundle();
-      Pair<Boolean, String> bidBundleAccept = this.serverState.addBidBundle(bidBundle.getDay(), agent.getName(), bidBundle);
-      if (!bidBundleAccept.getElement1()) {
-        throw new AdXException("Bid bundle not accepted. Server replied: " + bidBundleAccept.getElement2());
+      // An agent could return a null bid, e.g., in case the reserve is too high.
+      if (bidBundle != null) {
+        Pair<Boolean, String> bidBundleAccept = this.serverState.addBidBundle(bidBundle.getDay(), agent.getName(), bidBundle);
+        if (!bidBundleAccept.getElement1()) {
+          throw new AdXException("Bid bundle not accepted. Server replied: " + bidBundleAccept.getElement2());
+        }
       }
     }
     this.serverState.advanceDay();
     // Run auctions
+    // Logging.log("[Simulator]: run auctions with reserve = " + this.reserve);
     this.serverState.runAdAuctions(this.reserve, this.numberOfImpressions);
     this.serverState.updateDailyStatistics();
     // Report results
-    //this.serverState.printServerState();
-    //Logging.log(this.serverState.getStatistics().getStatisticsAds().printNiceAdStatisticsTable());
+    // this.serverState.printServerState();
+    // Logging.log(this.serverState.getStatistics().getStatisticsAds().printNiceAdStatisticsTable());
     return this.serverState.getStatistics();
+  }
+
+  /**
+   * Sample a campaign for the simulator. In this case the campaigns always last for exactly 1 day.
+   * 
+   * @return
+   * @throws AdXException
+   */
+  private Campaign sampleSimulatorCampaign() throws AdXException {
+    Pair<MarketSegment, Integer> randomMarketSegment = Sampling.sampleMarketSegment();
+    MarketSegment marketSegment = randomMarketSegment.getElement1();
+    Integer expectedMarketSegmentSize = randomMarketSegment.getElement2();
+    Campaign campaign = new Campaign(Sampling.getUniqueCampaignId(), 1, 1, marketSegment, (int) Math.floor(this.demandDiscountFactor * expectedMarketSegmentSize * (1.0 / this.agents.size())));
+    campaign.setBudget(expectedMarketSegmentSize);
+    return campaign;
   }
 
 }

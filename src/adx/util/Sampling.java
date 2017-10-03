@@ -41,14 +41,16 @@ public class Sampling {
    * Different campaign reach factors.
    */
   private static final double[] campaignReachFactor = { 0.2, 0.4, 0.6 };
-  // private static final double[] campaignReachFactor = { 1.5 };
-  
-  private static final Random random = new Random();
 
   /**
    * A unique identifier for campaigns ids.
    */
-  public static int campaignId = 0;
+  private static int campaignId = 0;
+
+  /**
+   * Initialize a random number generator.
+   */
+  private static final Random random = new Random();
 
   static {
     // Initialize static structures only once.
@@ -73,6 +75,8 @@ public class Sampling {
       Sampling.totalProportion += Sampling.segmentsToSample.get(m);
       Sampling.cumulativeMarketSegments.add(new AbstractMap.SimpleEntry<MarketSegment, Integer>(m, totalProportion));
     }
+    Logging.log(Sampling.totalProportion);
+    Logging.log(Sampling.cumulativeMarketSegments);
   }
 
   /**
@@ -90,7 +94,7 @@ public class Sampling {
     for (MarketSegment m : Sampling.segmentsToSample.keySet()) {
       population.put(new Query(m), 0);
     }
-    
+
     // Sample one user at a time.
     for (int i = 0; i < n; i++) {
       int r = Sampling.random.nextInt(Sampling.totalProportion) + 1;
@@ -110,7 +114,7 @@ public class Sampling {
    * 
    * @param n
    * @return
-   * @throws AdXException 
+   * @throws AdXException
    */
   public static final List<Query> samplePopulation(int n) throws AdXException {
     List<Query> samplePopulation = new ArrayList<Query>();
@@ -136,7 +140,7 @@ public class Sampling {
     // The only difference is that the budget equals 1$ per impression.
     Campaign initialCampaign = Sampling.sampleCampaign(0);
     initialCampaign.setBudget(initialCampaign.getReach());
-    //Logging.log(initialCampaign);
+    // Logging.log(initialCampaign);
     return initialCampaign;
   }
 
@@ -148,7 +152,7 @@ public class Sampling {
    * @throws AdXException
    */
   public static Campaign sampleCampaign(int day) throws AdXException {
-    return Sampling.sampleCampaignOpportunityMessage(day, MarketSegment.proportionsList);
+    return Sampling.sampleCampaignOpportunityMessage(day);
   }
 
   /**
@@ -173,19 +177,46 @@ public class Sampling {
    * @return a CampaignOpportunityMessage with a sample campaign.
    * @throws AdXException
    */
-  public static Campaign sampleCampaignOpportunityMessage(int day, List<Entry<MarketSegment, Integer>> candidateSegments) throws AdXException {
-    Random randomGenerator = new Random();
-    // Get a random Market Segment and the number of users |C_S| in that segment.
-    Entry<MarketSegment, Integer> randomEntry = candidateSegments.get(randomGenerator.nextInt(candidateSegments.size()));
-    MarketSegment randomSegment = randomEntry.getKey();
-    int sizeOfRandomSegment = randomEntry.getValue();
+  public static Campaign sampleCampaignOpportunityMessage(int day) throws AdXException {
+    // Get the random market segment and its expected size.
+    Pair<MarketSegment, Integer> randomMarketSegmentPair = Sampling.sampleMarketSegment();
+    MarketSegment randomMarketSegment = randomMarketSegmentPair.getElement1();
+    int sizeOfRandomSegment = randomMarketSegmentPair.getElement2();
     // Determine the random campaign reach level factor C_RL.
-    double randomReachFactor = Sampling.campaignReachFactor[randomGenerator.nextInt(Sampling.campaignReachFactor.length)];
+    double randomReachFactor = Sampling.campaignReachFactor[Sampling.random.nextInt(Sampling.campaignReachFactor.length)];
     // Determine the random length of the campaign C_L
-    int randomDuration = Parameters.CAMPAIGN_DURATIONS.get(randomGenerator.nextInt(Parameters.CAMPAIGN_DURATIONS.size()));
-    // Compute the actual reach (see game specs, C_R = C_RL * |C_S| * C_L.
+    int randomDuration = Parameters.CAMPAIGN_DURATIONS.get(Sampling.random.nextInt(Parameters.CAMPAIGN_DURATIONS.size()));
+    // Compute the actual reach (see game specification, C_R = C_RL * |C_S| * C_L.
     int reach = (int) Math.floor(randomReachFactor * sizeOfRandomSegment * randomDuration);
-    return new Campaign(++Sampling.campaignId, day + 1, day + randomDuration, randomSegment, reach);
+    // Return a new campaign object.
+    return new Campaign(Sampling.getUniqueCampaignId(), day + 1, day + randomDuration, randomMarketSegment, reach);
+  }
+
+  /**
+   * Compute a random market segment from the available list in MarketSegment.proportionsList.
+   * 
+   * @return
+   */
+  public static Pair<MarketSegment, Integer> sampleMarketSegment() {
+    // Get a random Market Segment and the number of users |C_S| in that segment.
+    Entry<MarketSegment, Integer> entry = MarketSegment.proportionsList.get(Sampling.random.nextInt(MarketSegment.proportionsList.size()));
+    return new Pair<>(entry.getKey(), entry.getValue());
+  }
+
+  /**
+   * Keeps track of a unique campaign Id.
+   * 
+   * @return a unique campaign id that never repeats starting from 0.
+   */
+  public static int getUniqueCampaignId() {
+    return ++Sampling.campaignId;
+  }
+
+  /**
+   * Resets the unique campaign id to 0.
+   */
+  public static void resetUniqueCampaignId() {
+    Sampling.campaignId = 0;
   }
 
 }

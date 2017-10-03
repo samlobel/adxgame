@@ -21,16 +21,23 @@ public class Experiment {
   private final List<SimAgent> simAgents;
   private final int numberOfGames;
   private int numberOfImpressions;
+  private final double reserve;
+  private double demandDiscountFactor;
 
-  public Experiment(String csvFileName, List<SimAgent> simAgents, int numberOfGames) {
+  public Experiment(String csvFileName, List<SimAgent> simAgents, int numberOfGames, double reserve) {
     this.csvFileName = csvFileName;
     this.simAgents = simAgents;
     this.numberOfGames = numberOfGames;
     this.numberOfImpressions = Parameters.POPULATION_SIZE;
+    this.reserve = reserve;
   }
-  
+
   public void setNumberOfImpressions(int numberOfImpressions) {
     this.numberOfImpressions = numberOfImpressions;
+  }
+  
+  public void setDemandDiscountFactor(double demandDiscountFactor) {
+    this.demandDiscountFactor = demandDiscountFactor;
   }
 
   /**
@@ -47,13 +54,14 @@ public class Experiment {
     String ret = "";
     for (int g = 0; g < this.numberOfGames; g++) {
       // Run simulator.
-      Simulator simulator = new Simulator(this.simAgents, 0.0, this.numberOfImpressions);
+      Simulator simulator = new Simulator(this.simAgents, this.reserve, this.numberOfImpressions, this.demandDiscountFactor);
       // Get statistics.
       Statistics statistics = simulator.run();
       ret += statistics.oneLineSummary(1, g);
       // Logging.log("Result : \n" + statistics.oneLineSummary(1, g));
     }
     // Logging.log(ret);
+    // Logging.log("Save file to " + this.csvFileName);
     PrintWriter writer = new PrintWriter(this.csvFileName, "UTF-8");
     writer.println(ret);
     writer.close();
