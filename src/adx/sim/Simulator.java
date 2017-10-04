@@ -11,7 +11,6 @@ import adx.structures.BidBundle;
 import adx.structures.Campaign;
 import adx.structures.MarketSegment;
 import adx.util.Pair;
-import adx.util.Parameters;
 import adx.util.Sampling;
 
 /**
@@ -62,16 +61,6 @@ public class Simulator {
     this.numberOfImpressions = numberOfImpressions;
     this.demandDiscountFactor = demandDiscountFactor;
     Sampling.resetUniqueCampaignId();
-  }
-
-  /**
-   * Constructor. No reserve and default number of impressions.
-   * 
-   * @param agents
-   * @throws AdXException
-   */
-  public Simulator(List<SimAgent> agents) throws AdXException {
-    this(agents, 0.0, Parameters.POPULATION_SIZE, 1.0);
   }
 
   /**
@@ -132,9 +121,11 @@ public class Simulator {
   private Campaign sampleSimulatorCampaign() throws AdXException {
     Pair<MarketSegment, Integer> randomMarketSegment = Sampling.sampleMarketSegment();
     MarketSegment marketSegment = randomMarketSegment.getElement1();
-    Integer expectedMarketSegmentSize = randomMarketSegment.getElement2();
-    Campaign campaign = new Campaign(Sampling.getUniqueCampaignId(), 1, 1, marketSegment, (int) Math.floor(this.demandDiscountFactor * expectedMarketSegmentSize * (1.0 / this.agents.size())));
-    campaign.setBudget(expectedMarketSegmentSize);
+    Integer expectedMarketSegmentSize = (int) Math.ceil(randomMarketSegment.getElement2() * (this.numberOfImpressions / 10000.0));
+    int reach = (int) Math.ceil(this.demandDiscountFactor * expectedMarketSegmentSize * (1.0 / this.agents.size()));
+    Campaign campaign = new Campaign(Sampling.getUniqueCampaignId(), 1, 1, marketSegment, reach);
+    //campaign.setBudget(expectedMarketSegmentSize);
+    campaign.setBudget(Sampling.random.nextGaussian()*(0.1*reach) + reach);
     return campaign;
   }
 

@@ -31,6 +31,9 @@ public enum MarketSegment {
   public static final List<Entry<MarketSegment, Integer>> proportionsList;
 
   static {
+    /*
+     * Note that the proportions are given out of a total population of 10,000.
+     */
     HashMap<MarketSegment, Integer> initMap = new HashMap<MarketSegment, Integer>();
     /*initMap.put(MALE, 4956);
     initMap.put(FEMALE, 5044);

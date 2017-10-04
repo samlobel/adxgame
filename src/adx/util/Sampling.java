@@ -50,7 +50,7 @@ public class Sampling {
   /**
    * Initialize a random number generator.
    */
-  private static final Random random = new Random();
+  public static final Random random = new Random();
 
   static {
     // Initialize static structures only once.
@@ -75,8 +75,8 @@ public class Sampling {
       Sampling.totalProportion += Sampling.segmentsToSample.get(m);
       Sampling.cumulativeMarketSegments.add(new AbstractMap.SimpleEntry<MarketSegment, Integer>(m, totalProportion));
     }
-    Logging.log(Sampling.totalProportion);
-    Logging.log(Sampling.cumulativeMarketSegments);
+    // Logging.log(Sampling.totalProportion);
+    // Logging.log(Sampling.cumulativeMarketSegments);
   }
 
   /**

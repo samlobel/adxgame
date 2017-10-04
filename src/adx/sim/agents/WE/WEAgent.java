@@ -20,7 +20,6 @@ import adx.sim.agents.SimAgent;
 import adx.sim.agents.SimAgentModel;
 import adx.sim.agents.SimAgentModel.MarketModel;
 import adx.structures.BidBundle;
-import adx.structures.Campaign;
 import adx.structures.SimpleBidEntry;
 import adx.util.Logging;
 import adx.variants.onedaygame.OneDayBidBundle;
@@ -41,22 +40,21 @@ public class WEAgent extends SimAgent {
    * 
    * @param simAgentName
    */
-  public WEAgent(String simAgentName, double reserve) {
-    super(simAgentName, reserve);
+  public WEAgent(String simAgentName, double reserve, int numberOfImpressions) {
+    super(simAgentName, reserve, numberOfImpressions);
   }
 
   @Override
   public BidBundle getBidBundle() {
-
     try {
       // Get the model.
-      MarketModel marketModel = SimAgentModel.constructModel(this.myCampaign, this.othersCampaigns);
+      MarketModel marketModel = SimAgentModel.constructModel(this.myCampaign, this.othersCampaigns, this.numberOfImpressions);
       Market<GameGoods, Bidder<GameGoods>> market = marketModel.market;
+      // Logging.log(market);
       // Print some useful info
       // this.printInfo(market);
       Bidder<GameGoods> myCampaignBidder = marketModel.mybidder;
       Set<GameGoods> myDemandSet = marketModel.mybidder.getDemandSet();
-
       // Get the market with the reserve price.
       GameMarketWithReserve mwrp = new GameMarketWithReserve(market, this.reserve);
       // Test if there are bidders in the market with reserve.
@@ -65,7 +63,7 @@ public class WEAgent extends SimAgent {
         MarketAllocation<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> allocForMarketWithReserve = new GreedyAllocation<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>>().Solve(mwrp.getMarketWithReservePrice());
         // Deduce a MarketAllocation for the original market.
         MarketAllocation<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> allocForOriginalMarket = mwrp.deduceAllocation(allocForMarketWithReserve);
-        // Run pricing algorithm for the original market and its deduced allocation. 
+        // Run pricing algorithm for the original market and its deduced allocation.
         RestrictedEnvyFreePricesLPWithReserve<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> restrictedEnvyFreePricesLP = new RestrictedEnvyFreePricesLPWithReserve<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>>(allocForOriginalMarket, this.reserve);
         restrictedEnvyFreePricesLP.createLP();
         RestrictedEnvyFreePricesLPSolution<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> prices = restrictedEnvyFreePricesLP.Solve();
@@ -77,7 +75,8 @@ public class WEAgent extends SimAgent {
         for (GameGoods demandedGood : myDemandSet) {
           // Logging.log("Price for: " + demandedGood + " is " + prices.getPrice(demandedGood));
           if (allocForOriginalMarket.getAllocation(demandedGood, myCampaignBidder) > 0) {
-            // bidEntries.add(new SimpleBidEntry(demandedGood.getMarketSegment(), prices.getPrice(demandedGood), greedyAllocation.getAllocation(demandedGood, myCampaignBidder) * prices.getPrice(demandedGood)));
+            // bidEntries.add(new SimpleBidEntry(demandedGood.getMarketSegment(), prices.getPrice(demandedGood), greedyAllocation.getAllocation(demandedGood,
+            // myCampaignBidder) * prices.getPrice(demandedGood)));
             bidEntries.add(new SimpleBidEntry(demandedGood.getMarketSegment(), prices.getPrice(demandedGood), this.myCampaign.getBudget()));
           }
         }
@@ -86,30 +85,11 @@ public class WEAgent extends SimAgent {
         // Logging.log("\n:::::::WEBidBundle for campaign: " + this.myCampaign + " = " + WEBidBundle);
         return WEBidBundle;
       }
-    } catch (AdXException | MarketCreationException | BidderCreationException | MarketAllocationException | AllocationException | GoodsException
-        | PrincingAlgoException | IloException | MarketOutcomeException e) {
+    } catch (AdXException | MarketCreationException | BidderCreationException | MarketAllocationException | AllocationException | GoodsException | PrincingAlgoException | IloException | MarketOutcomeException e) {
       Logging.log("Failed to create market model --> ");
       e.printStackTrace();
       return null;
     }
     return null;
   }
-
-  /**
-   * Helper method to print information, mainly about the model.
-   */
-  protected void printInfo(Market<GameGoods, Bidder<GameGoods>> market) {
-    Logging.log("***********" + this.getName() + "************");
-    Logging.log("My Campaign: \n\t " + this.myCampaign);
-    Logging.log("Others Campaigns: ");
-    for (Campaign c : this.othersCampaigns) {
-      Logging.log("\t " + c);
-    }
-    Logging.log("List of Goods = ");
-    for (GameGoods gameGood : SimAgentModel.listOfGameGoods) {
-      Logging.log("\t " + gameGood);
-    }
-    Logging.log("\n ------ Model: \n" + market + "\n ---------");
-  }
-
 }

@@ -1,8 +1,10 @@
 package adx.sim.agents;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import structures.Bidder;
@@ -20,36 +22,37 @@ import com.google.common.collect.ImmutableList;
 public class SimAgentModel {
 
   /**
-   * Immutable list of goods.
+   * Maps int -> list of game goods. The idea is to compute the game goods for a given supply number only once!
    */
-  public static ImmutableList<GameGoods> listOfGameGoods;
+  public static final Map<Integer, ImmutableList<GameGoods>> mapOfGameGoods = new HashMap<Integer, ImmutableList<GameGoods>>();
 
-  /**
-   * Static structures.
-   */
-  static {
-    // Create the market segments just once.
-    List<MarketSegment> marketSegments = new ArrayList<MarketSegment>();
-    marketSegments.add(MarketSegment.MALE_YOUNG_LOW_INCOME);
-    marketSegments.add(MarketSegment.MALE_YOUNG_HIGH_INCOME);
-    marketSegments.add(MarketSegment.MALE_OLD_LOW_INCOME);
-    marketSegments.add(MarketSegment.MALE_OLD_HIGH_INCOME);
-    marketSegments.add(MarketSegment.FEMALE_YOUNG_LOW_INCOME);
-    marketSegments.add(MarketSegment.FEMALE_YOUNG_HIGH_INCOME);
-    marketSegments.add(MarketSegment.FEMALE_OLD_LOW_INCOME);
-    marketSegments.add(MarketSegment.FEMALE_OLD_HIGH_INCOME);
-    List<GameGoods> gameGoods = new ArrayList<GameGoods>();
-    for (MarketSegment marketSegment : marketSegments) {
-      try {
-        gameGoods.add(new GameGoods(marketSegment, MarketSegment.proportionsMap.get(marketSegment)));
-      } catch (GoodsCreationException e) {
-        Logging.log("Error creating goods in the market model");
-        e.printStackTrace();
+  public static ImmutableList<GameGoods> getListOfGameGoods(int numberOfImpressions) {
+    if (!SimAgentModel.mapOfGameGoods.containsKey(numberOfImpressions)) {
+      // Logging.log("Creating list of goods for " + numberOfImpressions + " many impressions");
+      // Create the market segments just once.
+      List<MarketSegment> marketSegments = new ArrayList<MarketSegment>();
+      marketSegments.add(MarketSegment.MALE_YOUNG_LOW_INCOME);
+      marketSegments.add(MarketSegment.MALE_YOUNG_HIGH_INCOME);
+      marketSegments.add(MarketSegment.MALE_OLD_LOW_INCOME);
+      marketSegments.add(MarketSegment.MALE_OLD_HIGH_INCOME);
+      marketSegments.add(MarketSegment.FEMALE_YOUNG_LOW_INCOME);
+      marketSegments.add(MarketSegment.FEMALE_YOUNG_HIGH_INCOME);
+      marketSegments.add(MarketSegment.FEMALE_OLD_LOW_INCOME);
+      marketSegments.add(MarketSegment.FEMALE_OLD_HIGH_INCOME);
+      List<GameGoods> gameGoods = new ArrayList<GameGoods>();
+      for (MarketSegment marketSegment : marketSegments) {
+        try {
+          gameGoods.add(new GameGoods(marketSegment, (int) Math.ceil(MarketSegment.proportionsMap.get(marketSegment) * (numberOfImpressions / 10000.0))));
+        } catch (GoodsCreationException e) {
+          Logging.log("Error creating goods in the market model");
+          e.printStackTrace();
+        }
       }
+      ImmutableList.Builder<GameGoods> gameMarketSegmentBuilder = ImmutableList.builder();
+      gameMarketSegmentBuilder.addAll(gameGoods);
+      SimAgentModel.mapOfGameGoods.put(numberOfImpressions, gameMarketSegmentBuilder.build());
     }
-    ImmutableList.Builder<GameGoods> gameMarketSegmentBuilder = ImmutableList.builder();
-    gameMarketSegmentBuilder.addAll(gameGoods);
-    SimAgentModel.listOfGameGoods = gameMarketSegmentBuilder.build();
+    return SimAgentModel.mapOfGameGoods.get(numberOfImpressions);
   }
 
   /**
@@ -62,16 +65,17 @@ public class SimAgentModel {
    * @throws AdXException
    * @throws MarketCreationException
    */
-  public static MarketModel constructModel(Campaign myCampaign, List<Campaign> listOfOthersCampaigns) throws BidderCreationException, AdXException, MarketCreationException {
+  public static MarketModel constructModel(Campaign myCampaign, List<Campaign> listOfOthersCampaigns, int numberOfImpressions) throws BidderCreationException, AdXException, MarketCreationException {
     // Construct the model
+    ImmutableList<GameGoods> listOfGameGoods = SimAgentModel.getListOfGameGoods(numberOfImpressions);
     ArrayList<Bidder<GameGoods>> listOfBidders = new ArrayList<Bidder<GameGoods>>();
-    Set<GameGoods> myDemandSet = SimAgentModel.generateDemandSet(myCampaign);
+    Set<GameGoods> myDemandSet = SimAgentModel.generateDemandSet(listOfGameGoods, myCampaign);
     Bidder<GameGoods> myCampaignBidder = new Bidder<GameGoods>(myCampaign.getReach(), myCampaign.getBudget(), myDemandSet);
     listOfBidders.add(myCampaignBidder);
     for (Campaign othersCampaigns : listOfOthersCampaigns) {
-      listOfBidders.add(new Bidder<GameGoods>(othersCampaigns.getReach(), othersCampaigns.getBudget(), SimAgentModel.generateDemandSet(othersCampaigns)));
+      listOfBidders.add(new Bidder<GameGoods>(othersCampaigns.getReach(), othersCampaigns.getBudget(), SimAgentModel.generateDemandSet(listOfGameGoods, othersCampaigns)));
     }
-    Market<GameGoods, Bidder<GameGoods>> market = new Market<GameGoods, Bidder<GameGoods>>(SimAgentModel.listOfGameGoods, listOfBidders);
+    Market<GameGoods, Bidder<GameGoods>> market = new Market<GameGoods, Bidder<GameGoods>>(listOfGameGoods, listOfBidders);
     return new SimAgentModel.MarketModel(market, myCampaignBidder);
   }
 
@@ -82,9 +86,9 @@ public class SimAgentModel {
    * @return
    * @throws AdXException
    */
-  public static Set<GameGoods> generateDemandSet(Campaign campaign) throws AdXException {
+  public static Set<GameGoods> generateDemandSet(ImmutableList<GameGoods> listOfGameGoods, Campaign campaign) throws AdXException {
     Set<GameGoods> demandSet = new HashSet<GameGoods>();
-    for (GameGoods gameGood : SimAgentModel.listOfGameGoods) {
+    for (GameGoods gameGood : listOfGameGoods) {
       if (MarketSegment.marketSegmentSubset(campaign.getMarketSegment(), gameGood.getMarketSegment())) {
         demandSet.add(gameGood);
       }
@@ -92,6 +96,10 @@ public class SimAgentModel {
     return demandSet;
   }
 
+  /**
+   * Auxiliary class to contain the market model and the bidder who owns the model.
+   *
+   */
   public static class MarketModel {
     public Market<GameGoods, Bidder<GameGoods>> market;
     public Bidder<GameGoods> mybidder;

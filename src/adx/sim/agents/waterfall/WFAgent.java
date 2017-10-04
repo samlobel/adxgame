@@ -32,25 +32,28 @@ public class WFAgent extends SimAgent {
    * 
    * @param simAgentName
    */
-  public WFAgent(String simAgentName, double reserve) {
-    super(simAgentName, reserve);
+  public WFAgent(String simAgentName, double reserve, int numberOfImpressions) {
+    super(simAgentName, reserve, numberOfImpressions);
   }
 
   @Override
   public BidBundle getBidBundle() {
-    // Get the model.
     try {
-      MarketModel marketModel = SimAgentModel.constructModel(this.myCampaign, this.othersCampaigns);
+      // Get the model.
+      MarketModel marketModel = SimAgentModel.constructModel(this.myCampaign, this.othersCampaigns, this.numberOfImpressions);
       Market<GameGoods, Bidder<GameGoods>> market = marketModel.market;
+      //Logging.log(market);
+      //Logging.log(market.getGoods());
+      //Logging.log(market.getSupplyToDemandRatio());
       // Print some useful info
       // this.printInfo("WF AGENT", market);
       Bidder<GameGoods> myCampaignBidder = marketModel.mybidder;
       Set<GameGoods> myDemandSet = marketModel.mybidder.getDemandSet();
-
+      // Compute the Waterfall outcome.
       Waterfall<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> waterfall = new Waterfall<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>>(market, this.reserve);
       WaterfallSolution<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> waterfallSolution = waterfall.run();
-      //waterfallSolution.printAllocationTable();
-      //waterfallSolution.printPricesTable();
+      // waterfallSolution.printAllocationTable();
+      // waterfallSolution.printPricesTable();
       // Back-up bid from waterfall allocation and prices
       Set<SimpleBidEntry> bidEntries = new HashSet<SimpleBidEntry>();
       for (GameGoods demandedGood : myDemandSet) {

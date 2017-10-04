@@ -32,16 +32,22 @@ public abstract class SimAgent {
    * The reserve price.
    */
   protected final double reserve;
+  
+  /**
+   * Number of impressions.
+   */
+  protected final int numberOfImpressions;
 
   /**
    * Constructor.
    * 
    * @param simAgentName
    */
-  public SimAgent(String simAgentName, double reserve) {
+  public SimAgent(String simAgentName, double reserve, int numberOfImpressions) {
     this.simAgentName = simAgentName;
     this.reserve = reserve;
-    Logging.log("[Agent] " + simAgentName + ", with reserve = " + reserve);
+    this.numberOfImpressions = numberOfImpressions;
+    Logging.log("[Agent] " + simAgentName + ", (r, m) = (" + this.reserve + "," + this.numberOfImpressions + ")");
   }
 
   /**

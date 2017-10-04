@@ -42,9 +42,9 @@ def get_group_data(dir_location, agent1, agent2, agent1fix = True):
         agent2_means[column] = []
     for i in range(0,max_number_agents):
         if agent1fix:
-            all_data.append(get_data(dir_location, agent1 + agent2 + '(20-'+str(i+1)+').csv'))
+            all_data.append(get_data(dir_location, agent1 + agent2 + '(1-'+str(i+1)+').csv'))
         else:
-            all_data.append(get_data(dir_location, agent1 + agent2 + '('+str(i+1)+'-20).csv'))
+            all_data.append(get_data(dir_location, agent1 + agent2 + '('+str(i+1)+'-1).csv'))
         agent1_data.append(all_data[i][all_data[i]['agent'].str.contains(agent1 + 'Agent')])
         agent2_data.append(all_data[i][all_data[i]['agent'].str.contains(agent2 + 'Agent')])
         for column in columns:
@@ -92,8 +92,17 @@ def produce_all_plots():
     #dir_location = '../results_Version2/'
     #image_prefix = 'version2-'
 
-    dir_location = '../results-demand-factor-0.75/'
-    image_prefix = 'demand-factor-0.75-'
+    #dir_location = '../results0.75-10k/'
+    #image_prefix = 'demand-factor-0.75-10kimpressions-'
+
+    dir_location = '../results0.75-2k/'
+    image_prefix = 'demand-factor-0.75-2kimpressions-'
+
+    #dir_location = '../results1.25-2k/'
+    #image_prefix = 'demand-factor-1.25-2kimpressions-'
+
+    #dir_location = '../results1.25-10k/'
+    #image_prefix = 'demand-factor-1.25-10kimpressions-'
 
     for x in combinations(['SI','WE','WF'], 2):
         for y in [True, False]:
