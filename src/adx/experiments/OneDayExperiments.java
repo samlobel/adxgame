@@ -92,7 +92,7 @@ public class OneDayExperiments {
     }
   }
 
-  public static void main7(String[] args) throws FileNotFoundException, UnsupportedEncodingException, AdXException {
+  public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, AdXException {
     double demandDiscountFactor;
     int numberOfImpressions;
     Logging.log("Results with demand discount factor");
@@ -129,7 +129,7 @@ public class OneDayExperiments {
     }
   }
 
-  public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, AdXException {
+  public static void main7(String[] args) throws FileNotFoundException, UnsupportedEncodingException, AdXException {
     OneDayExperiments.varyReserve(args);
   }
 }
