@@ -125,8 +125,35 @@ public class OneDayExperiments {
     }*/
   }
 
+  public static void eightAgentsVaryReserve(String[] args) throws FileNotFoundException, UnsupportedEncodingException, AdXException {
+    Logging.log("Eight Agents Vary Reserve Experiment");
+
+    double demandDiscountFactor = 3.0;
+    Logging.log("Endogenous demandDiscountFactor: " + demandDiscountFactor);
+    int numberOfImpressions = 2000;
+    Logging.log("Endogenous numberOfImpressions: " + numberOfImpressions);
+    ExperimentFactory.resultsDirectory = "data/results" + demandDiscountFactor + "-2k-8agents-varyreserve/";
+    Logging.log("Endogenous folder: " + ExperimentFactory.resultsDirectory);
+
+    double reserve = 0.0;
+    int count = 0;
+    for (int r = 0; r < 131; r++) {
+      for (int i = 0; i < 9; i++) {
+        Logging.log("WEWF(" + (8 - i) + "-" + i + "), r = " + reserve);
+        Experiment experiment = ExperimentFactory.WEandWFAgents("WEWF(" + (8 - i) + "-" + i + ")-r(" + r + ").csv", 8 - i, i, reserve, numberOfImpressions);
+        experiment.setDemandDiscountFactor(demandDiscountFactor);
+        experiment.runExperiment();
+        count++;
+      }
+      reserve += 1.0 / 100.0;
+    }
+    Logging.log("Total Count " + count);
+  }
+  
   public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, AdXException {
     // OneDayExperiments.varyReserve(args);
-    OneDayExperiments.basicExperiments(args);
+    // OneDayExperiments.basicExperiments(args);
+    OneDayExperiments.eightAgentsVaryReserve(args);
   }
+  
 }
