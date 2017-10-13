@@ -31,7 +31,7 @@ def produce_graph_data(dir_location, number_of_agents, reserve = 0, include_rese
         graph_data.append(('WE' * (number_of_agents - i) + 'WF' * i, (WEdata.profit.mean(), WFdata.profit.mean())))
     return graph_data
 
-def produce_deviation_graph(demand_factor, impressions, graph_data):
+def produce_deviation_graph(graph_data):
     """
     Given the data of the graph, produces a directed graph, DG,
     whichi is an object of the library networkx.
@@ -63,10 +63,11 @@ def plot_deviation_graph(demand_factor, impressions, graph_data, DG):
     number_of_agents = len(graph_data)
     pos = nx.circular_layout(DG)
     labels = dict((i, r'$WE^{' + str(i.count('WE')) + '}WF^{' + str(i.count('WF')) + '}$') for (i, v) in graph_data)
-    fig = plt.figure(3,figsize=(number_of_agents + 1,number_of_agents + 1))
+    fig = plt.figure(3, figsize=(number_of_agents + 1,number_of_agents + 1))
     nx.draw(DG, pos, labels = labels, node_size = 2500, font_color = 'white', node_color = 'blue')
     plt.title('Deviation Graph, WE v WF, ' + str(number_of_agents - 1) + ' agents')
     plt.savefig("deviationgraphWEWF-" + demand_factor.replace('.','_') + "-" + impressions + "-" + str(number_of_agents - 1)+".png")
+    plt.show()
     plt.close(fig)
         
 def plot_proportion_pure_nash(demand_factor, impressions, dict_of_pure_nash):
@@ -95,7 +96,7 @@ def get_dict_of_pure_nash(demand_factor, impressions, dir_location):
     for i in range(2, 21):
         print('Number of agents: ' + str(i))
         graph_data = produce_graph_data(dir_location, i)
-        DG = produce_deviation_graph(demand_factor, impressions, graph_data)
+        DG = produce_deviation_graph(graph_data)
         # Uncomment next line to bulk produce all graphs
         #plot_deviation_graph(demand_factor, impressions, graph_data, DG)
         dict_of_pure_nash[i] = get_pure_nash(DG)
@@ -123,7 +124,7 @@ profit_reserve_at_equilibirum = {}
 for r in range(0,131):
     update_progress(r / 130.0)
     data = produce_graph_data(dir_location, number_agents, r , True)
-    DG = produce_deviation_graph(0, 2000, data)
+    DG = produce_deviation_graph(data)
     pure_nash = get_pure_nash(DG)
     list_profit = []
     for (we,wf) in pure_nash:
@@ -145,5 +146,7 @@ plt.show()
 
 # For inspection purposes, the next line gets the graph data for a 
 # given number of agents
-#dir_location = '../results0.25-2k-newreward/'
-#graph_data = produce_graph_data(dir_location, number_of_agents = 3)
+dir_location = '../../results0.25-2k-newreward/'
+graph_data = produce_graph_data(dir_location, number_of_agents = 3)
+DG = produce_deviation_graph(graph_data)
+plot_deviation_graph('0.25', '2k', graph_data, DG)
