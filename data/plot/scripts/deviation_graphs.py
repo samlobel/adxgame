@@ -87,7 +87,7 @@ def plot_proportion_pure_nash(demand_factor, impressions, dict_of_pure_nash):
     plt.title('Proportion of agents playing each strategy at equilibirum\n Demand factor ' + str(demand_factor) + ', impressions ' + str(impressions))
     plt.xlabel('Number of agents')
     plt.ylabel('Proportion at equilibrium')
-    plt.savefig('proportionateq-'+demand_factor.replace('.','_')+'-'+impressions+'.png')
+    plt.savefig('../proportionateq-'+demand_factor.replace('.','_')+'-'+impressions+'.png')
     plt.close(fig)
 
 def get_dict_of_pure_nash(demand_factor, impressions, dir_location):

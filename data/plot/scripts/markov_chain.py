@@ -64,25 +64,28 @@ def produce_soft_deviation_graph(profile_data):
         DG.add_edge(profile_data[i][0], profile_data[i+1][0], label = float("{0:.2f}".format(normalized_vector[3])))
         DG.add_weighted_edges_from([(profile_data[i][0], profile_data[i][0], normalized_vector[0]+normalized_vector[1]), (profile_data[i][0], profile_data[i-1][0], normalized_vector[2]), (profile_data[i][0], profile_data[i+1][0], normalized_vector[3])])
     return DG
-    
-def plot_soft_deviation_graph(DG):
-    """
-    Given a directed graph object DG with weighted edges, 
-    plots the soft deviation graph. To produce this graph,
-    first computes the steady state distribution.
-    """
+
+def compute_steady_state(DG):
     #Compute the steady state distribution
     P = nx.adjacency_matrix(DG)
     mc = markovChain(P)
     mc.computePi('linear') #We can also use 'power', 'krylov' or 'eigen'
     steady_state = mc.pi
-    #print(steady_state)
     #print(P.todense())
     
     map_steady_dist = {}
-    for i in range(0,len(profile_data)):
-        map_steady_dist[profile_data[i][0]] = steady_state[i]
+    i = 0
+    for profile in DG.nodes():
+        map_steady_dist[profile] = steady_state[i]
+        i = i + 1
+    return map_steady_dist
     
+def plot_soft_deviation_graph(DG, map_steady_dist):
+    """
+    Given a directed graph object DG with weighted edges, 
+    plots the soft deviation graph. To produce this graph,
+    first computes the steady state distribution.
+    """    
     # Drawing edges weights
     edge_labels = edge_labels=dict([((u,v,),float("{0:.2f}".format(d['weight']))) for u,v,d in DG.edges(data=True) if u!=v])
     labels = dict((i, r'$WE^{' + str(i.count('WE')) + '}WF^{' + str(i.count('WF')) + '}$') for (i, v) in profile_data)
@@ -102,19 +105,50 @@ def plot_soft_deviation_graph(DG):
     plt.savefig("../deviationgraphSoftWEWF-" + demand_factor.replace('.','_') + "-" + impressions + "-" + str(number_of_profiles)+".png")
     plt.show()
     plt.close(fig)
+    
+def expected_number_strategies(map_steady_dist):
+    expected_WE = 0
+    expected_WF = 0    
+    for s,p in map_steady_dist.items():
+        expected_WE += s.count('WE') * p
+        expected_WF += s.count('WF') * p
+    return {'WE': expected_WE, 'WF': expected_WF}
+
+def plot_soft_expected_agents_pure_nash(dir_location, demand_factor, impressions):
+    y = [expected_number_strategies(compute_steady_state(produce_soft_deviation_graph(produce_profile_data(dir_location, i)))) for i in range(2,21)]    
+    fig = plt.figure(4, figsize=(10,4))
+    xaxis = [i for i in range(2,21)]
+    plt.plot(xaxis, [x['WE'] for x in y], label = 'Expected # WE')
+    plt.plot(xaxis, [x['WF'] for x in y], label = 'Expected # WF')
+    plt.legend()
+    plt.title('Expected number of agents playing each strategy\n Demand factor ' + str(demand_factor) + ', impressions ' + str(impressions))
+    plt.xlabel('Number of players')
+    plt.ylabel('Expected number of agents playing strategy.')
+    plt.savefig('../proportionateqSoft-'+demand_factor.replace('.','_')+'-'+impressions+'.png')
+    plt.show()
+    plt.close(fig)
+
 
 # Testing one soft graph, manually
-number_agents = 2
+number_agents = 5
+#demand_factor = '0.25'
 demand_factor = '3.0'
 impressions = '2k'
 dir_location = '../../results' + demand_factor + '-' + impressions + '-newreward/'
-profile_data = produce_profile_data(dir_location, number_agents)
-DG = produce_soft_deviation_graph(profile_data)
+#profile_data = produce_profile_data(dir_location, number_agents)
+#DG = produce_soft_deviation_graph(profile_data)
 #write_dot(DG, 'test.dot')
-plot_soft_deviation_graph(DG)
+#map_steady_dist = compute_steady_state(DG)
+#print(map_steady_dist)
+#plot_soft_deviation_graph(DG, map_steady_dist)
 
-# Bulk graph plotting
+plot_soft_expected_agents_pure_nash(dir_location, demand_factor, impressions)
+
+"""# Bulk graph plotting
 for i in range(1,20):
     profile_data = produce_profile_data(dir_location, i)
     DG = produce_soft_deviation_graph(profile_data)
-    plot_soft_deviation_graph(DG)
+    map_steady_dist = compute_steady_state(DG)
+    plot_soft_deviation_graph(DG, map_steady_dist)"""
+    
+    
