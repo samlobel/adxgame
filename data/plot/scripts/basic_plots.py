@@ -12,7 +12,6 @@ import scipy as sp
 import scipy.stats
 from matplotlib import pyplot as plt
 from itertools import combinations, product
-from progress import update_progress
 
 def mean_confidence_interval(data, confidence=0.95):
     """
@@ -120,14 +119,14 @@ def produce_all_plots(dir_location, image_prefix, demand_factor, impressions):
         for y in [True, False]:
             print('Graph: ' + str(x) + (', Fix Agent ' + str(x[0]) if y else ', Fix Agent ' + str(x[1])))
             plotGroup(dir_location, image_prefix, demand_factor, impressions, x[0], x[1], y) 
-            
-def produce_latex():
+    
+def produce_latex_and_plots():
     """
     Produces all the latex to show results
     """
     demand_factors = ['0.25','0.75','1.25','3.0']
-    impressions = ['2k']
-        
+    impressions = ['2000']
+    
     for (demand, supply) in product(demand_factors, impressions):
         dir_location = '../../results/' + demand + '-' + supply + '/agents/'
         image_prefix = 'demand-factor-' + demand.replace('.','_') + '-' + supply + 'impressions-'
@@ -148,3 +147,4 @@ def produce_latex():
     \includegraphics[scale=0.65]{/home/eareyanv/workspace/adxgame/data/plot/""" + image_prefix + """WFvWE}
         """
         print(latex)
+        

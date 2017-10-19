@@ -8,7 +8,7 @@ Created on Tue Oct 10 08:50:01 2017
 
 import networkx as nx
 import matplotlib.pyplot as plt
-from basic_plots import get_data, mean_confidence_interval
+from basic_plots import get_data
 from itertools import product
 from progress import update_progress
 
@@ -97,7 +97,7 @@ def get_dict_of_pure_nash(demand_factor, impressions, dir_location):
     """
     dict_of_pure_nash = {}
     for i in range(2, 21):
-        print('Number of agents: ' + str(i))
+        update_progress(i/20)
         profile_data = produce_profile_data(dir_location, i)
         DG = produce_deviation_graph(profile_data)
         # Uncomment next line to bulk produce all graphs
@@ -110,44 +110,16 @@ def plot_all_proportion_pure_nash():
     Save all the deviation graphs to an image and the
     image of the proportion of pure nash
     """
-    demand_factors = ['0.25','3.0']
-    impressions = ['2k']
+    demand_factors = ['0.25','0.75','1.25','3.0']
+    impressions = ['2000']
         
     for (demand, supply) in product(demand_factors, impressions):
-        dir_location = '../results' + demand + '-' + supply + '-newreward/'
-        print(dir_location)
+        dir_location = '../../results/' + demand + '-' + supply + '/agents/'
+        print(demand, supply)
         dict_of_pure_nash = get_dict_of_pure_nash(demand, supply, dir_location)
         plot_proportion_pure_nash(demand, supply, dict_of_pure_nash)
-
+    
 """
-number_agents = 8
-demand_factor = '3.0'
-impressions = '2k'
-dir_location = '../../results' + demand_factor + '-' + impressions + '-' + str(number_agents) + 'agents-varyreserve/'
-profit_reserve_at_equilibirum = {}
-for r in range(0,131):
-    update_progress(r / 130.0)
-    data = produce_profile_data(dir_location, number_agents, r , True)
-    DG = produce_deviation_graph(data)
-    pure_nash = get_pure_nash(DG)
-    list_profit = []
-    for (we,wf) in pure_nash:
-        file_name = 'WEWF(' + str(we) + '-' + str(wf) + ')-r(' + str(r) + ').csv'
-        temp = get_data(dir_location, file_name)
-        list_profit.append(mean_confidence_interval(temp.wincost))
-    profit_reserve_at_equilibirum[r] = min(list_profit, key = lambda t: t[0])
-
-xaxis = [0.01 + 0.01*x for x in range(0,131)]
-profit_confidence = list(profit_reserve_at_equilibirum.values())
-plt.plot(xaxis, [mean*number_agents for (mean, lb, ub) in profit_confidence], '--', color = 'navy')
-plt.fill_between(xaxis, [lb*number_agents for (mean, lb, ub) in profit_confidence], [ub*number_agents for (mean, lb, ub) in profit_confidence], alpha=0.5)
-plt.title('Market maker revenue as a function of reserve, \n where ' + str(number_agents) + ' players play at equilibirum. \n Demand factor = ' + demand_factor +', impressions = ' + impressions + '.')
-plt.xlabel('Reserve price')
-plt.ylabel('Market maker mean revenue')
-plt.tight_layout()
-plt.savefig('../MarketRevenueAtEq-' + str(number_agents) + 'Agents-' + demand_factor.replace('.','_') + '-' + impressions + '.png')
-plt.show()
-
 # For inspection purposes, the next line gets the graph data for a 
 # given number of agents
 dir_location = '../../results0.25-2k-newreward/'

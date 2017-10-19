@@ -65,35 +65,6 @@ public class OneDayExperiments {
   }
 
   /**
-   * Experiments with reserve.
-   * 
-   * @param args
-   * @throws FileNotFoundException
-   * @throws UnsupportedEncodingException
-   * @throws AdXException
-   */
-  public static void eightWEWFAgentsSpecialCasesvaryReserve(double demandDiscountFactor, int numberOfImpressions) throws FileNotFoundException, UnsupportedEncodingException, AdXException {
-    Logging.log("Eight Agents, Special Cases, Vary Reserve Experiment");
-    
-    ExperimentFactory.resultsDirectory = directoryPrefix + "8-agents-specialcases-varyreserve-" + demandDiscountFactor + "-" + numberOfImpressions + "/";
-    Logging.log("Results folder: " + ExperimentFactory.resultsDirectory);
-
-    double reserve = 0.0;
-    for (int i = 0; i < 131; i++) {
-      Experiment experiment1 = ExperimentFactory.allWEExperiment("WEWF(8,0)-" + i, 8, reserve, numberOfImpressions);
-      Experiment experiment2 = ExperimentFactory.allWFExperiment("WEWF(0,8)-" + i, 8, reserve, numberOfImpressions);
-      Experiment experiment3 = ExperimentFactory.WEandWFAgents("WEWF(4,4)-" + i, 4, 4, reserve, numberOfImpressions);
-      experiment1.setDemandDiscountFactor(demandDiscountFactor);
-      experiment2.setDemandDiscountFactor(demandDiscountFactor);
-      experiment3.setDemandDiscountFactor(demandDiscountFactor);
-      experiment1.runExperiment();
-      experiment2.runExperiment();
-      experiment3.runExperiment();
-      reserve += 1.0 / 100.0;
-    }
-  }
-
-  /**
    * Eight WE and WF agents, any combinations, varying reserve.
    * 
    * @param args
@@ -149,7 +120,6 @@ public class OneDayExperiments {
     }
     // Experiments so far.
     OneDayExperiments.basicExperiments(demandDiscountFactor, numberOfImpressions);
-    OneDayExperiments.eightWEWFAgentsSpecialCasesvaryReserve(demandDiscountFactor, numberOfImpressions);
     OneDayExperiments.eightWEWFAgentsVaryReserve(demandDiscountFactor, numberOfImpressions);
   }
 
