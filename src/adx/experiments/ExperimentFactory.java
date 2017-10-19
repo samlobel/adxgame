@@ -72,7 +72,7 @@ public class ExperimentFactory {
    * @return
    */
   public static Experiment allWEExperiment(String resultsFileName, int numberOfAgents, double reserve, int numberOfImpressions) {
-    return new Experiment(ExperimentFactory.resultsDirectory + resultsFileName, ExperimentFactory.listOfWEAgents(numberOfAgents, reserve, numberOfImpressions), ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
+    return new Experiment(ExperimentFactory.resultsDirectory, resultsFileName, ExperimentFactory.listOfWEAgents(numberOfAgents, reserve, numberOfImpressions), ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
   }
 
   /**
@@ -82,7 +82,7 @@ public class ExperimentFactory {
    * @return
    */
   public static Experiment allWFExperiment(String resultsFileName, int numberOfAgents, double reserve, int numberOfImpressions) {
-    return new Experiment(ExperimentFactory.resultsDirectory + resultsFileName, ExperimentFactory.listOfWFAgents(numberOfAgents, reserve, numberOfImpressions), ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
+    return new Experiment(ExperimentFactory.resultsDirectory, resultsFileName, ExperimentFactory.listOfWFAgents(numberOfAgents, reserve, numberOfImpressions), ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
   }
 
   /**
@@ -95,7 +95,7 @@ public class ExperimentFactory {
   public static Experiment SIandWEAgents(String resultsFileName, int numberSI, int numberWE, double reserve, int numberOfImpressions) {
     List<SimAgent> simAgents = ExperimentFactory.listOfSIAgents(numberSI, reserve, numberOfImpressions);
     simAgents.addAll(ExperimentFactory.listOfWEAgents(numberWE, reserve, numberOfImpressions));
-    return new Experiment(ExperimentFactory.resultsDirectory + resultsFileName, simAgents, ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
+    return new Experiment(ExperimentFactory.resultsDirectory, resultsFileName, simAgents, ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
   }
 
   /**
@@ -108,7 +108,7 @@ public class ExperimentFactory {
   public static Experiment SIandWFAgents(String resultsFileName, int numberSI, int numberWF, double reserve, int numberOfImpressions) {
     List<SimAgent> simAgents = ExperimentFactory.listOfSIAgents(numberSI, reserve, numberOfImpressions);
     simAgents.addAll(ExperimentFactory.listOfWFAgents(numberWF, reserve, numberOfImpressions));
-    return new Experiment(ExperimentFactory.resultsDirectory + resultsFileName, simAgents, ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
+    return new Experiment(ExperimentFactory.resultsDirectory, resultsFileName, simAgents, ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
   }
 
   /**
@@ -121,7 +121,7 @@ public class ExperimentFactory {
   public static Experiment WEandWFAgents(String resultsFileName, int numberWE, int numberWF, double reserve, int numberOfImpressions) {
     List<SimAgent> simAgents = ExperimentFactory.listOfWEAgents(numberWE, reserve, numberOfImpressions);
     simAgents.addAll(ExperimentFactory.listOfWFAgents(numberWF, reserve, numberOfImpressions));
-    return new Experiment(ExperimentFactory.resultsDirectory + resultsFileName, simAgents, ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
+    return new Experiment(ExperimentFactory.resultsDirectory, resultsFileName, simAgents, ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
   }
 
   /**
@@ -131,11 +131,11 @@ public class ExperimentFactory {
    * @param numberWF
    * @return
    */
-  public static Experiment SIandWEandWFAgents(int numberSI, int numberWE, int numberWF, double reserve, int numberOfImpressions) {
+  public static Experiment SIandWEandWFAgents(String resultsFileName, int numberSI, int numberWE, int numberWF, double reserve, int numberOfImpressions) {
     List<SimAgent> simAgents = ExperimentFactory.listOfSIAgents(numberSI, reserve, numberOfImpressions);
     simAgents.addAll(ExperimentFactory.listOfWEAgents(numberWE, reserve, numberOfImpressions));
     simAgents.addAll(ExperimentFactory.listOfWFAgents(numberWF, reserve, numberOfImpressions));
-    return new Experiment(ExperimentFactory.resultsDirectory + "/SIWEWF(" + numberSI + "-" + numberWE + "-" + numberWF + ")" + ".csv", simAgents, ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
+    return new Experiment(ExperimentFactory.resultsDirectory, "SIWEWF(" + numberSI + "-" + numberWE + "-" + numberWF + ")", simAgents, ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
   }
 
 }

@@ -39,9 +39,19 @@ public class StatisticsAds {
   protected final Table<Integer, String, Map<Integer, Integer>> dailyEffectiveReach;
 
   /**
-   * A table that maps: Agent -> IdCampaign > (Total Effective Win Count, Total Win Cost)
+   * A map: Agent -> IdCampaign > (Total Effective Win Count, Total Win Cost)
    */
   protected final Map<String, Map<Integer, Pair<Integer, Double>>> summary;
+
+  /**
+   * A map: Day -> (Impressions allocated at reserve, Impressions allocated not at reserve)
+   */
+  protected final Map<Integer, Pair<Integer, Integer>> reserveAllocation;
+
+  /**
+   * A map: Day -> (Impressions not allocated because bidders do not meet reserve, Impressions not allocated because lack of bids)
+   */
+  protected final Map<Integer, Pair<Integer, Integer>> noAllocation;
 
   /**
    * Constructor.
@@ -56,6 +66,8 @@ public class StatisticsAds {
     this.dailySummary = HashBasedTable.create();
     this.dailyEffectiveReach = HashBasedTable.create();
     this.summary = new HashMap<String, Map<Integer, Pair<Integer, Double>>>();
+    this.reserveAllocation = new HashMap<Integer, Pair<Integer, Integer>>();
+    this.noAllocation = new HashMap<Integer, Pair<Integer, Integer>>();
   }
 
   /**
@@ -111,12 +123,12 @@ public class StatisticsAds {
       HashMap<Integer, Pair<Integer, Double>> newStat = new HashMap<Integer, Pair<Integer, Double>>();
       this.dailySummary.put(day, agent, newStat);
     }
-    if(!this.dailySummary.get(day, agent).containsKey(campaignId)) {
+    if (!this.dailySummary.get(day, agent).containsKey(campaignId)) {
       this.dailySummary.get(day, agent).put(campaignId, new Pair<Integer, Double>(0, 0.0));
     }
     return this.dailySummary.get(day, agent).get(campaignId);
   }
-  
+
   /**
    * Returns the daily summary statistic for the given day and agent.
    * 
@@ -206,6 +218,62 @@ public class StatisticsAds {
       Pair<Integer, Double> total = this.summary.get(agent).get(campaignId);
       this.summary.get(agent).put(campaignId, new Pair<Integer, Double>(total.getElement1() + effectiveReach, total.getElement2() + winCost));
     }
+  }
+
+  /**
+   * Given a day and a boolean variable allocatedAtReserve, adds one to the counter of impressions allocated at reserve in case the variable is true, otherwise
+   * adds one to the counter of impressions not allocated at reserve.
+   * 
+   * @param day
+   * @param allocatedAtReserve
+   */
+  public void addReserveAllocation(int day, boolean allocatedAtReserve) {
+    if (!this.reserveAllocation.containsKey(day)) {
+      this.reserveAllocation.put(day, new Pair<Integer, Integer>(0, 0));
+    }
+    Pair<Integer, Integer> currentAllocation = this.reserveAllocation.get(day);
+    this.reserveAllocation.put(day, new Pair<Integer, Integer>(currentAllocation.getElement1() + (allocatedAtReserve ? 1 : 0), currentAllocation.getElement2() + (!allocatedAtReserve ? 1 : 0)));
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param day
+   * @return
+   */
+  public Pair<Integer, Integer> getReseveAllocation(int day) {
+    if (!this.reserveAllocation.containsKey(day)) {
+      this.reserveAllocation.put(day, new Pair<Integer, Integer>(0, 0));
+    }
+    return this.reserveAllocation.get(day);
+  }
+
+  /**
+   * Given a day and a boolean variable reserveTooExpensive, adds one to the counter of impressions not allocated bue to the reserve being too high, otherwise
+   * adds one to the impressions not beign allocated for other reasons (i.e., no bids were present OR bidders already exaushted their limits).
+   * 
+   * @param day
+   * @param reserveTooExpensive
+   */
+  public void addNoAllocation(int day, boolean reserveTooExpensive) {
+    if (!this.noAllocation.containsKey(day)) {
+      this.noAllocation.put(day, new Pair<Integer, Integer>(0, 0));
+    }
+    Pair<Integer, Integer> current = this.noAllocation.get(day);
+    this.noAllocation.put(day, new Pair<Integer, Integer>(current.getElement1() + (reserveTooExpensive ? 1 : 0), current.getElement2() + (!reserveTooExpensive ? 1 : 0)));
+  }
+
+  /**
+   * Getter.
+   * 
+   * @param day
+   * @return
+   */
+  public Pair<Integer, Integer> getNoAllocation(int day) {
+    if (!this.noAllocation.containsKey(day)) {
+      this.noAllocation.put(day, new Pair<Integer, Integer>(0, 0));
+    }
+    return this.noAllocation.get(day);
   }
 
   /**

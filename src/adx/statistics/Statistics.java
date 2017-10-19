@@ -276,20 +276,39 @@ public class Statistics {
   }
 
   /**
-   * One Line Summary results of the game in a given .
+   * One Line Summary results of the game in a given day, from the point of view of the agents.
    * 
    * @param day
    * @throws AdXException
    */
-  public String oneLineSummary(int day, int game) throws AdXException {
+  public String oneLineAgentsSummary(int day, int game) throws AdXException {
     String ret = "";
     for (String agent : this.agentsNames) {
       for (Campaign c : this.campaignsStatisticsHandler.agentsCampaigns.get(agent)) {
         Pair<Integer, Double> winCountCost = this.adsStatisticsHandler.getDailySummaryStatistic(day, agent, c.getId());
-        ret += game + "," + agent + "," + c.getMarketSegment() + "," + c.getReach() + "," + c.getBudget() + "," + winCountCost.getElement1() + ","
-            + winCountCost.getElement2() + "\n";
+        ret += game + "," + agent + "," + c.getMarketSegment() + "," + c.getReach() + "," + c.getBudget() + "," + winCountCost.getElement1() + "," + winCountCost.getElement2() + "\n";
       }
     }
     return ret;
   }
+
+  /**
+   * One Line Summary results of the game in a given day, from the point of view of the market maker.
+   * 
+   * @param day
+   * @param game
+   * @return
+   * @throws AdXException
+   */
+  public String oneLineMarketMakerSummary(int day, int game, int totalImpressions) throws AdXException {
+    int reserveTooHigh = this.adsStatisticsHandler.getNoAllocation(day).getElement1();
+    int noBids = this.adsStatisticsHandler.getNoAllocation(day).getElement2();
+    int allocatedAtReserve = this.adsStatisticsHandler.getReseveAllocation(day).getElement1();
+    int allocatedNotAtReserve = this.adsStatisticsHandler.getReseveAllocation(day).getElement2();
+    if (reserveTooHigh + noBids + allocatedAtReserve + allocatedNotAtReserve != totalImpressions) {
+      throw new AdXException("The count of allocated + not allocated impressions does not add to the total impression which are " + totalImpressions);
+    }
+    return game + "," + reserveTooHigh + "," + noBids + "," + allocatedAtReserve + "," + allocatedNotAtReserve + "\n";
+  }
+
 }

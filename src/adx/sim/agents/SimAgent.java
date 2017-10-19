@@ -67,6 +67,7 @@ public abstract class SimAgent {
   public void setCampaigns(Campaign campaign, List<Campaign> othersCampaigns) {
     this.myCampaign = campaign;
     this.othersCampaigns = othersCampaigns;
+    // Logging.log("[Agent] " + simAgentName + ", (r, m) = (" + this.reserve + "," + this.numberOfImpressions + "), " + "Segment = " + this.myCampaign.getMarketSegment() + " Reach = " + this.myCampaign.getReach() + " Reward = " + this.myCampaign.getBudget());
     // Logging.log(this.simAgentName);
     // Logging.log(this.myCampaign);
     // Logging.log(this.othersCampaigns);

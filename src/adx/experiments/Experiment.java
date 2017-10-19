@@ -18,23 +18,27 @@ import adx.util.Logging;
  */
 public class Experiment {
   /**
-   * name of csv file where results are going to be stored.
+   * Name of the directory where to save files.
    */
-  private final String csvFileName;
+  private final String resultsDirectory;
   /**
-   * the list of agents in the experiment.
+   * Name of file where results are going to be stored.
+   */
+  private final String resultsFileName;
+  /**
+   * The list of agents in the experiment.
    */
   private final List<SimAgent> simAgents;
   /**
-   * how many games (trials) of the experiment.
+   * How many games (trials) of the experiment.
    */
   private final int numberOfGames;
   /**
-   * number of impressions.
+   * Number of impressions.
    */
   private final int numberOfImpressions;
   /**
-   * the reserve price.
+   * The reserve price.
    */
   private final double reserve;
   /**
@@ -50,8 +54,9 @@ public class Experiment {
    * @param numberOfGames
    * @param reserve
    */
-  public Experiment(String csvFileName, List<SimAgent> simAgents, int numberOfGames, double reserve, int numberOfImpressions) {
-    this.csvFileName = csvFileName;
+  public Experiment(String resultsDirectory, String csvFileName, List<SimAgent> simAgents, int numberOfGames, double reserve, int numberOfImpressions) {
+    this.resultsDirectory = resultsDirectory;
+    this.resultsFileName = csvFileName;
     this.simAgents = simAgents;
     this.numberOfGames = numberOfGames;
     this.numberOfImpressions = numberOfImpressions;
@@ -70,7 +75,7 @@ public class Experiment {
   /**
    * Runs an experiments and saves the results to csv file.
    * 
-   * @param csvFileName
+   * @param resultsFileName
    * @param simAgents
    * @param numberOfGames
    * @throws AdXException
@@ -78,22 +83,28 @@ public class Experiment {
    * @throws UnsupportedEncodingException
    */
   public void runExperiment() throws AdXException, FileNotFoundException, UnsupportedEncodingException {
-    String ret = "";
-    Logging.log("[experiment] running with parameters:" + "\n\t\t reserve = " + this.reserve + "\n\t\t numberOfImpressions = " + this.numberOfImpressions
-        + "\n\t\t demandDiscountFactor = " + this.demandDiscountFactor);
+    String agentsResults = "";
+    String marketMakerResults = "";
+    Logging.log("[experiment] running with parameters:" + "\n\t\t reserve = " + this.reserve + "\n\t\t numberOfImpressions = " + this.numberOfImpressions + "\n\t\t demandDiscountFactor = " + this.demandDiscountFactor);
     for (int g = 0; g < this.numberOfGames; g++) {
       // Run simulator.
       Simulator simulator = new Simulator(this.simAgents, this.reserve, this.numberOfImpressions, this.demandDiscountFactor);
       // Get statistics.
       Statistics statistics = simulator.run();
-      ret += statistics.oneLineSummary(1, g);
-      // Logging.log("Result : \n" + statistics.oneLineSummary(1, g));
+      agentsResults += statistics.oneLineAgentsSummary(1, g);
+      marketMakerResults += statistics.oneLineMarketMakerSummary(1, g, this.numberOfImpressions);
+      // Logging.log("Result Agents: " + statistics.oneLineAgentsSummary(1, g));
+      // Logging.log("Result Market Maker: " + statistics.oneLineMarketMakerSummary(1, g, this.numberOfImpressions));
     }
-    // Logging.log(ret);
-    // Logging.log("Save file to " + this.csvFileName);
-    PrintWriter writer = new PrintWriter(this.csvFileName, "UTF-8");
-    writer.println(ret);
-    writer.close();
+    // Save results to .csv files.
+    // Results from the agent point of view.
+    PrintWriter writerAgentsResults = new PrintWriter(this.resultsDirectory + "agents/" + this.resultsFileName + ".csv", "UTF-8");
+    writerAgentsResults.println(agentsResults);
+    writerAgentsResults.close();
+    // Results from the market maker point of view.
+    PrintWriter writerMarketMakerResults = new PrintWriter(this.resultsDirectory + "marketmaker/" + this.resultsFileName + ".csv", "UTF-8");
+    writerMarketMakerResults.println(marketMakerResults);
+    writerMarketMakerResults.close();
   }
 
 }

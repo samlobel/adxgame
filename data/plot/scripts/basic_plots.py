@@ -129,7 +129,7 @@ def produce_latex():
     impressions = ['2k']
         
     for (demand, supply) in product(demand_factors, impressions):
-        dir_location = '../../results' + demand + '-' + supply + '-newreward/'
+        dir_location = '../../results/' + demand + '-' + supply + '/agents/'
         image_prefix = 'demand-factor-' + demand.replace('.','_') + '-' + supply + 'impressions-'
         produce_all_plots(dir_location, image_prefix, demand, supply)    
         latex = """

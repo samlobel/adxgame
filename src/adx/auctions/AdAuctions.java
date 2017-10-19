@@ -103,11 +103,10 @@ public class AdAuctions {
    * 
    * @param day
    * @param bidBundles
-   * @param adStatistics
+   * @param statistics
    * @throws AdXException
    */
-  public static void runAllAuctions(int day, Map<String, BidBundle> bidBundles, Statistics adStatistics, double reserve, int numberOfImpressions)
-      throws AdXException {
+  public static void runAllAuctions(int day, Map<String, BidBundle> bidBundles, Statistics statistics, double reserve, int numberOfImpressions) throws AdXException {
     // Get the daily limits
     Map<Integer, Double> dailyLimits = AdAuctions.getCampaingsDailyLimit(day, bidBundles);
     // Collect bids.
@@ -131,17 +130,21 @@ public class AdAuctions {
       // Logging.log("\t -> " + bidsForCurrentQuery);
       // Attempt to allocate the user. It could happen that the winner hits it limit and we need to find another winner.
       while (true) {
-        Pair<String, BidEntry> winner = bidsForCurrentQuery.getWinner();
-        if (winner == null) {
-          // There is no bidder for this query, thus nothing to allocate.
+        // The getWinner() function returns a pair <Boolean, <Agent Name, Bid>>, where Boolean is the reason
+        // in case a winner could not be found (and null otherwise), and <Agent Name, Bid> is the winner in case one exists.
+        Pair<Boolean, Pair<String, BidEntry>> winnerDetermination = bidsForCurrentQuery.getWinner();
+        if (winnerDetermination.getElement2() == null) {
+          // A winner could not be determined. Record the reason.
+          statistics.getStatisticsAds().addNoAllocation(day, winnerDetermination.getElement1());
           break;
         }
+        Pair<String, BidEntry> winner = winnerDetermination.getElement2();
         String winnerName = winner.getElement1();
         BidEntry winnerBidEntry = winner.getElement2();
         double winCost = bidsForCurrentQuery.getWinnerCost();
         // Logging.log("Winner is: " + winner + ", pays " + winCost);
-        double totalSpendSoFar = adStatistics.getStatisticsAds().getDailySummaryStatistic(day, winnerName, winnerBidEntry.getCampaignId()).getElement2();
-        double querySpendSoFar = adStatistics.getStatisticsAds().getDailyStatistic(day, winnerName, winnerBidEntry.getCampaignId(), query).getElement2();
+        double totalSpendSoFar = statistics.getStatisticsAds().getDailySummaryStatistic(day, winnerName, winnerBidEntry.getCampaignId()).getElement2();
+        double querySpendSoFar = statistics.getStatisticsAds().getDailyStatistic(day, winnerName, winnerBidEntry.getCampaignId(), query).getElement2();
         double dailyLimit = (dailyLimits.containsKey(winnerBidEntry.getCampaignId())) ? dailyLimits.get(winnerBidEntry.getCampaignId()) : Double.MAX_VALUE;
 
         if (totalSpendSoFar + winCost > dailyLimit) {
@@ -156,7 +159,8 @@ public class AdAuctions {
           // Logging.log("DELETED BID FROM QUERY: " + query);
         } else {
           // In case the campaign still has budget (both query and daily), allocate the user to this campaign.
-          adStatistics.getStatisticsAds().addStatistic(day, winnerName, winnerBidEntry.getCampaignId(), query, 1, winCost);
+          statistics.getStatisticsAds().addStatistic(day, winnerName, winnerBidEntry.getCampaignId(), query, 1, winCost);
+          statistics.getStatisticsAds().addReserveAllocation(day, bidsForCurrentQuery.winnerPayedReserve());
           break;
         }
       }
