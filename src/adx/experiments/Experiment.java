@@ -1,8 +1,9 @@
 package adx.experiments;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import adx.exceptions.AdXException;
@@ -18,6 +19,10 @@ import adx.util.Logging;
  */
 public class Experiment {
   /**
+   * The list of agents in the experiment.
+   */
+  private final List<SimAgent> simAgents;
+  /**
    * Name of the directory where to save files.
    */
   private final String resultsDirectory;
@@ -25,10 +30,6 @@ public class Experiment {
    * Name of file where results are going to be stored.
    */
   private final String resultsFileName;
-  /**
-   * The list of agents in the experiment.
-   */
-  private final List<SimAgent> simAgents;
   /**
    * How many games (trials) of the experiment.
    */
@@ -38,13 +39,13 @@ public class Experiment {
    */
   private final int numberOfImpressions;
   /**
+   * The demand discount factor.
+   */
+  private final double demandDiscountFactor;
+  /**
    * The reserve price.
    */
   private final double reserve;
-  /**
-   * The demand discount factor.
-   */
-  private double demandDiscountFactor = 1.0;
 
   /**
    * Constructor.
@@ -54,24 +55,16 @@ public class Experiment {
    * @param numberOfGames
    * @param reserve
    */
-  public Experiment(String resultsDirectory, String csvFileName, List<SimAgent> simAgents, int numberOfGames, double reserve, int numberOfImpressions) {
-    this.resultsDirectory = resultsDirectory;
-    this.resultsFileName = csvFileName;
+  public Experiment(List<SimAgent> simAgents, String resultsDirectory, String resultsFileName, int numberOfGames, int numberOfImpressions, double demandDiscountFactor, double reserve) {
     this.simAgents = simAgents;
+    this.resultsDirectory = resultsDirectory;
+    this.resultsFileName = resultsFileName;
     this.numberOfGames = numberOfGames;
     this.numberOfImpressions = numberOfImpressions;
+    this.demandDiscountFactor = demandDiscountFactor;
     this.reserve = reserve;
   }
-
-  /**
-   * Setter.
-   * 
-   * @param demandDiscountFactor
-   */
-  public void setDemandDiscountFactor(double demandDiscountFactor) {
-    this.demandDiscountFactor = demandDiscountFactor;
-  }
-
+  
   /**
    * Runs an experiments and saves the results to csv file.
    * 
@@ -79,13 +72,12 @@ public class Experiment {
    * @param simAgents
    * @param numberOfGames
    * @throws AdXException
-   * @throws FileNotFoundException
-   * @throws UnsupportedEncodingException
+   * @throws IOException 
    */
-  public void runExperiment() throws AdXException, FileNotFoundException, UnsupportedEncodingException {
+  public void runExperiment() throws AdXException, IOException {
     String agentsResults = "";
     String marketMakerResults = "";
-    Logging.log("[experiment] running with parameters:" + "\n\t\t reserve = " + this.reserve + "\n\t\t numberOfImpressions = " + this.numberOfImpressions + "\n\t\t demandDiscountFactor = " + this.demandDiscountFactor);
+    Logging.log("[experiment]" + "\n\t reserve = " + this.reserve + "\n\t numberOfImpressions = " + this.numberOfImpressions + "\n\t demandDiscountFactor = " + this.demandDiscountFactor);
     for (int g = 0; g < this.numberOfGames; g++) {
       // Run simulator.
       Simulator simulator = new Simulator(this.simAgents, this.reserve, this.numberOfImpressions, this.demandDiscountFactor);
@@ -98,10 +90,12 @@ public class Experiment {
     }
     // Save results to .csv files.
     // Results from the agent point of view.
+    Files.createDirectories(Paths.get(this.resultsDirectory + "agents/"));
     PrintWriter writerAgentsResults = new PrintWriter(this.resultsDirectory + "agents/" + this.resultsFileName + ".csv", "UTF-8");
     writerAgentsResults.println(agentsResults);
     writerAgentsResults.close();
     // Results from the market maker point of view.
+    Files.createDirectories(Paths.get(this.resultsDirectory + "marketmaker/"));
     PrintWriter writerMarketMakerResults = new PrintWriter(this.resultsDirectory + "marketmaker/" + this.resultsFileName + ".csv", "UTF-8");
     writerMarketMakerResults.println(marketMakerResults);
     writerMarketMakerResults.close();

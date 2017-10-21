@@ -15,20 +15,15 @@ import adx.sim.agents.waterfall.WFAgent;
  */
 public class ExperimentFactory {
 
-  // Fixed parameters for all experiments.
-  public static final int numberOfGames = 100;
-  public static String resultsDirectory = "results/";
-
   /**
    * Creates a list of SI agents.
    * 
    * @param numberOfAgents
    * @return
    */
-  public static List<SimAgent> listOfSIAgents(int numberOfAgents, double reserve, int numberOfImpressions) {
+  public static List<SimAgent> listOfSIAgents(int numberOfAgents, int numberOfImpressions, double reserve) {
     List<SimAgent> simAgents = new ArrayList<SimAgent>();
     for (int j = 0; j < numberOfAgents; j++) {
-      // Simple Agents
       simAgents.add(new SimpleSimAgent("SIAgent" + j, reserve, numberOfImpressions));
     }
     return simAgents;
@@ -41,10 +36,9 @@ public class ExperimentFactory {
    * @param numberOfAgents
    * @return
    */
-  public static List<SimAgent> listOfWEAgents(int numberOfAgents, double reserve, int numberOfImpressions) {
+  public static List<SimAgent> listOfWEAgents(int numberOfAgents, int numberOfImpressions, double reserve) {
     List<SimAgent> simAgents = new ArrayList<SimAgent>();
     for (int j = 0; j < numberOfAgents; j++) {
-      // Walrasian Agents
       simAgents.add(new WEAgent("WEAgent" + j, reserve, numberOfImpressions));
     }
     return simAgents;
@@ -59,32 +53,11 @@ public class ExperimentFactory {
   public static List<SimAgent> listOfWFAgents(int numberOfAgents, double reserve, int numberOfImpressions) {
     List<SimAgent> simAgents = new ArrayList<SimAgent>();
     for (int j = 0; j < numberOfAgents; j++) {
-      // Waterfall Agents
       simAgents.add(new WFAgent("WFAgent" + j, reserve, numberOfImpressions));
     }
     return simAgents;
   }
-
-  /**
-   * Experiment with all WE agents, parameterized by the number of agents
-   * 
-   * @param numberOfAgents
-   * @return
-   */
-  public static Experiment allWEExperiment(String resultsFileName, int numberOfAgents, double reserve, int numberOfImpressions) {
-    return new Experiment(ExperimentFactory.resultsDirectory, resultsFileName, ExperimentFactory.listOfWEAgents(numberOfAgents, reserve, numberOfImpressions), ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
-  }
-
-  /**
-   * Experiment with all WF agents, parameterized by the number of agents.
-   * 
-   * @param numberOfAgents
-   * @return
-   */
-  public static Experiment allWFExperiment(String resultsFileName, int numberOfAgents, double reserve, int numberOfImpressions) {
-    return new Experiment(ExperimentFactory.resultsDirectory, resultsFileName, ExperimentFactory.listOfWFAgents(numberOfAgents, reserve, numberOfImpressions), ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
-  }
-
+  
   /**
    * A game with only SI and WE agents.
    * 
@@ -92,10 +65,10 @@ public class ExperimentFactory {
    * @param numberWF
    * @return
    */
-  public static Experiment SIandWEAgents(String resultsFileName, int numberSI, int numberWE, double reserve, int numberOfImpressions) {
-    List<SimAgent> simAgents = ExperimentFactory.listOfSIAgents(numberSI, reserve, numberOfImpressions);
-    simAgents.addAll(ExperimentFactory.listOfWEAgents(numberWE, reserve, numberOfImpressions));
-    return new Experiment(ExperimentFactory.resultsDirectory, resultsFileName, simAgents, ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
+  public static Experiment SIandWEAgents(int numberSI, int numberWE, String resultsDirectory, String resultsFileName, int numberOfGames, int numberOfImpressions, double demandDiscountFactor, double reserve) {
+    List<SimAgent> simAgents = ExperimentFactory.listOfSIAgents(numberSI, numberOfImpressions, reserve);
+    simAgents.addAll(ExperimentFactory.listOfWEAgents(numberWE, numberOfImpressions, reserve));
+    return new Experiment(simAgents, resultsDirectory, resultsFileName, numberOfGames, numberOfImpressions, demandDiscountFactor, reserve);
   }
 
   /**
@@ -105,10 +78,10 @@ public class ExperimentFactory {
    * @param numberWF
    * @return
    */
-  public static Experiment SIandWFAgents(String resultsFileName, int numberSI, int numberWF, double reserve, int numberOfImpressions) {
-    List<SimAgent> simAgents = ExperimentFactory.listOfSIAgents(numberSI, reserve, numberOfImpressions);
+  public static Experiment SIandWFAgents(int numberSI, int numberWF, String resultsDirectory, String resultsFileName, int numberOfGames, int numberOfImpressions, double demandDiscountFactor, double reserve) {
+    List<SimAgent> simAgents = ExperimentFactory.listOfSIAgents(numberSI, numberOfImpressions, reserve);
     simAgents.addAll(ExperimentFactory.listOfWFAgents(numberWF, reserve, numberOfImpressions));
-    return new Experiment(ExperimentFactory.resultsDirectory, resultsFileName, simAgents, ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
+    return new Experiment(simAgents, resultsDirectory, resultsFileName, numberOfGames, numberOfImpressions, demandDiscountFactor, reserve);
   }
 
   /**
@@ -118,10 +91,10 @@ public class ExperimentFactory {
    * @param numberWF
    * @return
    */
-  public static Experiment WEandWFAgents(String resultsFileName, int numberWE, int numberWF, double reserve, int numberOfImpressions) {
-    List<SimAgent> simAgents = ExperimentFactory.listOfWEAgents(numberWE, reserve, numberOfImpressions);
+  public static Experiment WEandWFAgents(int numberWE, int numberWF, String resultsDirectory, String resultsFileName, int numberOfGames, int numberOfImpressions, double demandDiscountFactor, double reserve) {
+    List<SimAgent> simAgents = ExperimentFactory.listOfWEAgents(numberWE, numberOfImpressions, reserve);
     simAgents.addAll(ExperimentFactory.listOfWFAgents(numberWF, reserve, numberOfImpressions));
-    return new Experiment(ExperimentFactory.resultsDirectory, resultsFileName, simAgents, ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
+    return new Experiment(simAgents, resultsDirectory, resultsFileName, numberOfGames, numberOfImpressions, demandDiscountFactor, reserve);
   }
 
   /**
@@ -131,11 +104,11 @@ public class ExperimentFactory {
    * @param numberWF
    * @return
    */
-  public static Experiment SIandWEandWFAgents(String resultsFileName, int numberSI, int numberWE, int numberWF, double reserve, int numberOfImpressions) {
-    List<SimAgent> simAgents = ExperimentFactory.listOfSIAgents(numberSI, reserve, numberOfImpressions);
-    simAgents.addAll(ExperimentFactory.listOfWEAgents(numberWE, reserve, numberOfImpressions));
+  public static Experiment SIandWEandWFAgents(int numberSI, int numberWE, int numberWF, String resultsDirectory, String resultsFileName, int numberOfGames, int numberOfImpressions, double demandDiscountFactor, double reserve) {
+    List<SimAgent> simAgents = ExperimentFactory.listOfSIAgents(numberSI, numberOfImpressions, reserve);
+    simAgents.addAll(ExperimentFactory.listOfWEAgents(numberWE, numberOfImpressions, reserve));
     simAgents.addAll(ExperimentFactory.listOfWFAgents(numberWF, reserve, numberOfImpressions));
-    return new Experiment(ExperimentFactory.resultsDirectory, "SIWEWF(" + numberSI + "-" + numberWE + "-" + numberWF + ")", simAgents, ExperimentFactory.numberOfGames, reserve, numberOfImpressions);
+    return new Experiment(simAgents, resultsDirectory, resultsFileName, numberOfGames, numberOfImpressions, demandDiscountFactor, reserve);
   }
 
 }

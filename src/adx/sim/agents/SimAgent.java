@@ -47,7 +47,7 @@ public abstract class SimAgent {
     this.simAgentName = simAgentName;
     this.reserve = reserve;
     this.numberOfImpressions = numberOfImpressions;
-    Logging.log("[Agent] " + simAgentName + ", (r, m) = (" + this.reserve + "," + this.numberOfImpressions + ")");
+    Logging.log("[Agent] " + simAgentName + ", (r, m) = (" + this.reserve + ", " + this.numberOfImpressions + ")");
   }
 
   /**
