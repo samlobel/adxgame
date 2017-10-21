@@ -98,7 +98,9 @@ public class OneDayExperiments {
       // Running experiments via command line
       numberOfGames = Integer.parseInt(args[0]);
       Logging.log("Received numberOfGames via command line parameter: " + numberOfGames);
-      demandDiscountFactor = Double.parseDouble(args[1]);
+      int demandDiscountFactorIndex = Integer.parseInt(args[1]);
+      double[] gridOfDemandFactor = {0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0};
+      demandDiscountFactor = gridOfDemandFactor[demandDiscountFactorIndex];
       Logging.log("Received demandDiscountFactor via command line parameter: " + demandDiscountFactor);
       numberOfImpressions = Integer.parseInt(args[2]);
       Logging.log("Received numberOfImpressions via command line parameter: " + numberOfImpressions);
