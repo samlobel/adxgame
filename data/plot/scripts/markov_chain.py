@@ -5,14 +5,13 @@ Created on Mon Oct 16 11:10:11 2017
 
 @author: enriqueareyan
 """
-from deviation_graphs import produce_profile_data
-from discreteMarkovChain import markovChain
 import numpy as np
 import networkx as nx
-from scipy.stats import norm
 import matplotlib.pyplot as plt
-from networkx.drawing.nx_pydot import write_dot
-
+import setup
+from deviation_graphs import produce_profile_data
+from discreteMarkovChain import markovChain
+from scipy.stats import norm
 
 def normal1BiggerNormal2(mean1, std1, n1, mean2, std2, n2):
     """
@@ -80,7 +79,7 @@ def compute_steady_state(DG):
         i = i + 1
     return map_steady_dist
     
-def plot_soft_deviation_graph(DG, map_steady_dist):
+def plot_soft_deviation_graph(number_of_games, DG, map_steady_dist, profile_data, demand_factor, impressions):
     """
     Given a directed graph object DG with weighted edges, 
     plots the soft deviation graph. To produce this graph,
@@ -94,7 +93,7 @@ def plot_soft_deviation_graph(DG, map_steady_dist):
     number_of_profiles = DG.number_of_nodes()
     fig = plt.figure(3, figsize=(number_of_profiles + 3,number_of_profiles + 3))
     for node, prob in map_steady_dist.items():
-        print(node,prob)
+        #print(node,prob)
         nx.draw_networkx_nodes(DG, pos, nodelist=[node], alpha=prob, node_color = 'black', node_size = 5000)
     nx.draw_networkx_edge_labels(DG, pos, edge_labels=edge_labels, label_pos = 0.3)
     nx.draw_networkx_edges(DG, pos)
@@ -102,11 +101,15 @@ def plot_soft_deviation_graph(DG, map_steady_dist):
     #nx.draw(DG, pos,labels = labels, node_size = 2500, font_color = 'white')
     #nx.draw(DG, pos)
     plt.axis('off')
-    plt.savefig("../deviationgraphSoftWEWF-" + demand_factor.replace('.','_') + "-" + impressions + "-" + str(number_of_profiles)+".png")
-    plt.show()
+    plt.savefig('../' + str(number_of_games) + '/deviationgraphssoft/deviationgraphSoftWEWF-' + demand_factor.replace('.','_') + '-' + impressions + '-' + str(number_of_profiles) + '.png')
+    #plt.show()
     plt.close(fig)
     
 def expected_number_strategies(map_steady_dist):
+    """ 
+    Computes the expected number of strategies given a map
+    {'WE^nWF^m': steady state probability}
+    """
     expected_WE = 0
     expected_WF = 0    
     for s,p in map_steady_dist.items():
@@ -114,8 +117,11 @@ def expected_number_strategies(map_steady_dist):
         expected_WF += s.count('WF') * p
     return {'WE': expected_WE, 'WF': expected_WF}
 
-def plot_soft_expected_agents_pure_nash(dir_location, demand_factor, impressions):
-    y = [expected_number_strategies(compute_steady_state(produce_soft_deviation_graph(produce_profile_data(dir_location, i)))) for i in range(2,21)]    
+def plot_soft_expected_agents_pure_nash(number_of_games, dir_location, demand_factor, impressions):
+    """
+    Plots the expected number of strategies.
+    """
+    y = [expected_number_strategies(compute_steady_state(produce_soft_deviation_graph(produce_profile_data(number_of_games, dir_location, i)))) for i in range(2,21)]    
     fig = plt.figure(4, figsize=(10,4))
     xaxis = [i for i in range(2,21)]
     plt.plot(xaxis, [x['WE'] for x in y], label = 'Expected # WE')
@@ -124,31 +130,30 @@ def plot_soft_expected_agents_pure_nash(dir_location, demand_factor, impressions
     plt.title('Expected number of agents playing each strategy\n Demand factor ' + str(demand_factor) + ', impressions ' + str(impressions))
     plt.xlabel('Number of players')
     plt.ylabel('Expected number of agents playing strategy.')
-    plt.savefig('../proportionateqSoft-'+demand_factor.replace('.','_')+'-'+impressions+'.png')
-    plt.show()
+    plt.savefig('../' + str(number_of_games) + '/proportionsateqsoft/proportionateqsoft-' + demand_factor.replace('.','_') + '-' + impressions + '.png')
+    #plt.show()
     plt.close(fig)
 
 
-# Testing one soft graph, manually
-number_agents = 5
-#demand_factor = '0.25'
-demand_factor = '3.0'
-impressions = '2k'
-dir_location = '../../results' + demand_factor + '-' + impressions + '-newreward/'
-#profile_data = produce_profile_data(dir_location, number_agents)
-#DG = produce_soft_deviation_graph(profile_data)
-#write_dot(DG, 'test.dot')
-#map_steady_dist = compute_steady_state(DG)
-#print(map_steady_dist)
-#plot_soft_deviation_graph(DG, map_steady_dist)
+def plot_all_soft_expected_agents_pure_nash(number_of_games):
+    """
+    Wrapper to plot all expected number of strategies.
+    """
+    for (demand, supply) in setup.get_grid_demand_impressions():
+        print('Expected Pure Nash for (demand, supply) = (' , demand, ',', supply, ')')
+        dir_location = setup.get_agent_dir_location(number_of_games, supply, demand)        
+        plot_soft_expected_agents_pure_nash(number_of_games, dir_location, demand, supply)
 
-plot_soft_expected_agents_pure_nash(dir_location, demand_factor, impressions)
-
-"""# Bulk graph plotting
-for i in range(1,20):
-    profile_data = produce_profile_data(dir_location, i)
-    DG = produce_soft_deviation_graph(profile_data)
-    map_steady_dist = compute_steady_state(DG)
-    plot_soft_deviation_graph(DG, map_steady_dist)"""
-    
-    
+def plot_all_soft_deviation_graph(number_of_games):
+    """
+    Wrapper to plot all soft deviation graphs.
+    """
+    for (demand, supply) in setup.get_grid_demand_impressions():
+        print('Soft Deviation Graphs for (demand, supply) = (' , demand, ',', supply, ')')
+        dir_location = setup.get_agent_dir_location(number_of_games, supply, demand)
+        for i in range(1, 20):
+            print('\t Number of Agents: ', i)
+            profile_data = produce_profile_data(number_of_games, dir_location, i)
+            DG = produce_soft_deviation_graph(profile_data)
+            map_steady_dist = compute_steady_state(DG)
+            plot_soft_deviation_graph(number_of_games, DG, map_steady_dist, profile_data, demand, supply)    
