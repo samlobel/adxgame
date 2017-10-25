@@ -8,7 +8,7 @@ Created on Thu Oct 19 11:59:12 2017
 from itertools import product, combinations
 
 demand_factors = ['0.25', '0.5', '0.75', '1.0', '1.25', '1.5', '1.75', '2.0', '2.25', '2.5', '2.75', '3.0']
-#demand_factors = ['3.0']
+#demand_factors = ['2.5']
 impressions = ['2000']        
 
 def get_grid_demand_impressions():

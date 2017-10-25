@@ -23,15 +23,12 @@ def produce_profile_data(number_of_games, dir_location, number_of_agents, reserv
     Note that this game is symmetric and thus, WEWEWF = WEWFWE= WFWEWE.
     For simplicity, we normalize by first indicating WEs and then WFs.
     """
-    #profile_data = {}
     profile_data = []
     for i in range(0,number_of_agents + 1):
         file_location = 'WEWF(' + str(number_of_agents - i) + '-' + str(i) + ')' + ('-r(' + str(reserve) + ')' if include_reserve else '')+'.csv'
         mix = get_data.get_agent_data(number_of_games, dir_location, file_location)
         WEdata = mix[mix.agent.str.contains('WEAgent')]
         WFdata = mix[mix.agent.str.contains('WFAgent')]
-        #profile_data['WE' * (number_of_agents - i) + 'WF' * i] = {'WE': {'n' : len(WEdata), 'mean': WEdata.profit.mean(), 'std': WEdata.profit.std()} , 'WF': {'n': len(WFdata), 'mean' : WFdata.profit.mean(), 'std': WFdata.profit.std()}}
-        #profile_data.append(('WE' * (number_of_agents - i) + 'WF' * i, (WEdata.profit.mean(), WFdata.profit.mean()), (WEdata.profit.std(), WFdata.profit.std()) , (len(WEdata), len(WFdata))))
         profile_data.append(('WE' * (number_of_agents - i) + 'WF' * i, {'WE': {'n' : len(WEdata), 'mean': WEdata.profit.mean(), 'std': WEdata.profit.std()} , 'WF': {'n': len(WFdata), 'mean' : WFdata.profit.mean(), 'std': WFdata.profit.std()}}))
     return profile_data
 
@@ -69,7 +66,7 @@ def plot_deviation_graph(number_of_games, demand_factor, impressions, profile_da
     labels = dict((i, r'$WE^{' + str(i.count('WE')) + '}WF^{' + str(i.count('WF')) + '}$') for (i, v) in profile_data)
     fig = plt.figure(3, figsize=(number_of_profiles + 1,number_of_profiles + 1))
     # The next five lines are necessary for the deviation graphs with majority vote shading
-    majority_vote = deviationanalysis.get_majority_vote(demand_factor, impressions, number_of_profiles - 1)
+    majority_vote = deviationanalysis.get_majority_vote(impressions, demand_factor, number_of_profiles - 1)
     for node in DG.nodes():
         nx.draw_networkx_nodes(DG, pos, nodelist=[node], alpha=majority_vote[node], node_color = 'blue', node_size = 2500)
     nx.draw_networkx_edges(DG, pos)
