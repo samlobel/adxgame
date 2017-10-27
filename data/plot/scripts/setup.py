@@ -8,7 +8,7 @@ Created on Thu Oct 19 11:59:12 2017
 from itertools import product, combinations
 
 demand_factors = ['0.25', '0.5', '0.75', '1.0', '1.25', '1.5', '1.75', '2.0', '2.25', '2.5', '2.75', '3.0']
-#demand_factors = ['2.5']
+#demand_factors = ['0.25']
 impressions = ['2000']        
 
 def get_grid_demand_impressions():
@@ -19,5 +19,6 @@ def get_two_agents_combinations():
 
 def get_agent_dir_location(number_of_games, supply, demand):
     return str(number_of_games) + '/' + supply + '/' + demand + '/' + 'agents/'
+
 def get_market_maker_dir_location(number_of_games, supply, demand):
     return str(number_of_games) + '/' + supply + '/' + demand + '/' + 'marketmaker/'    

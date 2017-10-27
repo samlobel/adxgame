@@ -7,30 +7,54 @@ Created on Tue Oct 10 08:50:01 2017
 """
 
 import setup
-import deviationanalysis
+#import deviationanalysis
 import get_data
 import networkx as nx
 import matplotlib.pyplot as plt
 from progress import update_progress
 
-def produce_profile_data(number_of_games, dir_location, number_of_agents, reserve = 0, include_reserve = False):
+
+def produce_specific_profile_data(map_profile_to_numberofgames, number_of_agents, supply, demand, reserve = 0, include_reserve = False):
     """
-    Given the number of agents, produces a list of tuples:
-        (Strategy profile, (Profit WE, Profit WF))
-    An strategy profile indicates the strategy played by each
+    Given a map: 
+        {Profile:number of games}, 
+    (e.g. {'WEWE': 200,'WEWF': 200,'WFWF': 400})
+    produces a list of tuples:
+        (Strategy profile, {WE : {n, mean profit WE, std profit WE}, WF : {n, mean profit WF, std profit WF})
+    where the number of samples of each profile is given by the map_profile_to_numberofgames.
+        An strategy profile indicates the strategy played by each
     player in the game, e.g., a profile WEWEWF indicates a 
     game where two players play WE and one player plays WF.
     Note that this game is symmetric and thus, WEWEWF = WEWFWE= WFWEWE.
     For simplicity, we normalize by first indicating WEs and then WFs.
     """
+    #print(map_profile_to_numberofgames)
+    # Check that the map received is correct.
+    # Correcteness means that the map contains all profiles.
+    if(number_of_agents + 1 != len(map_profile_to_numberofgames)):
+        raise ValueError('The number of agents and length of map_profile_to_numberofgames must coincide!')
     profile_data = []
-    for i in range(0,number_of_agents + 1):
-        file_location = 'WEWF(' + str(number_of_agents - i) + '-' + str(i) + ')' + ('-r(' + str(reserve) + ')' if include_reserve else '')+'.csv'
-        mix = get_data.get_agent_data(number_of_games, dir_location, file_location)
+    for i in range(0, number_of_agents + 1):
+        profile = ('WE' * (number_of_agents - i) + 'WF' * i)
+        if(profile not in map_profile_to_numberofgames):
+            raise ValueError('The map does not contain profile: ' + ('WE' * (number_of_agents - i) + 'WF' * i) )
+        specific_number_of_games = map_profile_to_numberofgames[profile]
+        dir_location = setup.get_agent_dir_location(specific_number_of_games, supply, demand)
+        file_location = 'WEWF(' + str(number_of_agents - i) + '-' + str(i) + ').csv'
+        mix = get_data.get_agent_data(specific_number_of_games, dir_location, file_location)
         WEdata = mix[mix.agent.str.contains('WEAgent')]
         WFdata = mix[mix.agent.str.contains('WFAgent')]
         profile_data.append(('WE' * (number_of_agents - i) + 'WF' * i, {'WE': {'n' : len(WEdata), 'mean': WEdata.profit.mean(), 'std': WEdata.profit.std()} , 'WF': {'n': len(WFdata), 'mean' : WFdata.profit.mean(), 'std': WFdata.profit.std()}}))
     return profile_data
+
+
+def produce_profile_data(number_of_games, number_of_agents, supply, demand, reserve = 0, include_reserve = False):
+    """
+    Given the number of games and agents, produces a list of tuples:
+        (Strategy profile, {WE : {n, mean profit WE, std profit WE}, WF : {n, mean profit WF, std profit WF})
+    BY calling produce_specific_profile_data with the right input.
+    """
+    return produce_specific_profile_data(dict(('WE' * (number_of_agents - i) + 'WF' * i, number_of_games) for i in range(0,number_of_agents + 1)), number_of_agents, supply, demand, reserve, include_reserve)
 
 def produce_deviation_graph(profile_data):
     """
@@ -66,13 +90,13 @@ def plot_deviation_graph(number_of_games, demand_factor, impressions, profile_da
     labels = dict((i, r'$WE^{' + str(i.count('WE')) + '}WF^{' + str(i.count('WF')) + '}$') for (i, v) in profile_data)
     fig = plt.figure(3, figsize=(number_of_profiles + 1,number_of_profiles + 1))
     # The next five lines are necessary for the deviation graphs with majority vote shading
-    majority_vote = deviationanalysis.get_majority_vote(impressions, demand_factor, number_of_profiles - 1)
-    for node in DG.nodes():
-        nx.draw_networkx_nodes(DG, pos, nodelist=[node], alpha=majority_vote[node], node_color = 'blue', node_size = 2500)
-    nx.draw_networkx_edges(DG, pos)
-    nx.draw_networkx_labels(DG, pos, labels, font_size=16, font_color='white')
+    #majority_vote = deviationanalysis.get_majority_vote(impressions, demand_factor, number_of_profiles - 1)
+    #for node in DG.nodes():
+    #    nx.draw_networkx_nodes(DG, pos, nodelist=[node], alpha=majority_vote[node], node_color = 'blue', node_size = 2500)
+    #nx.draw_networkx_edges(DG, pos)
+    #nx.draw_networkx_labels(DG, pos, labels, font_size=16, font_color='white')
     # Uncomment next line and comment the few before for deviation graphs without majority vote shading
-    #nx.draw(DG, pos, labels = labels, node_size = 2500, font_color = 'white', node_color = 'blue')
+    nx.draw(DG, pos, labels = labels, node_size = 2500, font_color = 'white', node_color = 'blue')
     plt.axis('off')
     plt.title('Deviation Graph, WE v WF, ' + str(number_of_profiles - 1) + ' agents')
     plt.savefig('../' + str(number_of_games) + '/deviationgraphs/' + 'deviationgraphWEWF-' + demand_factor.replace('.','_') + '-' + impressions + '-' + str(number_of_profiles - 1) + '.png')
