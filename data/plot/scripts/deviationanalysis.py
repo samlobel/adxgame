@@ -117,12 +117,12 @@ def refine_conflicts(previous_n1, previous_n2, next_n1, supply, demand_factor, n
         #final_data.to_csv('../../stability/' + str(n1) + '-' + str(n2) + '/stability-for-' + str(number_agents) + '-agents.csv', index = False)
         return final_dataframe
     
-for i in range(2,3):
-    dataframes_agreements = []
-    print('\t Agents: ', i)
-    for demand, supply in product([0.25,0.5], ['2000']):
-        print('\t\t (demand, supply) = (', demand, ',', supply, ')')
-        temp = refine_conflicts(100,200,400,'2000',demand,i)
-        dataframes_agreements = dataframes_agreements + [temp]
-    dataframe = pd.concat(dataframes_agreements)
-    dataframe.columns = ['WE','WF','impressions','demand_factor', str(200) + '-' + str(400) + '-agreement']
+#for i in range(2,3):
+#    dataframes_agreements = []
+#    print('\t Agents: ', i)
+#    for demand, supply in product([0.25,0.5], ['2000']):
+#        print('\t\t (demand, supply) = (', demand, ',', supply, ')')
+#        temp = refine_conflicts(100,200,400,'2000',demand,i)
+#        dataframes_agreements = dataframes_agreements + [temp]
+#    dataframe = pd.concat(dataframes_agreements)
+#    dataframe.columns = ['WE','WF','impressions','demand_factor', str(200) + '-' + str(400) + '-agreement']
