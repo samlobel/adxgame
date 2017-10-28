@@ -1,72 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 23 10:58:01 2017
-
-@author: enriqueareyan
-"""
-import networkx as nx
-import pandas as pd
-import deviation_graphs
-from itertools import chain, product
-
-
-def get_agreement_data(G1, G2):
-    """
-    Given a pair of deviation graphs G1, G2, returns a list
-    of frames containing, for each profile, whether there is
-    agreement between the graphs.
-    """
-    list_of_frames = []
-    graphs = [G1, G2]
-    for graph in graphs:
-        i = 0
-        number_profiles = len(graph.nodes())
-        # Get the adjacency matrix: it is easier to compute with it.
-        P = nx.adjacency_matrix(graph)
-        deviation_data = {}
-        for node in graph.nodes():
-            # An agent might wish to deviation forward (switch to a WF) or backward (switch to a WE)
-            deviation_forward = 0
-            deviation_backward = 0
-            # Border cases: if all WF, then there is no going forward. Likewise, if all WE then there is no going backward.
-            if i < number_profiles - 1:
-                deviation_forward = P[i, i + 1]
-            if i > 0:
-                deviation_backward = P[i, i - 1]
-            deviation_data[node] = (deviation_backward, deviation_forward)
-            i = i + 1
-        list_of_frames.append(pd.DataFrame.from_dict(deviation_data, orient='index'))
-    return list_of_frames
-
-def agreement_data_to_dict(n1, n2, list_of_frames):
-    # Convert all the information to a dataframe for ease of manipulation.
-    x = pd.concat(list_of_frames, axis = 1)
-    x.columns = list(chain.from_iterable(('back_' + str(n),'forw_' + str(n)) for n in [n1, n2]))
-    x.loc[((x['back_' + str(n1)] == x['back_' + str(n2)]) & (x['forw_' + str(n1)] == x['forw_' + str(n2)])), str(n1)+ '-' + str(n2) + '-agreement'] = 1
-    # By filling na with 0, we account for the case where the samples disagree.
-    x = x.fillna(0)
-    return x.to_dict()
-
-def compute_agreement(n1, n2, impressions, demand_factor, number_of_agents):
-    """
-    Given number of games n1, n2 (for example n1 = 100 and n2 = 200), impressions
-    demand_factor, and number_of_agents, returns a dictionary {Strategy s : 1 or 0},
-    where 1 indicates that the samples for n1 and n2 agrees for strategy s.
-    This function assumes that all samples are present for sample numbers n1, n2.
-    This function is used mainly for n1 = 100, n2 = 200.
-    """
-    grid_number_games = [n1, n2]
-    graphs = []
-    for number_of_games in grid_number_games:
-        print('Agreement computation for #games = ', number_of_games)
-        # Create the deviation graph for the fix number of games.
-        profile_data = deviation_graphs.produce_profile_data(number_of_games, number_of_agents, impressions, demand_factor)
-        DG = deviation_graphs.produce_deviation_graph(profile_data)
-        graphs += [DG]
-    temp = agreement_data_to_dict(get_agreement_data(graphs[0], graphs[1]))
-    return temp[str(n1)+ '-' + str(n2) +'-agreement']
-
 def compute_all_initial_agreements(n1, n2, impressions, demand_factors, agents):
     """
     Compute all the agreement between number of games n1 and n2, for the
@@ -126,3 +57,24 @@ def refine_conflicts(previous_n1, previous_n2, next_n1, supply, demand_factor, n
 #        dataframes_agreements = dataframes_agreements + [temp]
 #    dataframe = pd.concat(dataframes_agreements)
 #    dataframe.columns = ['WE','WF','impressions','demand_factor', str(200) + '-' + str(400) + '-agreement']
+
+
+def compute_agreement(n1, n2, impressions, demand_factor, number_of_agents):
+    """
+    Given number of games n1, n2 (for example n1 = 100 and n2 = 200), impressions
+    demand_factor, and number_of_agents, returns a dictionary {Strategy s : 1 or 0},
+    where 1 indicates that the samples for n1 and n2 agrees for strategy s.
+    This function assumes that all samples are present for sample numbers n1, n2.
+    This function is used mainly for n1 = 100, n2 = 200.
+    """
+    grid_number_games = [n1, n2]
+    graphs = []
+    for number_of_games in grid_number_games:
+        print('Agreement computation for #games = ', number_of_games)
+        # Create the deviation graph for the fix number of games.
+        profile_data = deviation_graphs.produce_profile_data(number_of_games, number_of_agents, impressions, demand_factor)
+        DG = deviation_graphs.produce_deviation_graph(profile_data)
+        graphs += [DG]
+    temp = agreement_data_to_dict(get_agreement_data(graphs[0], graphs[1]))
+    return temp[str(n1)+ '-' + str(n2) +'-agreement']
+

@@ -21,3 +21,6 @@ hs_err_pid*
 *.synctex
 *.synctex.gz
 *.tex.backup
+
+# Python
+*.pyc

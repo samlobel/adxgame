@@ -21,7 +21,7 @@ public class RefinementExperiment {
     String csvFile = "data/stability/" + (numberOfSamples / 2) + "-" + numberOfSamples + "/stability-for-" + numberOfAgents + "-agents.csv";
     String line = "";
     String cvsSplitBy = ",";
-    
+
     Logging.log("Sampling Refinement for " + numberOfAgents + " agents");
     try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
       // Read the header of the file.
@@ -58,8 +58,8 @@ public class RefinementExperiment {
    * @throws AdXException
    */
   public static void main(String[] args) throws AdXException {
-    int samples = 200;
-    for (int i = 2; i < 20; i++) {
+    int samples = 800;
+    for (int i = 2; i < 16; i++) {
       RefinementExperiment.sampleRefinement(samples, i);
     }
   }
