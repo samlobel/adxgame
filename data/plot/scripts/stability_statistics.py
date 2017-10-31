@@ -26,7 +26,7 @@ def stability_statistics(number_of_agents):
     #print('Final non stable -> ' + str(total_profiles - stable_profiles_200_400))
     return [total_profiles, stable_profiles_100_200, stable_profiles_200_400, stable_profiles_400_800]
 
-total_number_agents = 19
+total_number_agents = 20
 count_profiles = []
 count_stable_100_200 = []
 count_non_stable_100_200 = []
