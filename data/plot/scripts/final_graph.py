@@ -37,6 +37,14 @@ def compute_edges(profile1_data, profile2_data, profile3_data, agreement1, agree
         # Check the agreements. If the profiles agree, add a weight of one, 
         # otherwise compute the probabilitiy of deviation of the sample mean.
         print('OK')
+        if(agreement1 == 1):
+            # There is agreement for the first profile, add an edge with weight of 1 in the appropiate direction:
+            # WE deviating to WF, i.e, is a WE making less than a WF?
+            if profile_data[i-1][1]['WE']['mean'] < profile_data[i][1]['WF']['mean']:
+                DG.add_edge(profile_data[i-1][0], profile_data[i][0])
+            # WF deviating to WE, i.e, is a WF making less than a WE?
+            if profile_data[i][1]['WF']['mean'] < profile_data[i-1][1]['WE']['mean']:
+                DG.add_edge(profile_data[i][0], profile_data[i-1][0])
     else:
         raise ValueError("The 3 given profiles are not adjacent --> \\n profile1_data = " , profile1_data, ", \\n profile2_data = ", profile2_data , "\\n profile3_data = ", profile3_data)
     # Next, 
@@ -72,3 +80,39 @@ for index, row in agreements.iterrows():
     Otherwise, compute the probability of deviation as given by the distribution
     of the sampling mean.
     """
+def agreement_data_to_dict(n1, n2, agreements):
+    """
+    Given the agreement data in form of a dataframe, convert it to a dict
+    """
+    agreement_dict = {}
+    number_of_players = len(agreements) - 1
+    print('number_of_players = ' , number_of_players)
+    print('agreements = ' , agreements)
+    i = 0
+    for index, row in agreements.iterrows():
+        agreement_dict['WE'* (number_of_players - i) + 'WF'*i] = row[str(n1) + '-' + str(n2) + '-agreement']
+        i = i + 1
+    return agreement_dict
+
+def compute_final_graph(cascade_profile, agreement_dict):
+    """
+    Given a cascade profile and agreement dictionary, compute the final graph.
+    This graph has edges with weight 1 in case there is agreement and probability
+    weights otherwise.
+    """
+    print('compute_final_graph')
+    number_of_profiles = len(cascade_profile)
+    number_of_players = number_of_profiles - 1
+    DG = nx.DiGraph()
+    DG.add_nodes_from([v[0] for v in cascade_profile])
+    for i in range(0, number_of_profiles):
+        profile_index = 'WE' *  (number_of_players - i) + 'WF' * i
+        print(i, agreement_dict[profile_index])
+        print(cascade_profile[i][0])
+        if cascade_profile[i]
+        # WE deviating to WF, i.e, is a WE making less than a WF?
+        if profile_data[i-1][1]['WE']['mean'] < profile_data[i][1]['WF']['mean']:
+            DG.add_edge(profile_data[i-1][0], profile_data[i][0])
+        # WF deviating to WE, i.e, is a WF making less than a WE?
+        if profile_data[i][1]['WF']['mean'] < profile_data[i-1][1]['WE']['mean']:
+            DG.add_edge(profile_data[i][0], profile_data[i-1][0])
