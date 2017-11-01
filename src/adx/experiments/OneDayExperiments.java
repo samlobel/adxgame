@@ -15,6 +15,17 @@ public class OneDayExperiments {
   public static final String directoryPrefix = "/home/eareyanv/workspace/adxgame/data/results/";
 
   /**
+   * Get the path of the results directory.
+   * @param numberOfGames
+   * @param numberOfImpressions
+   * @param demandDiscountFactor
+   * @return
+   */
+  public static String getResultsDirectory(String parentFolderName, int numberOfGames, int numberOfImpressions, double demandDiscountFactor) {
+    return directoryPrefix + parentFolderName + "/"  + numberOfGames + "/" + numberOfImpressions + "/" + demandDiscountFactor + "/";
+  }
+
+  /**
    * Basic Experiments.
    * 
    * @param args
@@ -24,7 +35,7 @@ public class OneDayExperiments {
   public static void basicExperiments(int numberOfGames, int numberOfImpressions, double demandDiscountFactor) throws AdXException, IOException {
     Logging.log("Basic Experiments");
 
-    String resultsDirectory = directoryPrefix + numberOfGames + "/" + numberOfImpressions + "/" + demandDiscountFactor + "/";
+    String resultsDirectory = OneDayExperiments.getResultsDirectory("all-agents-no-reserve", numberOfGames, numberOfImpressions, demandDiscountFactor);
     Logging.log("Results folder: " + resultsDirectory);
     
     int numberOfAgents = 30;
@@ -65,7 +76,7 @@ public class OneDayExperiments {
   public static void eightWEWFAgentsVaryReserve(int numberOfGames, int numberOfImpressions, double demandDiscountFactor) throws AdXException, IOException {
     Logging.log("Eight Agents Vary Reserve Experiment");
 
-    String resultsDirectory = directoryPrefix + numberOfGames + "/" + "8-agents-varyreserve-" + demandDiscountFactor + "-" + numberOfImpressions + "/";
+    String resultsDirectory = OneDayExperiments.getResultsDirectory("8-agents-reserve", numberOfGames, numberOfImpressions, demandDiscountFactor); 
     Logging.log("Results folder: " + resultsDirectory);
 
     double reserve = 0.0;
@@ -108,14 +119,14 @@ public class OneDayExperiments {
       // Running experiments manually
       numberOfGames = 100;
       Logging.log("Endogenous numberOfGames: " + numberOfGames);
-      demandDiscountFactor = 0.25;
+      demandDiscountFactor = 3.0;
       Logging.log("Endogenous demandDiscountFactor: " + demandDiscountFactor);
       numberOfImpressions = 2000;
       Logging.log("Endogenous numberOfImpressions: " + numberOfImpressions);
     }
     // Experiments so far.
-    OneDayExperiments.basicExperiments(numberOfGames, numberOfImpressions, demandDiscountFactor);
-    //OneDayExperiments.eightWEWFAgentsVaryReserve(numberOfGames, numberOfImpressions, demandDiscountFactor);
+    //OneDayExperiments.basicExperiments(numberOfGames, numberOfImpressions, demandDiscountFactor);
+    OneDayExperiments.eightWEWFAgentsVaryReserve(numberOfGames, numberOfImpressions, demandDiscountFactor);
   }
 
 }

@@ -92,19 +92,6 @@ def get_direction_dataframe(n1, n2, number_of_agents, supply, demand):
     deviation_dataframe = get_edge_agreement(n1, n2, supply, demand, deviation_dataframe)
     return deviation_dataframe
 
-def save_agreement_data(n1, n2, number_of_agents):
-    """
-    Given number of samples n1, n2; and number_of_agents, saves the agreement data
-    for all impressions and demand factors to a .csv file
-    """
-    list_of_dataframes = []
-    print('Computing agreement data for ', number_of_agents, ' agents, between ', n1, ' and ', n2 ,' samples')
-    for demand, impressions in setup.get_grid_demand_impressions():
-        print('\t(demand_factor, impressions) = (', demand, ',', impressions, ')')
-        list_of_dataframes += [get_direction_dataframe(n1, n2, number_of_agents, impressions, demand)]
-    final_dataframe = pd.concat(list_of_dataframes)
-    final_dataframe.to_csv('../../stability/' + str(n1) + '-' + str(n2) + '/stability-for-' + str(number_of_agents) + '-agents.csv', index = False)
-
 def determine_cascade_profile(number_of_games, number_of_agents, number_WE, number_WF, impressions, demand_factor):
     """
     Given an initial number of games, number_of_games, 
@@ -137,3 +124,16 @@ def compute_cascade_profile_data(number_of_games, number_of_agents, impressions,
     print('Computing cascade graph for number_of_games =', number_of_games, ', number_of_agents = ', number_of_agents, ', impressions = ', impressions, ', demand_factor = ', demand_factor)
     cascade_map_to_number_of_games = dict(('WE' * (number_of_agents-i) + 'WF' * i, determine_cascade_profile(number_of_games, number_of_agents,number_of_agents - i, i, impressions, demand_factor)) for i in range(0,number_of_agents + 1))
     return deviation_graphs.produce_specific_profile_data(cascade_map_to_number_of_games, number_of_agents, impressions, demand_factor)
+
+def save_agreement_data(n1, n2, number_of_agents):
+    """
+    Given number of samples n1, n2; and number_of_agents, saves the agreement data
+    for all impressions and demand factors to a .csv file
+    """
+    list_of_dataframes = []
+    print('Computing agreement data for ', number_of_agents, ' agents, between ', n1, ' and ', n2 ,' samples')
+    for demand, impressions in setup.get_grid_demand_impressions():
+        print('\t(demand_factor, impressions) = (', demand, ',', impressions, ')')
+        list_of_dataframes += [get_direction_dataframe(n1, n2, number_of_agents, impressions, demand)]
+    final_dataframe = pd.concat(list_of_dataframes)
+    final_dataframe.to_csv('../../stability/' + str(n1) + '-' + str(n2) + '/stability-for-' + str(number_of_agents) + '-agents.csv', index = False)

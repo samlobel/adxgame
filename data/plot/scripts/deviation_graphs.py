@@ -13,6 +13,14 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from progress import update_progress
 
+def get_specific_profile_data(numberWE, numberWF, specific_number_of_games, supply, demand):
+    dir_location = setup.get_agent_dir_location(specific_number_of_games, supply, demand)
+    file_location = 'WEWF(' + str(numberWE) + '-' + str(numberWF) + ').csv'
+    mix = get_data.get_agent_data(specific_number_of_games, dir_location, file_location)
+    WEdata = mix[mix.agent.str.contains('WEAgent')]
+    WFdata = mix[mix.agent.str.contains('WFAgent')]
+    return ('WE' * numberWE + 'WF' * numberWF, {'WE': {'n' : len(WEdata), 'mean' : WEdata.profit.mean(), 'var' : WEdata.profit.var()} , 
+                                                'WF': {'n' : len(WFdata), 'mean' : WFdata.profit.mean(), 'var' : WFdata.profit.var()}})
 
 def produce_specific_profile_data(map_profile_to_numberofgames, number_of_agents, supply, demand, reserve = 0, include_reserve = False):
     """
@@ -39,12 +47,7 @@ def produce_specific_profile_data(map_profile_to_numberofgames, number_of_agents
         if(profile not in map_profile_to_numberofgames):
             raise ValueError('The map does not contain profile: ' + ('WE' * (number_of_agents - i) + 'WF' * i) )
         specific_number_of_games = map_profile_to_numberofgames[profile]
-        dir_location = setup.get_agent_dir_location(specific_number_of_games, supply, demand)
-        file_location = 'WEWF(' + str(number_of_agents - i) + '-' + str(i) + ').csv'
-        mix = get_data.get_agent_data(specific_number_of_games, dir_location, file_location)
-        WEdata = mix[mix.agent.str.contains('WEAgent')]
-        WFdata = mix[mix.agent.str.contains('WFAgent')]
-        profile_data.append(('WE' * (number_of_agents - i) + 'WF' * i, {'WE': {'n' : len(WEdata), 'mean': WEdata.profit.mean(), 'std': WEdata.profit.std()} , 'WF': {'n': len(WFdata), 'mean' : WFdata.profit.mean(), 'std': WFdata.profit.std()}}))
+        profile_data.append(get_specific_profile_data(number_of_agents-i,i,specific_number_of_games,supply,demand))
     return profile_data
 
 
