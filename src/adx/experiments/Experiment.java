@@ -77,6 +77,7 @@ public class Experiment {
   public void runExperiment() throws AdXException, IOException {
     String agentsResults = "";
     String marketMakerResults = "";
+    String bidsLogs = "";
     Logging.log("[experiment]" + "\n\t reserve = " + this.reserve + "\n\t numberOfImpressions = " + this.numberOfImpressions + "\n\t demandDiscountFactor = " + this.demandDiscountFactor);
     for (int g = 0; g < this.numberOfGames; g++) {
       // Run simulator.
@@ -85,6 +86,7 @@ public class Experiment {
       Statistics statistics = simulator.run();
       agentsResults += statistics.oneLineAgentsSummary(1, g);
       marketMakerResults += statistics.oneLineMarketMakerSummary(1, g, this.numberOfImpressions);
+      bidsLogs += statistics.getStatisticsBids().logBidsToCSV(1);
       // Logging.log("Result Agents: " + statistics.oneLineAgentsSummary(1, g));
       // Logging.log("Result Market Maker: " + statistics.oneLineMarketMakerSummary(1, g, this.numberOfImpressions));
     }
@@ -99,6 +101,12 @@ public class Experiment {
     PrintWriter writerMarketMakerResults = new PrintWriter(this.resultsDirectory + "marketmaker/" + this.resultsFileName + ".csv", "UTF-8");
     writerMarketMakerResults.println(marketMakerResults);
     writerMarketMakerResults.close();
+    // Log of bids.
+    Files.createDirectories(Paths.get(this.resultsDirectory + "bidlogs/"));
+    PrintWriter writerBidsLog = new PrintWriter(this.resultsDirectory + "bidlogs/" + this.resultsFileName + ".csv", "UTF-8");
+    writerBidsLog.println(bidsLogs);
+    writerBidsLog.close();
+    
   }
 
 }

@@ -113,7 +113,7 @@ public class AdAuctions {
     Map<Query, StandingBidsForQuery> allQueriesStandingBids = new HashMap<Query, StandingBidsForQuery>();
     for (MarketSegment marketSegment : Sampling.segmentsToSample.keySet()) {
       Query query = new Query(marketSegment);
-      allQueriesStandingBids.put(query, new StandingBidsForQuery(AdAuctions.filterBids(query, bidBundles), reserve));
+      allQueriesStandingBids.put(query, new StandingBidsForQuery(day, query, AdAuctions.filterBids(query, bidBundles), reserve, statistics.getStatisticsBids()));
     }
     // Logging.log(allQueriesStandingBids);
     // Sample user population.
@@ -132,7 +132,7 @@ public class AdAuctions {
       while (true) {
         // The getWinner() function returns a pair <Boolean, <Agent Name, Bid>>, where Boolean is the reason
         // in case a winner could not be found (and null otherwise), and <Agent Name, Bid> is the winner in case one exists.
-        Pair<Boolean, Pair<String, BidEntry>> winnerDetermination = bidsForCurrentQuery.getWinner();
+        Pair<Boolean, Pair<String, BidEntry>> winnerDetermination = bidsForCurrentQuery.getWinner(day);
         if (winnerDetermination.getElement2() == null) {
           // A winner could not be determined. Record the reason.
           statistics.getStatisticsAds().addNoAllocation(day, winnerDetermination.getElement1());
@@ -165,6 +165,7 @@ public class AdAuctions {
         }
       }
     }
+    // statistics.getStatisticsBids().printBids(day);
     // Logging.log(adStatistics.getStatisticsAds().printNiceAdStatisticsTable());
   }
 }

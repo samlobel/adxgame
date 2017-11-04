@@ -6,7 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import adx.exceptions.AdXException;
+import adx.statistics.StatisticsBids;
 import adx.structures.BidEntry;
+import adx.structures.Query;
 import adx.util.Pair;
 
 /**
@@ -22,19 +24,37 @@ public class StandingBidsForQuery {
   private List<Pair<String, BidEntry>> standingBids;
 
   /**
+   * Statistics for the bids
+   */
+  private final StatisticsBids statisticsBids;
+
+  /**
    * Reserve price
    */
   private final double reserve;
+  
+  /**
+   * Auction day
+   */
+  private final int day;
+  
+  /**
+   * Auction Query
+   */
+  private final Query query;
 
   /**
    * Constructor. Sorts bids in decreasing order.
    * 
    * @param bids
-   */ 
-  public StandingBidsForQuery(List<Pair<String, BidEntry>> bids, double reserve) {
+   */
+  public StandingBidsForQuery(int day, Query query, List<Pair<String, BidEntry>> bids, double reserve, StatisticsBids statisticsBids) {
     this.standingBids = new ArrayList<Pair<String, BidEntry>>(bids);
     Collections.sort(this.standingBids, AdAuctions.bidComparator);
     this.reserve = reserve;
+    this.statisticsBids = statisticsBids;
+    this.day = day;
+    this.query = query;
   }
 
   /**
@@ -87,34 +107,51 @@ public class StandingBidsForQuery {
    * @return
    * @throws AdXException
    */
-  protected Pair<Boolean, Pair<String, BidEntry>> getWinner() throws AdXException {
+  protected Pair<Boolean, Pair<String, BidEntry>> getWinner(int day) throws AdXException {
     if (this.standingBids.size() == 0) {
       // If there are no more bids, return null.
       return new Pair<Boolean, Pair<String, BidEntry>>(false, null);
-    } else if (this.standingBids.get(0).getElement2().getBid() < this.reserve) {
-      // If the highest bid does not meet reserve, return null.
-      return new Pair<Boolean, Pair<String, BidEntry>>(true, null);
-    } else if (this.standingBids.size() == 1) {
-      // If there is only one bid, return it.
-      return new Pair<Boolean, Pair<String, BidEntry>>(null, this.standingBids.get(0));
     } else {
-      // There are more than one bid. Construct a list with all winners and return one of them at random.
-      List<Pair<String, BidEntry>> winnerList = new ArrayList<Pair<String, BidEntry>>();
-      double winningBid = this.standingBids.get(0).getElement2().getBid();
-      Iterator<Pair<String, BidEntry>> bidsListIterator = this.standingBids.iterator();
-      Pair<String, BidEntry> currentBidder = null;
-      // Keep adding bidders to the winnerList as long as their bids match the winning bid.
-      while ((bidsListIterator.hasNext()) && ((currentBidder = bidsListIterator.next()) != null) && currentBidder.getElement2().getBid() == winningBid) {
-        winnerList.add(currentBidder);
+      // There are bids, log them
+      this.logBids();
+      if (this.standingBids.get(0).getElement2().getBid() < this.reserve) {
+        // If the highest bid does not meet reserve, return null.
+        return new Pair<Boolean, Pair<String, BidEntry>>(true, null);
+      } else if (this.standingBids.size() == 1) {
+        // If there is only one bid, return it.
+        return new Pair<Boolean, Pair<String, BidEntry>>(null, this.standingBids.get(0));
+      } else {
+        // There are more than one bid. Construct a list with all winners and return one of them at random.
+        List<Pair<String, BidEntry>> winnerList = new ArrayList<Pair<String, BidEntry>>();
+        double winningBid = this.standingBids.get(0).getElement2().getBid();
+        Iterator<Pair<String, BidEntry>> bidsListIterator = this.standingBids.iterator();
+        Pair<String, BidEntry> currentBidder = null;
+        // Keep adding bidders to the winnerList as long as their bids match the winning bid.
+        while ((bidsListIterator.hasNext()) && ((currentBidder = bidsListIterator.next()) != null) && currentBidder.getElement2().getBid() == winningBid) {
+          winnerList.add(currentBidder);
+        }
+        // At this point we should have at least one bidder or something went wrong.
+        if (winnerList.size() == 0) {
+          throw new AdXException("There has to be at least one winner.");
+        }
+        // Pick a random bidder from the list of winners.
+        Collections.shuffle(winnerList);
+        return new Pair<Boolean, Pair<String, BidEntry>>(null, winnerList.get(0));
       }
-      // At this point we should have at least one bidder or something went wrong.
-      if (winnerList.size() == 0) {
-        throw new AdXException("There has to be at least one winner.");
-      }
-      // Pick a random bidder from the list of winners.
-      Collections.shuffle(winnerList);
-      return new Pair<Boolean, Pair<String, BidEntry>>(null, winnerList.get(0));
     }
+  }
+
+  /**
+   * Logs the current standing bids.
+   * 
+   * @param day
+   */
+  protected void logBids() {
+    ArrayList<Pair<String, Double>> listOfBids = new ArrayList<Pair<String, Double>>();
+    for (Pair<String, BidEntry> standingBid : this.standingBids) {
+      listOfBids.add(new Pair<String, Double>(standingBid.getElement1(), standingBid.getElement2().getBid()));
+    }
+    this.statisticsBids.addBids(this.day, this.query, listOfBids);
   }
 
   /**

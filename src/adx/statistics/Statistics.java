@@ -49,6 +49,11 @@ public class Statistics {
    * A handler to deal with campaign statistics.
    */
   private final StatisticsAds adsStatisticsHandler;
+  
+  /**
+   * A handler to deal with bid statistics.
+   */
+  private final StatisticsBids bidStatistics;
 
   /**
    * Constructor.
@@ -66,6 +71,7 @@ public class Statistics {
     InputValidators.validateNotNull(agentsNames);
     this.campaignsStatisticsHandler = new StatisticsCampaigns(this);
     this.adsStatisticsHandler = new StatisticsAds(this);
+    this.bidStatistics = new StatisticsBids(this);
   }
 
   /**
@@ -84,6 +90,15 @@ public class Statistics {
    */
   public StatisticsAds getStatisticsAds() {
     return this.adsStatisticsHandler;
+  }
+  
+  /**
+   * Getter.
+   * 
+   * @return the bid statistics handler.
+   */
+  public StatisticsBids getStatisticsBids() {
+    return this.bidStatistics;
   }
 
   /**

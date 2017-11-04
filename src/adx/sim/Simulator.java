@@ -78,8 +78,8 @@ public class Simulator {
     List<Campaign> allCampaigns = new ArrayList<Campaign>();
     for (int j = 0; j < this.agents.size(); j++) {
       allCampaigns.add(this.sampleSimulatorCampaign());
+      //Logging.log("Campaign for agent " + j + " -> " + allCampaigns.get(j));
     }
-    // Logging.log(allCampaigns);
     int i = 0;
     for (SimAgent agent : this.agents) {
       List<Campaign> otherCampaigns = new ArrayList<Campaign>(allCampaigns);
