@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-import deviation_graphs
+import mean_best_response_graphs
 import deviation_analysis
 import markov_chain
 import setup
@@ -62,17 +62,22 @@ def construct_final_graph(n1, n2, number_of_agents, supply, demand):
             #Add forward edge
             if(row['direction_' + str(n1)] == 'f'):
                add_weight_to_node(edge_dict, node1, node2, 1)
+            #Add backward edge
             elif(row['direction_' + str(n1)] == 'b'):
                add_weight_to_node(edge_dict, node2, node1, 1)
+            # d means a draw, add both edges
+            elif(row['direction_' + str(n1)] == 'd'):
+               add_weight_to_node(edge_dict, node1, node2, 1)
+               add_weight_to_node(edge_dict, node2, node1, 1)
             else:
-                raise ValueError('Direction are the same but not either f or b')
+                raise ValueError('Deviation not understood!!!')
         # Otherwise, construct the markov chain between these two nodes
         else:
             # Get the profile data for the disagreement
             number_of_games_profile_1 = deviation_analysis.determine_cascade_profile(n2, number_of_agents, row['WE1'], row['WF1'], str(supply), str(demand))
             number_of_games_profile_2 = deviation_analysis.determine_cascade_profile(n2, number_of_agents, row['WE2'], row['WF2'], str(supply), str(demand))
-            profile1_data = deviation_graphs.get_specific_profile_data(row['WE1'], row['WF1'], number_of_games_profile_1, str(supply), str(demand))
-            profile2_data = deviation_graphs.get_specific_profile_data(row['WE2'], row['WF2'], number_of_games_profile_2, str(supply), str(demand))
+            profile1_data = mean_best_response_graphs.get_specific_profile_data(row['WE1'], row['WF1'], number_of_games_profile_1, str(supply), str(demand))
+            profile2_data = mean_best_response_graphs.get_specific_profile_data(row['WE2'], row['WF2'], number_of_games_profile_2, str(supply), str(demand))
             # Is the mean of WE in the first profile bigger than the mean of WF in the secod profile?
             probability_WE_bigger = normal1BiggerNormal2(profile1_data[1]['WE']['mean'], profile1_data[1]['WE']['var'], profile1_data[1]['WE']['n'], 
                                                          profile2_data[1]['WF']['mean'], profile2_data[1]['WF']['var'], profile2_data[1]['WF']['n'])
@@ -116,30 +121,20 @@ def plot_directed_weighted_graph(DG, n1, n2, supply, demand, steady_dist = {}):
     #nx.draw(DG, pos)
     plt.title('Game Markov Chain for ' + str(number_of_profiles - 1) + ' agents. \n Impressions ' + str(supply) + ', demand factor ' + str(demand) + '. \n (n1,n2) = (' + str(n1) + ','+str(n2) + ')')
     plt.axis('off')
-    image_name = '../../markovchains/' + str(n1) + '-' + str(n2) + '/MC-' + str(demand).replace('.','_') + '-' + str(supply) + '-' + str(number_of_profiles - 1) + '.png'
-    plt.savefig(image_name)
+    plt.savefig(setup.create_dir('../../markovchains/' + str(n1) + '-' + str(n2) + '/' + str(supply) + '/' + str(demand) + '/') + 'markovchainWEEF-' + str(number_of_profiles - 1) + '.png', bbox_inches='tight')
     #plt.show()
     plt.close(fig)
-    return image_name
 
-#def plot_all_directed_wei_graphs(number_of_agents):
-#supply = 2000
-#demand = 1.25
-"""for number_of_agents in range(3,21):
-    for demand, supply  in setup.get_grid_demand_impressions():
+def plot_all_directed_weighted_graphs(number_of_agents):
+    """
+    Plots all directed, weighted graph, for specific number of agents.
+    """
+    for supply, demand  in setup.get_grid_supply_demand():
         pair_of_number_of_games = [(100, 200), (200, 400), (400, 800)]
-        #filenames = []
         demand = float(demand)
         supply = int(supply)
         for n1,n2 in pair_of_number_of_games:
             print(n1,n2, number_of_agents, demand, supply)
             DG = construct_final_graph(n1, n2, number_of_agents, supply, demand)
             map_steady_dist = markov_chain.compute_steady_state(DG)
-            image_name = plot_directed_weighted_graph(DG, n1, n2, supply, demand, map_steady_dist)
-            #print(image_name)
-            #filenames.append(image_name)
-
-images = []
-for filename in filenames:
-    images.append(imageio.imread(filename))
-imageio.mimsave('movie.gif', images, duration=0.5)"""
+            plot_directed_weighted_graph(DG, n1, n2, supply, demand, map_steady_dist)

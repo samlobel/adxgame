@@ -9,7 +9,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import setup
 import final_graph
-from deviation_graphs import produce_profile_data
+from mean_best_response_graphs import produce_profile_data
 from discreteMarkovChain import markovChain
     
 def produce_soft_deviation_graph(profile_data):

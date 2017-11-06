@@ -5,7 +5,7 @@ Created on Mon Oct 23 10:58:01 2017
 
 @author: enriqueareyan
 """
-import deviation_graphs
+import mean_best_response_graphs
 import deviation_analysis
 import zipfile
 import setup
@@ -65,11 +65,10 @@ def get_edge_agreement(n1, n2, supply, demand, deviation_dataframe):
                 strategy_tuple  = strategy_tuple + ('f',)
             elif((deviation_dataframe.iloc[i + 1]['back_' + str(n)] == 1) and (deviation_dataframe.iloc[i]['forw_' + str(n)] == 0)):
                 strategy_tuple  = strategy_tuple + ('b',)
+            elif((deviation_dataframe.iloc[i + 1]['back_' + str(n)] == 1) and (deviation_dataframe.iloc[i]['forw_' + str(n)] == 1)):
+                strategy_tuple  = strategy_tuple + ('d',)
             else:
-                # This should be better handled. This case can happen if there is a tie among the mean profit
-                # of profiles. For example, see WEWF(1-1) where everything is zero profit, thus a tie.
-                strategy_tuple  = strategy_tuple + ('x',)
-                #raise ValueError('Deviation not understood!!!')                       
+                raise ValueError('Deviation not understood!!!')
         list_of_edges = list_of_edges + [strategy_tuple]
     dataframe = pd.DataFrame(list_of_edges)
     dataframe['impressions'] = supply
@@ -86,13 +85,13 @@ def get_direction_dataframe(n1, n2, number_of_agents, supply, demand):
     """
     DG_0_profile_data = compute_cascade_profile_data(n1, number_of_agents, supply, demand)
     DG_1_profile_data = compute_cascade_profile_data(n2, number_of_agents, supply, demand)
-    DG_0 = deviation_graphs.produce_deviation_graph(DG_0_profile_data)
-    DG_1 = deviation_graphs.produce_deviation_graph(DG_1_profile_data)
+    DG_0 = mean_best_response_graphs.produce_mean_best_response_graph(DG_0_profile_data)
+    DG_1 = mean_best_response_graphs.produce_mean_best_response_graph(DG_1_profile_data)
     deviation_dataframe = deviation_analysis.get_agreement_data(n1, n2, DG_0, DG_1)
     deviation_dataframe = get_edge_agreement(n1, n2, supply, demand, deviation_dataframe)
     return deviation_dataframe
 
-def determine_cascade_profile(number_of_games, number_of_agents, number_WE, number_WF, impressions, demand_factor):
+def determine_cascade_profile(number_of_games, number_of_agents, number_WE, number_WF, supply, demand):
     """
     Given an initial number of games, number_of_games, 
     cascades back to the first time the profile in 
@@ -102,7 +101,7 @@ def determine_cascade_profile(number_of_games, number_of_agents, number_WE, numb
     """
     while(number_of_games >= 100):
         zf = zipfile.ZipFile('../../results/' + str(number_of_games) + '.zip')
-        file_location = setup.get_agent_dir_location(number_of_games, impressions, demand_factor) + 'WEWF(' + str(number_WE) + '-' + str(number_WF) + ').csv'
+        file_location = setup.get_agent_dir_location(number_of_games, supply, demand) + 'WEWF(' + str(number_WE) + '-' + str(number_WF) + ').csv'
         print('Searching for ', file_location)
         if file_location in zf.namelist():
             print('\tFound!')
@@ -112,7 +111,7 @@ def determine_cascade_profile(number_of_games, number_of_agents, number_WE, numb
         number_of_games = int(number_of_games / 2)
     raise ValueError('******************* Could not find a sample for ', file_location)        
 
-def compute_cascade_profile_data(number_of_games, number_of_agents, impressions, demand_factor):
+def compute_cascade_profile_data(number_of_games, number_of_agents, supply, demand):
     """
     This function will build a cascading graph, where we first look for 
     sample data with exactly number_of_games samples, and if we cannot find
@@ -121,19 +120,26 @@ def compute_cascade_profile_data(number_of_games, number_of_agents, impressions,
     will find all samples by definition and thus return the graph where
     all the samples are 100 OR 200 respectively.
     """
-    print('Computing cascade graph for number_of_games =', number_of_games, ', number_of_agents = ', number_of_agents, ', impressions = ', impressions, ', demand_factor = ', demand_factor)
-    cascade_map_to_number_of_games = dict(('WE' * (number_of_agents-i) + 'WF' * i, determine_cascade_profile(number_of_games, number_of_agents,number_of_agents - i, i, impressions, demand_factor)) for i in range(0,number_of_agents + 1))
-    return deviation_graphs.produce_specific_profile_data(cascade_map_to_number_of_games, number_of_agents, impressions, demand_factor)
+    print('Computing cascade graph for:\n\t number_of_games =', number_of_games, '\n\t number_of_agents = ', number_of_agents, '\n\t impressions = ', supply, '\n\t demand_factor = ', demand)
+    cascade_map_to_number_of_games = dict(('WE' * (number_of_agents-i) + 'WF' * i, determine_cascade_profile(number_of_games, number_of_agents,number_of_agents - i, i, supply, demand)) for i in range(0,number_of_agents + 1))
+    return mean_best_response_graphs.produce_specific_profile_data(cascade_map_to_number_of_games, number_of_agents, supply, demand)
+
+def get_best_response_graph(number_of_games, number_of_agents, supply, demand):
+    """
+    Gets the best_response graph for given parameters using the cascading profile.
+    """
+    profile_data = deviation_analysis.compute_cascade_profile_data(number_of_games, number_of_agents, supply, demand)
+    return mean_best_response_graphs.produce_mean_best_response_graph(profile_data)
 
 def save_agreement_data(n1, n2, number_of_agents):
     """
     Given number of samples n1, n2; and number_of_agents, saves the agreement data
-    for all impressions and demand factors to a .csv file
+    for all supply and demand factors to a .csv file
     """
     list_of_dataframes = []
     print('Computing agreement data for ', number_of_agents, ' agents, between ', n1, ' and ', n2 ,' samples')
-    for demand, impressions in setup.get_grid_demand_impressions():
-        print('\t(demand_factor, impressions) = (', demand, ',', impressions, ')')
-        list_of_dataframes += [get_direction_dataframe(n1, n2, number_of_agents, impressions, demand)]
+    for supply, demand in setup.get_grid_supply_demand():
+        print('\t(supply, demand) = (', supply, ',', demand, ')')
+        list_of_dataframes += [get_direction_dataframe(n1, n2, number_of_agents, supply, demand)]
     final_dataframe = pd.concat(list_of_dataframes)
     final_dataframe.to_csv('../../stability/' + str(n1) + '-' + str(n2) + '/stability-for-' + str(number_of_agents) + '-agents.csv', index = False)
