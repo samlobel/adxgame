@@ -50,18 +50,25 @@ def save_sink_eq_stats(number_of_games, number_of_agents):
 # Compute average number of sinks and average size of sink.
 avg_number_sinks = []
 avg_size_sink = []
-# TODO: average number of WEs and average number of WF.
 avg_number_WE_per_player = []
+avg_number_WF_per_player = []
 for number_of_agents in range(2,21):
     data = pd.read_csv('../../sinkequilibria/800/sink-equilibria-for-' + str(number_of_agents) + '-agents.csv')
     avg_number_sinks +=  [(data.sink_index.nunique() / 12)]
     avg_size_sink += [data.groupby('sink_index').size().mean()]
+    avg_number_WE_per_player += [data.groupby('sink_index').mean().mean()['WE'] / number_of_agents]
+    avg_number_WF_per_player += [data.groupby('sink_index').mean().mean()['WF'] / number_of_agents]
     
-fig, ax = plt.subplots(nrows = 2, ncols = 1, sharex = True)
+fig, ax = plt.subplots(nrows = 3, ncols = 1, sharex = True)
 x = [i for i in range (2,21)]
-ax[0].plot(x, avg_number_sinks)
-ax[0].set_title('Average number of sinks')
-ax[1].plot(x, avg_size_sink)
-ax[1].set_title('Average size of sinks')
+ax[0].plot(x, avg_number_sinks, label = 'Average number of sinks')
+ax[1].plot(x, avg_size_sink, label = 'Average size of sinks')
+ax[2].plot(x, avg_number_WE_per_player, label = 'Avg. #WE/#player')
+ax[2].plot(x, avg_number_WF_per_player, label = 'Avg. #WF/#player')
 plt.xlabel('Number of players')
 plt.xticks(np.arange(min(x), max(x)+1, 1.0))
+ax[0].legend()
+ax[1].legend()
+ax[2].legend()
+plt.show()
+
