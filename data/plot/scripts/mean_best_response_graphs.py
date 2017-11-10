@@ -10,25 +10,31 @@ import get_data
 import networkx as nx
 from progress import update_progress
 
-def get_specific_profile_data(numberWE, numberWF, specific_number_of_games, supply, demand):
+def get_specific_profile_data(zip_suffix, numberWE, numberWF, specific_number_of_games, supply, demand, reserve = None):
     """
     Given numberWE, numberWF, specific_number_of_games, supply, demand;
     produces the profile data for numberWE playing numberWF specific_number_of_games
     times with supply and demand.
     """
+    zip_location = setup.get_zip_location(zip_suffix, specific_number_of_games)
     dir_location = setup.get_agent_dir_location(specific_number_of_games, supply, demand)
-    file_location = 'WEWF(' + str(numberWE) + '-' + str(numberWF) + ').csv'
-    mix = get_data.get_agent_data(specific_number_of_games, dir_location, file_location)
+    file_location = setup.get_file_location(numberWE, numberWF, reserve)
+    mix = get_data.get_agent_data(zip_location, dir_location + file_location)
+    mix = mix.dropna()
     WEdata = mix[mix.agent.str.contains('WEAgent')]
     WFdata = mix[mix.agent.str.contains('WFAgent')]
+    """print('get_specific_profile_data (1) = ', file_name)
+    print('get_specific_profile_data (2) = ', dir_location)
+    print('get_specific_profile_data (3) = ', reserve)
+    print('get_specific_profile_data (4) = ', file_location)"""
     return ('WE' * numberWE + 'WF' * numberWF, {'WE': {'n' : len(WEdata), 'mean' : WEdata.profit.mean(), 'var' : WEdata.profit.var()} , 
                                                 'WF': {'n' : len(WFdata), 'mean' : WFdata.profit.mean(), 'var' : WFdata.profit.var()}})
 
-def produce_specific_profile_data(map_profile_to_numberofgames, number_of_agents, supply, demand, reserve = 0, include_reserve = False):
+def produce_specific_profile_data(zip_suffix, map_profile_to_numberofgames, number_of_agents, supply, demand, reserve = None):
     """
     Given a map: 
         {Profile:number of games}, 
-    (e.g. {'WEWE': 200,'WEWF': 200,'WFWF': 400})
+    (e.g. {'WEWE': path_to_data,'WEWF': path_to_data,'WFWF': path_to_data})
     produces a list of tuples:
         (Strategy profile, {WE : {n, mean profit WE, std profit WE}, WF : {n, mean profit WF, std profit WF})
     where the number of samples of each profile is given by the map_profile_to_numberofgames.
@@ -49,7 +55,7 @@ def produce_specific_profile_data(map_profile_to_numberofgames, number_of_agents
         if(profile not in map_profile_to_numberofgames):
             raise ValueError('The map does not contain profile: ' + ('WE' * (number_of_agents - i) + 'WF' * i) )
         specific_number_of_games = map_profile_to_numberofgames[profile]
-        profile_data.append(get_specific_profile_data(number_of_agents-i,i,specific_number_of_games,supply,demand))
+        profile_data.append(get_specific_profile_data(zip_suffix, number_of_agents-i, i, specific_number_of_games, supply, demand, reserve))
     return profile_data
 
 def produce_profile_data(number_of_games, number_of_agents, supply, demand, reserve = 0, include_reserve = False):

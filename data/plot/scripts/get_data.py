@@ -11,7 +11,6 @@ import scipy as sp
 import scipy.stats
 import zipfile
 
-
 def mean_confidence_interval(data, confidence=0.95):
     """
     Compute the confidence interval of the given data (array).
@@ -22,15 +21,25 @@ def mean_confidence_interval(data, confidence=0.95):
     h = se * sp.stats.t._ppf(( 1 + confidence) / 2., n - 1)
     return m, m-h, m+h
 
-def get_raw_data(number_of_games, dir_location, file_name):
+def zip_contains_file(zip_location, file_location):
+    """
+    Given a profile configuration, returns true if the profile
+    was sampled using number_of_games or false otherwise
+    """
+    zf = zipfile.ZipFile(zip_location)
+    return file_location in zf.namelist()
+
+def get_raw_data(zip_location, file_location):
     """
     Reads the raw data produced by the game.
     """
-    zf = zipfile.ZipFile('../../results/' + str(number_of_games) + '.zip') 
-    data = pd.read_csv(zf.open(dir_location + file_name), header = None)
+    print('\t Getting raw data from file ', file_location)
+    print('\t\t zip:', zip_location)
+    zf = zipfile.ZipFile(zip_location)
+    data = pd.read_csv(zf.open(file_location), header = None, error_bad_lines = False)
     return data    
 
-def get_agent_data(number_of_games, dir_location, file_name):
+def get_agent_data(zip_location, file_location):
     """
     Reads and process the data produced by the game from the agents point of view. 
     The agent data contains the following columns:
@@ -38,7 +47,7 @@ def get_agent_data(number_of_games, dir_location, file_name):
     In principle this data is enough to compute any statistic
     about the performance of an agent in the game.
     """
-    data = get_raw_data(number_of_games, dir_location, file_name)
+    data = get_raw_data(zip_location, file_location)
     data.columns = ['game','agent','segment','reach','reward','wincount','wincost']
     data.loc[data['wincount'] >= data['reach'], 'activate'] = 1
     data.loc[data['wincount'] <  data['reach'], 'activate'] = 0
@@ -56,7 +65,6 @@ def get_market_maker_data(number_of_games, dir_location, file_name):
     data.columns = ['game', 'reserveTooHigh', 'noBids', 'allocatedAtReserve', 'allocatedNotAtReserve']
     return data
     
-
 def get_agent_group_data(columns, number_of_games, dir_location, agent1, agent2, agent1fix = True, max_number_agents = 20):
     """
     Computes aggregates of the data produced by the game from the point of view of the agent.

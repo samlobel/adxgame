@@ -1,5 +1,6 @@
 package adx.experiments;
 
+import java.io.File;
 import java.io.IOException;
 
 import adx.exceptions.AdXException;
@@ -12,7 +13,9 @@ import adx.util.Logging;
  */
 public class OneDayExperiments {
 
-  public static final String directoryPrefix = "/home/eareyanv/workspace/adxgame/data/results/";
+  public static final String dataDirectoryPrefix = "/home/eareyanv/workspace/adxgame/data/";
+
+  public static final String resultsDirectoryPrefix = "/home/eareyanv/workspace/adxgame/data/results/";
 
   /**
    * Get the path of the results directory.
@@ -23,7 +26,7 @@ public class OneDayExperiments {
    * @return
    */
   public static String getResultsDirectory(String parentFolderName, int numberOfGames, int numberOfImpressions, double demandDiscountFactor) {
-    return directoryPrefix + parentFolderName + "/" + numberOfGames + "/" + numberOfImpressions + "/" + demandDiscountFactor + "/";
+    return resultsDirectoryPrefix + parentFolderName + "/" + numberOfGames + "/" + numberOfImpressions + "/" + demandDiscountFactor + "/";
   }
 
   /**
@@ -47,27 +50,27 @@ public class OneDayExperiments {
       Logging.log("All WE agents (" + j + ")");
       Experiment allWEExperiment = ExperimentFactory.WEandWFAgents(j, 0, resultsDirectory, "/WEWF(" + j + "-0)", numberOfGames, numberOfImpressions,
           demandDiscountFactor, 0.0);
-      allWEExperiment.runExperiment();
+      allWEExperiment.runExperiment(true, true);
       Logging.log("All WF agents (" + j + ")");
       Experiment allWFExperiment = ExperimentFactory.WEandWFAgents(0, j, resultsDirectory, "/WEWF(0-" + j + ")", numberOfGames, numberOfImpressions,
           demandDiscountFactor, 0.0);
-      allWFExperiment.runExperiment();
+      allWFExperiment.runExperiment(true, true);
       // Mix of agents.
       for (int l = 1; l < numberOfAgents + 1; l++) {
         Logging.log("SI and WE agents (" + j + "," + l + ")");
         Experiment SIandWEExperiment = ExperimentFactory.SIandWEAgents(j, l, resultsDirectory, "/SIWE(" + j + "-" + l + ")", numberOfGames,
             numberOfImpressions, demandDiscountFactor, 0.0);
-        SIandWEExperiment.runExperiment();
+        SIandWEExperiment.runExperiment(true, true);
 
         Logging.log("SI and WF agents (" + j + "," + l + ")");
         Experiment SIandWFExperiment = ExperimentFactory.SIandWFAgents(j, l, resultsDirectory, "/SIWF(" + j + "-" + l + ")", numberOfGames,
             numberOfImpressions, demandDiscountFactor, 0.0);
-        SIandWFExperiment.runExperiment();
+        SIandWFExperiment.runExperiment(true, true);
 
         Logging.log("WE and WF agents (" + j + "," + l + ")");
         Experiment WEandWFExperiment = ExperimentFactory.WEandWFAgents(j, l, resultsDirectory, "/WEWF(" + j + "-" + l + ")", numberOfGames,
             numberOfImpressions, demandDiscountFactor, 0.0);
-        WEandWFExperiment.runExperiment();
+        WEandWFExperiment.runExperiment(true, true);
       }
     }
   }
@@ -85,19 +88,32 @@ public class OneDayExperiments {
     String resultsDirectory = OneDayExperiments.getResultsDirectory("8-agents-reserve", numberOfGames, numberOfImpressions, demandDiscountFactor);
     Logging.log("Results folder: " + resultsDirectory);
 
-    double reserve = 0.0;
+    double reserve = 1000.0;
     int count = 0;
-    for (int r = 0; r < 131; r++) {
+    //for (int r = 0; r < 131; r++) {
+    int r = 1000;
       for (int i = 0; i < 9; i++) {
         Logging.log("WEWF(" + (8 - i) + "-" + i + "), r = " + reserve);
-        Experiment varyReserveExperiment = ExperimentFactory.WEandWFAgents(8 - i, i, resultsDirectory, "WEWF(" + (8 - i) + "-" + i + ")-r(" + r + ")",
-            numberOfGames, numberOfImpressions, demandDiscountFactor, reserve);
-        varyReserveExperiment.runExperiment();
+        File f = new File(resultsDirectory + "agents/WEWF(" + (8 - i) + "-" + i + ")-r(" + r + ").csv");
+        if (f.exists() && !f.isDirectory()) {
+          Logging.log("Experiment already ran, skipping");
+        } else {
+          Logging.log("Running Experiment");
+          Experiment varyReserveExperiment = ExperimentFactory.WEandWFAgents(8 - i, i, resultsDirectory, "WEWF(" + (8 - i) + "-" + i + ")-r(" + r + ")",
+              numberOfGames, numberOfImpressions, demandDiscountFactor, reserve);
+          varyReserveExperiment.runExperiment(false, false);
+        }
         count++;
       }
-      reserve += 1.0 / 100.0;
-    }
+      //reserve += 1.0 / 100.0;
+    //}
     Logging.log("Total Count " + count);
+  }
+  
+  public static void eightWEWFAgentsFixedReserve(int numberOfGames, int numberWE, int numberWF, int numberOfImpressions, double demandDiscountFactor, int reserve) throws AdXException, IOException {
+    String resultsDirectory = OneDayExperiments.getResultsDirectory("8-agents-fixed-reserve", numberOfGames, numberOfImpressions, demandDiscountFactor);
+    Experiment varyReserveExperiment = ExperimentFactory.WEandWFAgents(numberWE, numberWF, resultsDirectory, "WEWF(" + numberWE + "-" + numberWF + ")-r(" + reserve + ")", numberOfGames, numberOfImpressions, demandDiscountFactor, reserve * 0.01);
+    varyReserveExperiment.runExperiment(false, true);
   }
 
   /**
@@ -107,7 +123,7 @@ public class OneDayExperiments {
    * @throws AdXException
    * @throws IOException
    */
-  public static void mainX(String[] args) throws AdXException, IOException {
+  public static void main(String[] args) throws AdXException, IOException {
     int numberOfGames;
     double demandDiscountFactor;
     int numberOfImpressions;
@@ -124,19 +140,20 @@ public class OneDayExperiments {
       Logging.log("Received numberOfImpressions via command line parameter: " + numberOfImpressions);
     } else {
       // Running experiments manually
-      numberOfGames = 100;
+      numberOfGames = 200;
       Logging.log("Endogenous numberOfGames: " + numberOfGames);
-      demandDiscountFactor = 3.0;
+      demandDiscountFactor = 0.25;
       Logging.log("Endogenous demandDiscountFactor: " + demandDiscountFactor);
       numberOfImpressions = 2000;
       Logging.log("Endogenous numberOfImpressions: " + numberOfImpressions);
     }
     // Experiments so far.
     // OneDayExperiments.basicExperiments(numberOfGames, numberOfImpressions, demandDiscountFactor);
-    OneDayExperiments.eightWEWFAgentsVaryReserve(numberOfGames, numberOfImpressions, demandDiscountFactor);
+    // OneDayExperiments.eightWEWFAgentsVaryReserve(numberOfGames, numberOfImpressions, demandDiscountFactor);
+    OneDayExperiments.eightWEWFAgentsFixedReserve(200, 0, 8, 2000, 0.25, 80);
   }
 
-  public static void main(String[] args) throws AdXException, IOException {
+  public static void main2(String[] args) throws AdXException, IOException {
     int numberOfGames = 200;
     int numberOfImpressions = 2000;
     double demandDiscountFactor = 3.0;
@@ -146,8 +163,9 @@ public class OneDayExperiments {
     String resultsDirectory = OneDayExperiments.getResultsDirectory("small-tests", numberOfGames, numberOfImpressions, demandDiscountFactor);
     Logging.log("Results folder: " + resultsDirectory);
 
-    Experiment allWEExperiment = ExperimentFactory.WEandWFAgents(numberWE, numberWF, resultsDirectory, "/WEWF(" + numberWE + "-" + numberWF + ")-r(" + reserve + ")", numberOfGames, numberOfImpressions, demandDiscountFactor, reserve);
-    allWEExperiment.runExperiment();
+    Experiment allWEExperiment = ExperimentFactory.WEandWFAgents(numberWE, numberWF, resultsDirectory, "/WEWF(" + numberWE + "-" + numberWF + ")-r(" + reserve
+        + ")", numberOfGames, numberOfImpressions, demandDiscountFactor, reserve);
+    allWEExperiment.runExperiment(true, true);
   }
 
 }

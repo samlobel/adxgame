@@ -122,10 +122,10 @@ if __name__ == "__main__":
     # Real data auction
     numberWE = 0
     numberWF = 8
-    demand = 3.0
+    demand = 0.25
     number_of_games = 200
-    reserve = 0.8361
-    data = pd.read_csv("../../results/small-tests/" + str(number_of_games) + "/2000/" + str(demand) + "/bidlogs/WEWF(" + str(numberWE) + "-" + str(numberWF) + ")-r(" + str(reserve) + ").csv", names = ['bid1','bid2','bid3','bid4', 'bid5'], header = None)
+    reserve = 80
+    data = pd.read_csv("../../results/8-agents-fixed-reserve/" + str(number_of_games) + "/2000/" + str(demand) + "/bidlogs/WEWF(" + str(numberWE) + "-" + str(numberWF) + ")-r(" + str(reserve) + ").csv", names = ['bid1','bid2','bid3','bid4', 'bid5'], header = None)
     data = data.fillna(0)
     bidHistory = data.as_matrix()
     nBidder = len(bidHistory[0])

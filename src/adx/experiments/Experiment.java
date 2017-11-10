@@ -55,7 +55,8 @@ public class Experiment {
    * @param numberOfGames
    * @param reserve
    */
-  public Experiment(List<SimAgent> simAgents, String resultsDirectory, String resultsFileName, int numberOfGames, int numberOfImpressions, double demandDiscountFactor, double reserve) {
+  public Experiment(List<SimAgent> simAgents, String resultsDirectory, String resultsFileName, int numberOfGames, int numberOfImpressions,
+      double demandDiscountFactor, double reserve) {
     this.simAgents = simAgents;
     this.resultsDirectory = resultsDirectory;
     this.resultsFileName = resultsFileName;
@@ -64,7 +65,7 @@ public class Experiment {
     this.demandDiscountFactor = demandDiscountFactor;
     this.reserve = reserve;
   }
-  
+
   /**
    * Runs an experiments and saves the results to csv file.
    * 
@@ -72,13 +73,14 @@ public class Experiment {
    * @param simAgents
    * @param numberOfGames
    * @throws AdXException
-   * @throws IOException 
+   * @throws IOException
    */
-  public void runExperiment() throws AdXException, IOException {
+  public void runExperiment(boolean saveMarketMakerData, boolean saveBidsData) throws AdXException, IOException {
     String agentsResults = "";
     String marketMakerResults = "";
     String bidsLogs = "";
-    Logging.log("[experiment]" + "\n\t reserve = " + this.reserve + "\n\t numberOfImpressions = " + this.numberOfImpressions + "\n\t demandDiscountFactor = " + this.demandDiscountFactor);
+    Logging.log("[experiment]" + "\n\t reserve = " + this.reserve + "\n\t numberOfImpressions = " + this.numberOfImpressions + "\n\t demandDiscountFactor = "
+        + this.demandDiscountFactor);
     for (int g = 0; g < this.numberOfGames; g++) {
       // Run simulator.
       Simulator simulator = new Simulator(this.simAgents, this.reserve, this.numberOfImpressions, this.demandDiscountFactor);
@@ -96,17 +98,21 @@ public class Experiment {
     PrintWriter writerAgentsResults = new PrintWriter(this.resultsDirectory + "agents/" + this.resultsFileName + ".csv", "UTF-8");
     writerAgentsResults.println(agentsResults);
     writerAgentsResults.close();
-    // Results from the market maker point of view.
-    Files.createDirectories(Paths.get(this.resultsDirectory + "marketmaker/"));
-    PrintWriter writerMarketMakerResults = new PrintWriter(this.resultsDirectory + "marketmaker/" + this.resultsFileName + ".csv", "UTF-8");
-    writerMarketMakerResults.println(marketMakerResults);
-    writerMarketMakerResults.close();
+    if (saveMarketMakerData) {
+      // Results from the market maker point of view.
+      Files.createDirectories(Paths.get(this.resultsDirectory + "marketmaker/"));
+      PrintWriter writerMarketMakerResults = new PrintWriter(this.resultsDirectory + "marketmaker/" + this.resultsFileName + ".csv", "UTF-8");
+      writerMarketMakerResults.println(marketMakerResults);
+      writerMarketMakerResults.close();
+    }
     // Log of bids.
-    Files.createDirectories(Paths.get(this.resultsDirectory + "bidlogs/"));
-    PrintWriter writerBidsLog = new PrintWriter(this.resultsDirectory + "bidlogs/" + this.resultsFileName + ".csv", "UTF-8");
-    writerBidsLog.println(bidsLogs);
-    writerBidsLog.close();
-    
+    if (saveBidsData) {
+      Files.createDirectories(Paths.get(this.resultsDirectory + "bidlogs/"));
+      PrintWriter writerBidsLog = new PrintWriter(this.resultsDirectory + "bidlogs/" + this.resultsFileName + ".csv", "UTF-8");
+      writerBidsLog.println(bidsLogs);
+      writerBidsLog.close();
+    }
+
   }
 
 }

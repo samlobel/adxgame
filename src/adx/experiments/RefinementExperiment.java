@@ -1,6 +1,8 @@
 package adx.experiments;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -39,10 +41,10 @@ public class RefinementExperiment {
           Logging.log("No agreement - sample more");
           Logging.log("WE and WF agents (" + numberWE + "," + numberWF + ")");
           int numberOfGames = numberOfSamples * 2;
-          String resultsDirectory = OneDayExperiments.directoryPrefix + numberOfGames + "/" + numberOfImpressions + "/" + demandDiscountFactor + "/";
+          String resultsDirectory = OneDayExperiments.resultsDirectoryPrefix + numberOfGames + "/" + numberOfImpressions + "/" + demandDiscountFactor + "/";
           Experiment WEandWFExperiment = ExperimentFactory.WEandWFAgents(numberWE, numberWF, resultsDirectory, "/WEWF(" + numberWE + "-" + numberWF + ")",
               numberOfGames, numberOfImpressions, demandDiscountFactor, 0.0);
-          WEandWFExperiment.runExperiment();
+          WEandWFExperiment.runExperiment(true, true);
         }
       }
 
@@ -58,9 +60,74 @@ public class RefinementExperiment {
    * @throws AdXException
    */
   public static void main(String[] args) throws AdXException {
-    int samples = 800;
-    for (int i = 2; i < 16; i++) {
-      RefinementExperiment.sampleRefinement(samples, i);
+    if (args.length > 0) {
+      int numberOfGames = Integer.parseInt(args[0]);
+      int reserve = Integer.parseInt(args[1]);
+      samplingRefinementReserve(numberOfGames, reserve);
+    } else {
+      for (int i = 0; i < 131; i++) {
+        samplingRefinementReserve(400, i);
+      }
+    }
+  }
+
+  /**
+   * 
+   * @param numberOfSamples
+   * @param reserve
+   * @throws AdXException
+   * @throws FileNotFoundException
+   * @throws IOException
+   */
+  public static void samplingRefinementReserve(int numberOfSamples, int reserve) throws AdXException {
+    Logging.log("Refinement Experiment");
+    String csvFile = OneDayExperiments.dataDirectoryPrefix + "/stability-reserve/" + (numberOfSamples / 2) + "-" + numberOfSamples + "/stability-for-8-agents-reserve-" + reserve + ".csv";
+    String line = "";
+    String cvsSplitBy = ",";
+
+    Logging.log("Sampling Refinement for 8 agents and reserve " + reserve);
+    try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+      // Read the header of the file.
+      line = br.readLine();
+      while ((line = br.readLine()) != null) {
+        // Read a line of the .csv file
+        String[] data = line.split(cvsSplitBy);
+        int numberWE1 = Integer.parseInt(data[0]);
+        int numberWF1 = Integer.parseInt(data[1]);
+        int numberWE2 = Integer.parseInt(data[2]);
+        int numberWF2 = Integer.parseInt(data[3]);
+        int numberOfImpressions = Integer.parseInt(data[4]);
+        double demandDiscountFactor = Double.parseDouble(data[5]);
+        String direction1 = data[6];
+        String direction2 = data[7];
+        Logging.log(numberWE1 + "-" + numberWF1 + "-" + numberWE2 + "-" + numberWF2 + "-" + numberOfImpressions + "-" + demandDiscountFactor + "-" + direction1 + "-" + direction2);
+        if (!direction1.equals(direction2)) {
+          int numberOfGames = numberOfSamples * 2;
+          String resultsDirectory = OneDayExperiments.getResultsDirectory("8-agents-reserve", numberOfGames, numberOfImpressions, demandDiscountFactor);
+          double reserveValue = (1.0 / 100.0) * reserve;
+          Logging.log("\tNo agreement - sample more");
+          // Check if the first strategy was already sampled.
+          Logging.log("\t\t(WE, WF) = (" + numberWE1 + "," + numberWF1 + ")");
+          File f1 = new File(resultsDirectory + "agents/WEWF(" + numberWE1 + "-" + numberWF1 + ")-r(" + reserve + ").csv");
+          if (f1.exists() && !f1.isDirectory()) {
+            Logging.log("Experiment already ran, skipping");
+          } else {
+            Experiment WEandWFExperiment1 = ExperimentFactory.WEandWFAgents(numberWE1, numberWF1, resultsDirectory, "/WEWF(" + numberWE1 + "-" + numberWF1 + ")-r(" + reserve + ")", numberOfGames, numberOfImpressions, demandDiscountFactor, reserveValue);
+            WEandWFExperiment1.runExperiment(false, false);
+          }
+          // Check if the second strategy was already sampled.
+          Logging.log("\t\t(WE, WF) = (" + numberWE2 + "," + numberWF2 + ")");
+          File f2 = new File(resultsDirectory + "agents/WEWF(" + numberWE2 + "-" + numberWF2 + ")-r(" + reserve + ").csv");
+          if (f2.exists() && !f2.isDirectory()) {
+            Logging.log("Experiment already ran, skipping");
+          } else {
+            Experiment WEandWFExperiment2 = ExperimentFactory.WEandWFAgents(numberWE2, numberWF2, resultsDirectory, "/WEWF(" + numberWE2 + "-" + numberWF2 + ")-r(" + reserve + ")", numberOfGames, numberOfImpressions, demandDiscountFactor, reserveValue);
+            WEandWFExperiment2.runExperiment(false, false);
+          }
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 
