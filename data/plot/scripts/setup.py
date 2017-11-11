@@ -12,7 +12,7 @@ demand_list = ['0.25', '0.5', '0.75',
                '2.0', '2.25', '2.5', '2.75', 
                '3.0']
 #demand_list = ['1.75', '2.25', '2.75', '3.0']
-#demand_list = ['2.75']
+#demand_list = ['0.25']
 supply_list = [2000]
 
 path_to_data = '/home/eareyanv/workspace/adxgame/data/'

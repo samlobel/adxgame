@@ -13,22 +13,22 @@ import stats_mean_best_response_graphs
 import networkx as nx
 import matplotlib.pyplot as plt
 
-def save_reserve_agreement_data(n1, n2, reserve):
+def save_reserve_agreement_data(n1, n2, number_of_agents, reserve):
     list_of_dataframes = []
-    number_of_agents = 8
     print('Computing agreement data for ', number_of_agents, ' agents, reserve ',reserve ,', between ', n1, ' and ', n2 ,' samples')
     for supply, demand in setup.get_grid_supply_demand():
         print('\t(supply, demand) = (', supply, ',', demand, ')')
-        list_of_dataframes += [deviation_analysis.get_direction_dataframe(n1, n2, number_of_agents, supply, demand, str(n1) + '-8-agents-vary-reserve', str(n2) + '-8-agents-vary-reserve', reserve)]
+        list_of_dataframes += [deviation_analysis.get_direction_dataframe('-' + str(number_of_agents) + '-agents-vary-reserve', n1, n2, number_of_agents, supply, demand, reserve)]
     final_dataframe = pd.concat(list_of_dataframes)
     final_dataframe.to_csv(setup.create_dir(setup.path_to_data + 'stability-reserve/' + str(n1) + '-' + str(n2) + '/') + 'stability-for-' + str(number_of_agents) + '-agents-reserve-' + str(reserve) + '.csv', index = False)
     
 command_line_arguments = sys.argv
 if len(command_line_arguments) > 1:
     reserve_price = command_line_arguments[1]
+    number_of_agents = 20
     print('Call from command line -> reserve_price = ' + str(reserve_price))
-    #save_reserve_agreement_data(400, 800, int(reserve_price))
-    stats_mean_best_response_graphs.save_sink_eq_stats('-8-agents-vary-reserve', 800, 8, reserve_price)
+    #save_reserve_agreement_data(100, 200, number_of_agents, int(reserve_price))
+    stats_mean_best_response_graphs.save_sink_eq_stats('-' + str(number_of_agents) + '-agents-vary-reserve', 200, number_of_agents, reserve_price)
     
 def get_worst_sink_equilibria_profile(number_of_games, number_of_agents, supply, demand, reserve):
     """
@@ -49,19 +49,18 @@ def get_worst_sink_equilibria_profile(number_of_games, number_of_agents, supply,
         return worst_sink_equilibria
     else:
         raise ValueError('Could not find a sink equilibria!!!')
-        
-"""# Getting the profiles for the worst case equilibria. 
-number_of_games = 800
-number_of_agents = 8
-worst_reserve = []
-for supply, demand in setup.get_grid_supply_demand():
-    for i in range(0,131):
-        x = get_worst_sink_equilibria_profile(number_of_games, number_of_agents, supply, float(demand), i)
-        worst_reserve.append((i, supply, demand, x['WE'], x['WF'], x['revenue_mean']))
-data = pd.DataFrame(worst_reserve)
-data.columns = ['reserve','impressions','demand_factor','WE','WF','revenue_mean']
-data[['reserve','WE','WF']] = data[['reserve','WE','WF']].astype(int)
-data.to_csv(setup.create_dir(setup.path_to_data + 'worstequilibria-reserve/' + str(number_of_games)) + '/worst-equilibria-for-' + str(number_of_agents) + '-agents-all-reserves.csv', index = False)"""
+      
+def save_worst_eq(number_of_games, number_of_agents):
+    worst_reserve = []
+    for supply, demand in setup.get_grid_supply_demand():
+        #for i in range(0,131):
+        for i in [0, 15, 25, 50, 75, 80]:
+            x = get_worst_sink_equilibria_profile(number_of_games, number_of_agents, supply, float(demand), i)
+            worst_reserve.append((i, supply, demand, x['WE'], x['WF'], x['revenue_mean']))
+    data = pd.DataFrame(worst_reserve)
+    data.columns = ['reserve','impressions','demand_factor','WE','WF','revenue_mean']
+    data[['reserve','WE','WF']] = data[['reserve','WE','WF']].astype(int)
+    data.to_csv(setup.create_dir(setup.path_to_data + 'worstequilibria-reserve/' + str(number_of_games)) + '/worst-equilibria-for-' + str(number_of_agents) + '-agents-all-reserves.csv', index = False)
 
 """number_of_games = 800
 number_of_agents = 8
@@ -121,16 +120,21 @@ def get_reserve_eq_table(number_of_games, number_of_agents, demand):
     
     return table
 
-
-number_of_agents = 8
-table = """
+def get_reserve_eq_table_summary(number_of_games, number_of_agents):
+    table = """
 \\begin{table}[!htb]
     \\caption{Equilibria dynamics """ + str(number_of_agents) + """ agents}"""
-table += get_reserve_eq_table(800, number_of_agents, 0.25)
-table += get_reserve_eq_table(800, number_of_agents, 1.0)
-table += get_reserve_eq_table(800, number_of_agents, 2.0)
-table += get_reserve_eq_table(800, number_of_agents, 3.0)
-table += """\n\\end{table}"""
-
-print(table)
-
+    table += get_reserve_eq_table(number_of_games, number_of_agents, 0.25)
+    table += get_reserve_eq_table(number_of_games, number_of_agents, 0.5)
+    table += get_reserve_eq_table(number_of_games, number_of_agents, 0.75)
+    table += get_reserve_eq_table(number_of_games, number_of_agents, 1.0)
+    table += get_reserve_eq_table(number_of_games, number_of_agents, 1.25)
+    table += get_reserve_eq_table(number_of_games, number_of_agents, 1.5)
+    table += get_reserve_eq_table(number_of_games, number_of_agents, 1.75)
+    table += get_reserve_eq_table(number_of_games, number_of_agents, 2.0)
+    table += get_reserve_eq_table(number_of_games, number_of_agents, 2.25)
+    table += get_reserve_eq_table(number_of_games, number_of_agents, 2.5)
+    table += get_reserve_eq_table(number_of_games, number_of_agents, 2.75)
+    table += get_reserve_eq_table(number_of_games, number_of_agents, 3.0)
+    table += """\n\\end{table}"""
+    print(table)

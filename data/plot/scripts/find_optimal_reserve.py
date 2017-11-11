@@ -107,10 +107,9 @@ def plot_expected_revenue(reservePrices, totalExpectedRevenue):
     plt.show()
 
 
-def get_optimal_reserve(numberWE, numberWF, supply, demand, reserve):
+def get_optimal_reserve(number_of_games, number_of_agents, numberWE, numberWF, supply, demand, reserve):
     # Real data auction
-    number_of_games = 200
-    file_location = "../../results/8-agents-worstequilibria-bids/" + str(number_of_games) + "/" + str(supply) + "/" + str(demand) + "/bidlogs/WEWF(" + str(numberWE) + "-" + str(numberWF) + ")-r(" + str(reserve) + ").csv"
+    file_location = "../../results/" + str(number_of_agents) + "-agents-worstequilibria-bids/" + str(number_of_games) + "/" + str(supply) + "/" + str(demand) + "/bidlogs/WEWF(" + str(numberWE) + "-" + str(numberWF) + ")-r(" + str(reserve) + ").csv"
     print(file_location)
     data = pd.read_csv(file_location, names = ['bid1','bid2','bid3','bid4', 'bid5'], header = None)
     data = data.fillna(0)
@@ -126,15 +125,16 @@ def get_optimal_reserve(numberWE, numberWF, supply, demand, reserve):
 
     return optReservePrice
 
-for demand in [1.5, 2.25, 2.5, 2.75, 3.0]:
-    number_of_games = 800
-    number_of_agents = 8
+number_of_games = 200
+number_of_agents = 20
+for demand in [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0]:
     data = pd.read_csv("../../worstequilibria-reserve/" + str(number_of_games) + "/worst-equilibria-for-" + str(number_of_agents) + "-agents-all-reserves.csv")
     data[['reserve','WE','WF']] = data[['reserve','WE','WF']].astype(int)
     data = data[data['demand_factor'] == demand]
     for index, row in data.iterrows():
-        if(int(row['reserve']) <= 90):
-            opt_reserve = get_optimal_reserve(int(row['WE']), int(row['WF']), int(row['impressions']), row['demand_factor'], int(row['reserve']))
+        #if(int(row['reserve']) <= 90):
+        if(int(row['reserve']) in [0, 15, 25, 50, 75, 80]):
+            opt_reserve = get_optimal_reserve(number_of_games, number_of_agents, int(row['WE']), int(row['WF']), int(row['impressions']), row['demand_factor'], int(row['reserve']))
             data.loc[index, 'opt_reserve']= opt_reserve
             print(opt_reserve)
     data.to_csv(setup.path_to_data + 'worstequilibria-reserve/' + str(number_of_games) + '/worst-equilibria-for-' + str(number_of_agents) + '-agents-all-reserves-demand-' + str(demand) + '-OPT.csv', index = False)

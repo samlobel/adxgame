@@ -103,7 +103,6 @@ def determine_cascade_profile(zip_suffix, number_of_games, numberWE, numberWF, s
         zip_location = setup.get_zip_location(zip_suffix, number_of_games)
         zf = zipfile.ZipFile(zip_location)
         file_location = setup.get_agent_dir_location(number_of_games, supply, demand) + setup.get_file_location(numberWE, numberWF, reserve) 
-        #print('Searching for ', file_location, ', in zip ', zip_location)
         if file_location in zf.namelist():
             print('\tFound! =', number_of_games, ', (WE, WF) = (', numberWE,',',numberWF, ')', (' reserve = '+str(reserve) if reserve is not None else ''))
             print('\t', zip_location)

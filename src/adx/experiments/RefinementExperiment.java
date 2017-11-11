@@ -61,13 +61,13 @@ public class RefinementExperiment {
    * @throws FileNotFoundException
    * @throws IOException
    */
-  public static void samplingRefinementReserve(int numberOfSamples, int reserve) throws AdXException {
+  public static void samplingRefinementReserve(int numberOfSamples, int numberOfAgents, int reserve) throws AdXException {
     Logging.log("Refinement Experiment");
-    String csvFile = OneDayExperiments.dataDirectoryPrefix + "/stability-reserve/" + (numberOfSamples / 2) + "-" + numberOfSamples + "/stability-for-8-agents-reserve-" + reserve + ".csv";
+    String csvFile = OneDayExperiments.dataDirectoryPrefix + "/stability-reserve/" + (numberOfSamples / 2) + "-" + numberOfSamples + "/stability-for-" + numberOfAgents + "-agents-reserve-" + reserve + ".csv";
     String line = "";
     String cvsSplitBy = ",";
 
-    Logging.log("Sampling Refinement for 8 agents and reserve " + reserve);
+    Logging.log("Sampling Refinement for " + numberOfAgents + " agents and reserve " + reserve);
     try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
       // Read the header of the file.
       line = br.readLine();
@@ -82,10 +82,11 @@ public class RefinementExperiment {
         double demandDiscountFactor = Double.parseDouble(data[5]);
         String direction1 = data[6];
         String direction2 = data[7];
-        Logging.log(numberWE1 + "-" + numberWF1 + "-" + numberWE2 + "-" + numberWF2 + "-" + numberOfImpressions + "-" + demandDiscountFactor + "-" + direction1 + "-" + direction2);
+        Logging.log(numberWE1 + "-" + numberWF1 + "-" + numberWE2 + "-" + numberWF2 + "-" + numberOfImpressions + "-" + demandDiscountFactor + "-" + direction1
+            + "-" + direction2);
         if (!direction1.equals(direction2)) {
           int numberOfGames = numberOfSamples * 2;
-          String resultsDirectory = OneDayExperiments.getResultsDirectory("8-agents-reserve", numberOfGames, numberOfImpressions, demandDiscountFactor);
+          String resultsDirectory = OneDayExperiments.getResultsDirectory(numberOfAgents + "-agents-reserve", numberOfGames, numberOfImpressions, demandDiscountFactor);
           double reserveValue = (1.0 / 100.0) * reserve;
           Logging.log("\tNo agreement - sample more");
           // Check if the first strategy was already sampled.
@@ -94,7 +95,8 @@ public class RefinementExperiment {
           if (f1.exists() && !f1.isDirectory()) {
             Logging.log("Experiment already ran, skipping");
           } else {
-            Experiment WEandWFExperiment1 = ExperimentFactory.WEandWFAgents(numberWE1, numberWF1, resultsDirectory, "/WEWF(" + numberWE1 + "-" + numberWF1 + ")-r(" + reserve + ")", numberOfGames, numberOfImpressions, demandDiscountFactor, reserveValue);
+            Experiment WEandWFExperiment1 = ExperimentFactory.WEandWFAgents(numberWE1, numberWF1, resultsDirectory, "/WEWF(" + numberWE1 + "-" + numberWF1
+                + ")-r(" + reserve + ")", numberOfGames, numberOfImpressions, demandDiscountFactor, reserveValue);
             WEandWFExperiment1.runExperiment(true, false, false);
           }
           // Check if the second strategy was already sampled.
@@ -112,18 +114,18 @@ public class RefinementExperiment {
       e.printStackTrace();
     }
   }
-  
+
   /**
    * 
    * @throws AdXException
    */
-  public static void worstBidSamplingEquilibria() throws AdXException {
-    String csvFile = OneDayExperiments.dataDirectoryPrefix + "/worstequilibria-reserve/800/worst-equilibria-for-8-agents-all-reserves.csv";
+  public static void worstBidSamplingEquilibria(int numberOfGames, int numberOfAgents) throws AdXException {
+    String csvFile = OneDayExperiments.dataDirectoryPrefix + "/worstequilibria-reserve/" + numberOfGames + "/worst-equilibria-for-" + numberOfAgents + "-agents-all-reserves.csv";
     String line = "";
     String cvsSplitBy = ",";
 
     Logging.log("Worst equilibria bid sampling");
-    
+
     try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
       // Read the header of the file.
       line = br.readLine();
@@ -135,7 +137,6 @@ public class RefinementExperiment {
         double demandDiscountFactor = Double.parseDouble(data[2]);
         int numberWE = Integer.parseInt(data[3]);
         int numberWF = Integer.parseInt(data[4]);
-        int numberOfGames = 200;
         String resultsDirectory = OneDayExperiments.getResultsDirectory((numberWE + numberWF) + "-agents-worstequilibria-bids", numberOfGames, numberOfImpressions, demandDiscountFactor);
         // Check if the first strategy was already sampled.
         Logging.log("\t\t(WE, WF) = (" + numberWE + "," + numberWF + ")");
@@ -159,16 +160,16 @@ public class RefinementExperiment {
    * @throws AdXException
    */
   public static void main(String[] args) throws AdXException {
-    if (args.length > 0) {
-      //int numberOfGames = Integer.parseInt(args[0]);
-      //int reserve = Integer.parseInt(args[1]);
-      //samplingRefinementReserve(numberOfGames, reserve);
+    /*if (args.length > 0) {
+      int numberOfGames = Integer.parseInt(args[0]);
+      int reserve = Integer.parseInt(args[1]);
+      samplingRefinementReserve(numberOfGames, 20, reserve);
     } else {
       for (int i = 0; i < 131; i++) {
-        //samplingRefinementReserve(400, i);
+        samplingRefinementReserve(200, 20, i);
       }
-    }
-    RefinementExperiment.worstBidSamplingEquilibria();
+    }*/
+    RefinementExperiment.worstBidSamplingEquilibria(200, 20);
   }
 
 }
