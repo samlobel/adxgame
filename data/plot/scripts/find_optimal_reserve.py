@@ -7,8 +7,7 @@ as a reserve price.
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import time
-
+import setup
 
 def test_bids_as_reserve_prices(bidHistory):
     """Find the empirically best reserve price for a second price auction.
@@ -77,7 +76,6 @@ def get_optimal_reserve_price(reservePrices, totalExpectedRevenue):
     """
     maxTotalExpectedRevenue = np.max(totalExpectedRevenue)
     optReservePrice = reservePrices[np.argmax(totalExpectedRevenue)]
-    print(type(maxTotalExpectedRevenue))
 
     return optReservePrice, maxTotalExpectedRevenue
 
@@ -109,42 +107,38 @@ def plot_expected_revenue(reservePrices, totalExpectedRevenue):
     plt.show()
 
 
-if __name__ == "__main__":
-    # Example: Uniform distribution
-    # Sampled auction data
-    #bidHistoryLen = 10000
-    #nBidder = 4
-    #bidHistory = np.random.rand(bidHistoryLen, nBidder)
-    #bidHistory = np.random.randint(0, 11, (bidHistoryLen, nBidder))
-    #bidHistory = handle_one_bidder_setting(bidHistory)
-
-
+def get_optimal_reserve(numberWE, numberWF, supply, demand, reserve):
     # Real data auction
-    numberWE = 0
-    numberWF = 8
-    demand = 0.25
     number_of_games = 200
-    reserve = 80
-    data = pd.read_csv("../../results/8-agents-fixed-reserve/" + str(number_of_games) + "/2000/" + str(demand) + "/bidlogs/WEWF(" + str(numberWE) + "-" + str(numberWF) + ")-r(" + str(reserve) + ").csv", names = ['bid1','bid2','bid3','bid4', 'bid5'], header = None)
+    file_location = "../../results/8-agents-worstequilibria-bids/" + str(number_of_games) + "/" + str(supply) + "/" + str(demand) + "/bidlogs/WEWF(" + str(numberWE) + "-" + str(numberWF) + ")-r(" + str(reserve) + ").csv"
+    print(file_location)
+    data = pd.read_csv(file_location, names = ['bid1','bid2','bid3','bid4', 'bid5'], header = None)
     data = data.fillna(0)
-    bidHistory = data.as_matrix()
-    nBidder = len(bidHistory[0])
-
-
+    bidHistory = data.as_matrix()    
     # Test the first and second highest bids as reserve
-    startTime = time.time()
     reservePrices, totalExpectedRevenue = test_bids_as_reserve_prices(bidHistory)
-    endTime = time.time()
-    elapsedTime = endTime - startTime
-    print("Testing bids, elapsed time:", elapsedTime)
-
     # Find what reserve price was optimal
-    optReservePrice, maxTotalExpectedRevenue = get_optimal_reserve_price(
-        reservePrices, totalExpectedRevenue)
-    print("Optimal reserve price:", optReservePrice)
-    print("Revenue at opptimal reserve price:", maxTotalExpectedRevenue)
-    
+    optReservePrice, maxTotalExpectedRevenue = get_optimal_reserve_price(reservePrices, totalExpectedRevenue)
+    #print("Optimal reserve price:", optReservePrice)
+    #print("Revenue at opptimal reserve price:", maxTotalExpectedRevenue)
     # Plot what was seen
     plot_expected_revenue(reservePrices, totalExpectedRevenue)
+
+    return optReservePrice
+
+for demand in [1.5, 2.25, 2.5, 2.75, 3.0]:
+    number_of_games = 800
+    number_of_agents = 8
+    data = pd.read_csv("../../worstequilibria-reserve/" + str(number_of_games) + "/worst-equilibria-for-" + str(number_of_agents) + "-agents-all-reserves.csv")
+    data[['reserve','WE','WF']] = data[['reserve','WE','WF']].astype(int)
+    data = data[data['demand_factor'] == demand]
+    for index, row in data.iterrows():
+        if(int(row['reserve']) <= 90):
+            opt_reserve = get_optimal_reserve(int(row['WE']), int(row['WF']), int(row['impressions']), row['demand_factor'], int(row['reserve']))
+            data.loc[index, 'opt_reserve']= opt_reserve
+            print(opt_reserve)
+    data.to_csv(setup.path_to_data + 'worstequilibria-reserve/' + str(number_of_games) + '/worst-equilibria-for-' + str(number_of_agents) + '-agents-all-reserves-demand-' + str(demand) + '-OPT.csv', index = False)
+
+
 
 

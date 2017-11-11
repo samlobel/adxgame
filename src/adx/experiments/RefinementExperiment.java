@@ -44,30 +44,12 @@ public class RefinementExperiment {
           String resultsDirectory = OneDayExperiments.resultsDirectoryPrefix + numberOfGames + "/" + numberOfImpressions + "/" + demandDiscountFactor + "/";
           Experiment WEandWFExperiment = ExperimentFactory.WEandWFAgents(numberWE, numberWF, resultsDirectory, "/WEWF(" + numberWE + "-" + numberWF + ")",
               numberOfGames, numberOfImpressions, demandDiscountFactor, 0.0);
-          WEandWFExperiment.runExperiment(true, true);
+          WEandWFExperiment.runExperiment(true, true, true);
         }
       }
 
     } catch (IOException e) {
       e.printStackTrace();
-    }
-  }
-
-  /**
-   * Main.
-   * 
-   * @param args
-   * @throws AdXException
-   */
-  public static void main(String[] args) throws AdXException {
-    if (args.length > 0) {
-      int numberOfGames = Integer.parseInt(args[0]);
-      int reserve = Integer.parseInt(args[1]);
-      samplingRefinementReserve(numberOfGames, reserve);
-    } else {
-      for (int i = 0; i < 131; i++) {
-        samplingRefinementReserve(400, i);
-      }
     }
   }
 
@@ -113,7 +95,7 @@ public class RefinementExperiment {
             Logging.log("Experiment already ran, skipping");
           } else {
             Experiment WEandWFExperiment1 = ExperimentFactory.WEandWFAgents(numberWE1, numberWF1, resultsDirectory, "/WEWF(" + numberWE1 + "-" + numberWF1 + ")-r(" + reserve + ")", numberOfGames, numberOfImpressions, demandDiscountFactor, reserveValue);
-            WEandWFExperiment1.runExperiment(false, false);
+            WEandWFExperiment1.runExperiment(true, false, false);
           }
           // Check if the second strategy was already sampled.
           Logging.log("\t\t(WE, WF) = (" + numberWE2 + "," + numberWF2 + ")");
@@ -122,13 +104,71 @@ public class RefinementExperiment {
             Logging.log("Experiment already ran, skipping");
           } else {
             Experiment WEandWFExperiment2 = ExperimentFactory.WEandWFAgents(numberWE2, numberWF2, resultsDirectory, "/WEWF(" + numberWE2 + "-" + numberWF2 + ")-r(" + reserve + ")", numberOfGames, numberOfImpressions, demandDiscountFactor, reserveValue);
-            WEandWFExperiment2.runExperiment(false, false);
+            WEandWFExperiment2.runExperiment(true, false, false);
           }
         }
       }
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+  
+  /**
+   * 
+   * @throws AdXException
+   */
+  public static void worstBidSamplingEquilibria() throws AdXException {
+    String csvFile = OneDayExperiments.dataDirectoryPrefix + "/worstequilibria-reserve/800/worst-equilibria-for-8-agents-all-reserves.csv";
+    String line = "";
+    String cvsSplitBy = ",";
+
+    Logging.log("Worst equilibria bid sampling");
+    
+    try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+      // Read the header of the file.
+      line = br.readLine();
+      while ((line = br.readLine()) != null) {
+        String[] data = line.split(cvsSplitBy);
+        int reserve = Integer.parseInt(data[0]);
+        double reserveValue = (1.0 / 100.0) * reserve;
+        int numberOfImpressions = Integer.parseInt(data[1]);
+        double demandDiscountFactor = Double.parseDouble(data[2]);
+        int numberWE = Integer.parseInt(data[3]);
+        int numberWF = Integer.parseInt(data[4]);
+        int numberOfGames = 200;
+        String resultsDirectory = OneDayExperiments.getResultsDirectory((numberWE + numberWF) + "-agents-worstequilibria-bids", numberOfGames, numberOfImpressions, demandDiscountFactor);
+        // Check if the first strategy was already sampled.
+        Logging.log("\t\t(WE, WF) = (" + numberWE + "," + numberWF + ")");
+        File f1 = new File(resultsDirectory + "agents/WEWF(" + numberWE + "-" + numberWF + ")-r(" + reserve + ").csv");
+        if (f1.exists() && !f1.isDirectory()) {
+          Logging.log("Experiment already ran, skipping");
+        } else {
+          Experiment WEandWFExperiment = ExperimentFactory.WEandWFAgents(numberWE, numberWF, resultsDirectory, "/WEWF(" + numberWE + "-" + numberWF + ")-r(" + reserve + ")", numberOfGames, numberOfImpressions, demandDiscountFactor, reserveValue);
+          WEandWFExperiment.runExperiment(false, false, true);
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Main.
+   * 
+   * @param args
+   * @throws AdXException
+   */
+  public static void main(String[] args) throws AdXException {
+    if (args.length > 0) {
+      //int numberOfGames = Integer.parseInt(args[0]);
+      //int reserve = Integer.parseInt(args[1]);
+      //samplingRefinementReserve(numberOfGames, reserve);
+    } else {
+      for (int i = 0; i < 131; i++) {
+        //samplingRefinementReserve(400, i);
+      }
+    }
+    RefinementExperiment.worstBidSamplingEquilibria();
   }
 
 }

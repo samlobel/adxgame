@@ -10,6 +10,8 @@ import pandas as pd
 import setup
 import sys
 import stats_mean_best_response_graphs
+import networkx as nx
+import matplotlib.pyplot as plt
 
 def save_reserve_agreement_data(n1, n2, reserve):
     list_of_dataframes = []
@@ -48,8 +50,87 @@ def get_worst_sink_equilibria_profile(number_of_games, number_of_agents, supply,
     else:
         raise ValueError('Could not find a sink equilibria!!!')
         
-# Getting the profiles for the worst case equilibria. 
-# get_worst_sink_equilibria_profile(800, 8, 2000, 0.25, 0)
-for i in range(0,113):
-    x = get_worst_sink_equilibria_profile(800, 8, 2000, 1.0, i)
-    print(i, x['WE'], x['WF'])
+"""# Getting the profiles for the worst case equilibria. 
+number_of_games = 800
+number_of_agents = 8
+worst_reserve = []
+for supply, demand in setup.get_grid_supply_demand():
+    for i in range(0,131):
+        x = get_worst_sink_equilibria_profile(number_of_games, number_of_agents, supply, float(demand), i)
+        worst_reserve.append((i, supply, demand, x['WE'], x['WF'], x['revenue_mean']))
+data = pd.DataFrame(worst_reserve)
+data.columns = ['reserve','impressions','demand_factor','WE','WF','revenue_mean']
+data[['reserve','WE','WF']] = data[['reserve','WE','WF']].astype(int)
+data.to_csv(setup.create_dir(setup.path_to_data + 'worstequilibria-reserve/' + str(number_of_games)) + '/worst-equilibria-for-' + str(number_of_agents) + '-agents-all-reserves.csv', index = False)"""
+
+"""number_of_games = 800
+number_of_agents = 8
+demand = 1.25
+data = pd.read_csv("../../worstequilibria-reserve/" + str(number_of_games) + "/worst-equilibria-for-" + str(number_of_agents) + "-agents-all-reserves-demand-" + str(demand) + "-OPT.csv")
+DG = nx.DiGraph()
+labels = {}
+reserve_nodes = [0, 15, 25, 50]
+for r in reserve_nodes:
+    eq_data = data[data['reserve'] == r]
+    if(len(eq_data) != 1):
+        raise ValueError('something went wrong!')
+    eq_data = eq_data.iloc[0]
+    print(eq_data['WE'], eq_data['WF'], eq_data['opt_reserve'])
+    numberWE = int(eq_data['WE'])
+    numberWF = int(eq_data['WF'])
+    DG.add_node((numberWE, numberWF))
+    labels[(numberWE, numberWF)] = r'$WE^{' + str(numberWE) + '}WF^{ ' + str(numberWF) + '}$'
+
+pos=nx.circular_layout(DG)
+#number_of_profiles = DG.number_of_nodes()
+fig = plt.figure(3, figsize=(8,8))
+for node in DG.nodes():
+    nx.draw_networkx_nodes(DG, pos, nodelist=[node], alpha=1.0, node_color = 'blue', node_size = 5000)
+#nx.draw_networkx_edge_labels(DG, pos, edge_labels=edge_labels, label_pos = 0.3)
+nx.draw_networkx_edges(DG, pos)
+nx.draw_networkx_labels(DG, pos, labels, font_size=16, font_color='red')
+plt.axis('off')
+#nx.draw_networkx_labels(DG, pos, labels, font_size=16, font_color='red')"""
+
+
+
+def get_reserve_eq_table(number_of_games, number_of_agents, demand):
+
+    data = pd.read_csv("../../worstequilibria-reserve/" + str(number_of_games) + "/worst-equilibria-for-" + str(number_of_agents) + "-agents-all-reserves-demand-" + str(demand) + "-OPT.csv")
+    reserve_nodes = [0, 15, 25, 50, 75, 80]
+    
+    table = """
+    \\begin{subtable}{.4\linewidth}
+      \\centering
+        \\caption{$\delta = """ + str(demand) + """$}
+            \\begin{tabular}{|c|c|c|} \hline
+                $r$ 	\t& $\StratProfile^*_r$ 	\t& $OPT(\StratProfile^*_r)$ \\\\\\hline\n"""
+    
+    for r in reserve_nodes:
+        eq_data = data[data['reserve'] == r]
+        if(len(eq_data) != 1):
+            raise ValueError('something went wrong!')
+        eq_data = eq_data.iloc[0]
+        table += '\t\t' + "{0:.2f}".format(r / 100.0) + '\t&' +  str(int(eq_data['WE'])) + ', ' +  str(int(eq_data['WF'])) + '\t&' +  "{0:.2f}".format(eq_data['opt_reserve']) + '\\\\ \n'
+    
+    table += """
+          \\hline
+        \\end{tabular}
+        \\label{tab:Equilibria""" + str(demand) + """}
+    \\end{subtable}"""
+    
+    return table
+
+
+number_of_agents = 8
+table = """
+\\begin{table}[!htb]
+    \\caption{Equilibria dynamics """ + str(number_of_agents) + """ agents}"""
+table += get_reserve_eq_table(800, number_of_agents, 0.25)
+table += get_reserve_eq_table(800, number_of_agents, 1.0)
+table += get_reserve_eq_table(800, number_of_agents, 2.0)
+table += get_reserve_eq_table(800, number_of_agents, 3.0)
+table += """\n\\end{table}"""
+
+print(table)
+

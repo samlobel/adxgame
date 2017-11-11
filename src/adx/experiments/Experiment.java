@@ -75,7 +75,7 @@ public class Experiment {
    * @throws AdXException
    * @throws IOException
    */
-  public void runExperiment(boolean saveMarketMakerData, boolean saveBidsData) throws AdXException, IOException {
+  public void runExperiment(boolean saveAgentData, boolean saveMarketMakerData, boolean saveBidsData) throws AdXException, IOException {
     String agentsResults = "";
     String marketMakerResults = "";
     String bidsLogs = "";
@@ -93,11 +93,13 @@ public class Experiment {
       // Logging.log("Result Market Maker: " + statistics.oneLineMarketMakerSummary(1, g, this.numberOfImpressions));
     }
     // Save results to .csv files.
-    // Results from the agent point of view.
-    Files.createDirectories(Paths.get(this.resultsDirectory + "agents/"));
-    PrintWriter writerAgentsResults = new PrintWriter(this.resultsDirectory + "agents/" + this.resultsFileName + ".csv", "UTF-8");
-    writerAgentsResults.println(agentsResults);
-    writerAgentsResults.close();
+    if (saveAgentData) {
+      // Results from the agent point of view.
+      Files.createDirectories(Paths.get(this.resultsDirectory + "agents/"));
+      PrintWriter writerAgentsResults = new PrintWriter(this.resultsDirectory + "agents/" + this.resultsFileName + ".csv", "UTF-8");
+      writerAgentsResults.println(agentsResults);
+      writerAgentsResults.close();
+    }
     if (saveMarketMakerData) {
       // Results from the market maker point of view.
       Files.createDirectories(Paths.get(this.resultsDirectory + "marketmaker/"));
