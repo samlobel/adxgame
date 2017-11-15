@@ -72,16 +72,15 @@ def plot_sink_stats():
         avg_number_WE_per_player += [data.groupby('sink_index').mean().mean()['WE'] / number_of_agents]
         avg_number_WF_per_player += [data.groupby('sink_index').mean().mean()['WF'] / number_of_agents]
         
-    fig, ax = plt.subplots(nrows = 3, ncols = 1, sharex = True)
+    fig, ax = plt.subplots(nrows = 2, ncols = 1, sharex = True)
     x = [i for i in range (2,21)]
-    ax[0].plot(x, avg_number_sinks, label = 'Average number of sinks')
-    ax[1].plot(x, avg_size_sink, label = 'Average size of sinks')
-    ax[2].plot(x, avg_number_WF_per_player, label = 'Avg. #WF/#player')
-    ax[2].plot(x, avg_number_WE_per_player, label = 'Avg. #WE/#player')
-    plt.xlabel('Number of players')
+    ax[0].plot(x, avg_number_sinks, label = 'Average number of sinks',linestyle = ':')#, color = 'red')
+    ax[0].plot(x, avg_size_sink, label = 'Average size of sinks',linestyle = ':')#, color = 'green')
+    ax[1].plot(x, avg_number_WF_per_player, label = 'Avg. #WF/#player')
+    ax[1].plot(x, avg_number_WE_per_player, label = 'Avg. #WE/#player')
+    plt.xlabel('Number of agents')
     plt.xticks(np.arange(min(x), max(x)+1, 1.0))
     ax[0].legend()
     ax[1].legend()
-    ax[2].legend()
     plt.show()
 
