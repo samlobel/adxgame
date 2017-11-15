@@ -76,8 +76,8 @@ def plot_sink_stats():
     x = [i for i in range (2,21)]
     ax[0].plot(x, avg_number_sinks, label = 'Average number of sinks')
     ax[1].plot(x, avg_size_sink, label = 'Average size of sinks')
-    ax[2].plot(x, avg_number_WE_per_player, label = 'Avg. #WE/#player')
     ax[2].plot(x, avg_number_WF_per_player, label = 'Avg. #WF/#player')
+    ax[2].plot(x, avg_number_WE_per_player, label = 'Avg. #WE/#player')
     plt.xlabel('Number of players')
     plt.xticks(np.arange(min(x), max(x)+1, 1.0))
     ax[0].legend()

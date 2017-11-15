@@ -45,7 +45,7 @@ def plot_agent_group(number_of_games, dir_location, image_prefix, demand_factor,
     plot_agent_means(xaxis, xlabel, 'Cost', agent1, agent2, data[0]['wincost'], data[1]['wincost'], ax[2])
     plot_agent_means(xaxis, xlabel, 'Profit', agent1, agent2, data[0]['profit'], data[1]['profit'], ax[3], True)
     ax[0].set_title('Performance comparison, fixing one ' + (agent1 if fixagent1 else agent2) + ' agent. \n Demand factor = ' + demand_factor + ', impressions = ' + impressions + '.')
-    plt.savefig('../' + str(number_of_games) + '/basicplots/' + image_prefix + (agent1 + 'v' + agent2 if fixagent1 else agent2 + 'v' + agent1) + '.png')
+    #plt.savefig('../' + str(number_of_games) + '/basicplots/' + image_prefix + (agent1 + 'v' + agent2 if fixagent1 else agent2 + 'v' + agent1) + '.png')
     plt.close()
     
 def produce_agents_plots(number_of_games, demand_factor, impressions):

@@ -56,6 +56,6 @@ total_non_stable_400_800 = sum(count_non_stable_400_800)
 
 
 plt.bar([0, 1, 2], [total_non_stable_100_200, total_non_stable_200_400, total_non_stable_400_800])
-plt.xticks([0, 1, 2],[r'(100, 200)','(200, 400)', '(400, 800)'])
+plt.xticks([0, 1, 2],[r'q = 100','q = 200', 'q = 400'])
 plt.title('Number of sets of profiles in disagreement \n for all possible profiles between 2 and ' + str(total_number_agents) + ' players \n playing WE or WF strategies.')
-plt.xlabel(r'Sample Deviation Graphs $\tilde{D}_n^2(n_1)$ and $\tilde{D}_n^2(n_2)$,'+' \n where $n\in\{2,\ldots,20\}$ and $(n_1, n_2)$' + ' samples ' + (', reserve ' + str(reserve * 0.1) if reserve is not None else '') + '. \n Total of ' + str(sum(count_profiles)) + ' profiles')
+plt.xlabel(r'Total number of disagreements between graphs $\tilde{B}_n^2(q)$ and $\tilde{B}_n^2(2q)$, ' + '\n where $n\in\{2,\ldots,20\}$. Total of ' + str(sum(count_profiles)) + ' profiles.')

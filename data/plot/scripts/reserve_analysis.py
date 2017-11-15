@@ -102,15 +102,17 @@ def get_reserve_eq_table(number_of_games, number_of_agents, demand):
     \\begin{subtable}{.4\linewidth}
       \\centering
         \\caption{$\delta = """ + str(demand) + """$}
-            \\begin{tabular}{|c|c|c|} \hline
-                $r$ 	\t& $\StratProfile^*_r$ 	\t& $OPT(\StratProfile^*_r)$ \\\\\\hline\n"""
+            \\begin{tabular}{|c|c|c|c|} \hline
+                $r$ 	\t& $\StratProfile^*_r$ 	\t& $OPT(\StratProfile^*_r)$ \t& Revenue  \\\\\\hline\n"""
     
     for r in reserve_nodes:
         eq_data = data[data['reserve'] == r]
         if(len(eq_data) != 1):
             raise ValueError('something went wrong!')
         eq_data = eq_data.iloc[0]
-        table += '\t\t' + "{0:.2f}".format(r / 100.0) + '\t&' +  str(int(eq_data['WE'])) + ', ' +  str(int(eq_data['WF'])) + '\t&' +  "{0:.2f}".format(eq_data['opt_reserve']) + '\\\\ \n'
+        if("{0:.2f}".format(eq_data['opt_reserve']) == "{0:.2f}".format(r / 100.0)):
+            table += """\\rowcolor{RowColor}"""
+        table += '\t\t' + "{0:.2f}".format(r / 100.0) + '\t&' +  str(int(eq_data['WE'])) + ', ' +  str(int(eq_data['WF'])) + '\t&' +  "{0:.2f}".format(eq_data['opt_reserve']) + '\t&' +  "{0:.2f}".format(eq_data['revenue_mean']) +  '\\\\ \n'
     
     table += """
           \\hline
@@ -125,16 +127,42 @@ def get_reserve_eq_table_summary(number_of_games, number_of_agents):
 \\begin{table}[!htb]
     \\caption{Equilibria dynamics """ + str(number_of_agents) + """ agents}"""
     table += get_reserve_eq_table(number_of_games, number_of_agents, 0.25)
-    table += get_reserve_eq_table(number_of_games, number_of_agents, 0.5)
-    table += get_reserve_eq_table(number_of_games, number_of_agents, 0.75)
-    table += get_reserve_eq_table(number_of_games, number_of_agents, 1.0)
-    table += get_reserve_eq_table(number_of_games, number_of_agents, 1.25)
-    table += get_reserve_eq_table(number_of_games, number_of_agents, 1.5)
+    #table += get_reserve_eq_table(number_of_games, number_of_agents, 0.5)
+    #table += get_reserve_eq_table(number_of_games, number_of_agents, 0.75)
+    #table += get_reserve_eq_table(number_of_games, number_of_agents, 1.0)
+    #table += get_reserve_eq_table(number_of_games, number_of_agents, 1.25)
+    #table += get_reserve_eq_table(number_of_games, number_of_agents, 1.5)
     table += get_reserve_eq_table(number_of_games, number_of_agents, 1.75)
-    table += get_reserve_eq_table(number_of_games, number_of_agents, 2.0)
+    #table += get_reserve_eq_table(number_of_games, number_of_agents, 2.0)
     table += get_reserve_eq_table(number_of_games, number_of_agents, 2.25)
-    table += get_reserve_eq_table(number_of_games, number_of_agents, 2.5)
+    #table += get_reserve_eq_table(number_of_games, number_of_agents, 2.5)
     table += get_reserve_eq_table(number_of_games, number_of_agents, 2.75)
-    table += get_reserve_eq_table(number_of_games, number_of_agents, 3.0)
+    #table += get_reserve_eq_table(number_of_games, number_of_agents, 3.0)
+    table += """\n\\label{tab:Equilibria""" + str(number_of_agents) + """Agents}"""
     table += """\n\\end{table}"""
     print(table)
+    
+def get_one_latex_row(number_of_games, number_of_agents, demand):
+    map_demand_opt_reserve = {0.25: 80, 1.75: 80, 2.25: 80, 2.75: 80}
+    # This next map for 8 agents.
+    #map_demand_opt_reserve = {0.25: 80, 1.75: 83, 2.25: 81, 2.75: 81}
+    data = pd.read_csv("../../worstequilibria-reserve/" + str(number_of_games) + "/worst-equilibria-for-" + str(number_of_agents) + "-agents-all-reserves-demand-" + str(demand) + "-OPT.csv")
+    reserve_0 = data[data['reserve'] == 0]
+    reserve_0 = reserve_0.iloc[0]
+    opt_rev = get_optimal_revenue(number_of_games, number_of_agents, demand, map_demand_opt_reserve[demand])
+    
+    return str(demand)  + """ & """ + str(int(reserve_0['WE'])) + """, """ + str(int(reserve_0['WF'])) + """ & """ + "{0:.2f}".format(reserve_0['revenue_mean']) + """ & """ + "{0:.2f}".format(reserve_0['opt_reserve']) + ' &' + str(int(opt_rev[0])) + ', ' + str(int(opt_rev[1])) + ' & ' + "{0:.2f}".format(opt_rev[2]) + ' & ' + "{0:.2f}".format(opt_rev[2]-reserve_0['revenue_mean'])  +  '\\\\\n'
+
+def get_optimal_revenue(number_of_games, number_of_agents, demand, reserve):
+    data = pd.read_csv("../../worstequilibria-reserve/" + str(number_of_games) + "/worst-equilibria-for-" + str(number_of_agents) + "-agents-all-reserves-demand-" + str(demand) + "-OPT.csv")    
+    reserve_data = data[data['reserve'] == reserve]
+    reserve_data = reserve_data.iloc[0]
+    return (reserve_data['WE'],reserve_data['WF'],reserve_data['revenue_mean'])
+
+demand_list = [0.25, 1.75, 2.25, 2.75]
+latex_table = ''
+for demand in demand_list:
+    #latex_table += get_one_latex_row(800, 8, demand)
+    latex_table += get_one_latex_row(200, 20, demand)
+
+print(latex_table)
