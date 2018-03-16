@@ -96,29 +96,10 @@ abstract public class GameServerAbstract {
     // For development purposes, this map contains the allowable agents
     // along with their passwords. This should be obtained from a database.
     HashMap<String, String> agentsInfo = new HashMap<String, String>();
-    // Sundays
-    agentsInfo.put("Lab7Agent", "123456");
-    agentsInfo.put("EpicNickname", "123456");
-    agentsInfo.put("adbot9000", "123456");
-    agentsInfo.put("GeoBot", "123456");
-    agentsInfo.put("DEMI-OS", "123456");
-    agentsInfo.put("dualityagent", "123456");
-    
-    // Mondays
-    agentsInfo.put("Agent Zero", "123456");
-    agentsInfo.put("Raj's_Bot", "123456");
-    agentsInfo.put("tjc", "123456");
-    agentsInfo.put("Luke Camery", "123456");
-    agentsInfo.put("_", "123456");
-    agentsInfo.put("AgentJohnson", "123456");
-    agentsInfo.put("eddie", "123456");
-    agentsInfo.put("InstructorBot", "123456");
-    agentsInfo.put("Caroline", "123456");
-    agentsInfo.put("iRobot", "123456");
-    agentsInfo.put("name", "123456");
-    agentsInfo.put("agent0", "123456");
-    agentsInfo.put("agent1", "123456");
-    agentsInfo.put("irrational", "123456");
+    // Dummies
+    for (int i = 1; i < 21; i++) {
+      agentsInfo.put("Agent" + i, "123456");
+    }
     return agentsInfo.containsKey(agentName) && agentsInfo.get(agentName).equals(agentPassword);
   }
   

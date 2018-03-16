@@ -46,6 +46,6 @@ public class SimpleOneDayAgent extends OneDayAgent {
    */
   public static void main(String[] args) {
     SimpleOneDayAgent agent = new SimpleOneDayAgent("localhost", 9898);
-    agent.connect("agent0");
+    agent.connect("Agent2");
   }
 }
