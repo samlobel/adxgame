@@ -8,26 +8,45 @@ import com.google.common.collect.ImmutableList;
  * @author Enrique Areyan Viqueira
  */
 public class Parameters {
-
-  
-  // For TwoDaysOneCampaign,  POPULATION_SIZE = 5000,  and CAMPAIGN_DURATIONS = ImmutableList.of(2)
-  // For TwoDaysTwoCampaigns, POPULATION_SIZE = 10000, and CAMPAIGN_DURATIONS = ImmutableList.of(1)
-  
+  // Number of real-time seconds for a simulated day.
   public static final int SECONDS_DURATION_DAY = 2;
-
-  public static final int POPULATION_SIZE = 10000;
-
+  // In case campaigns are auctioned, how many campaigns to auction.
   public static final int NUMBER_AUCTION_CAMPAINGS = 1;
-
-  //public static final double QUALITY_SCORE_LEARNING_RATE = 0.6;
+  // The rate at which quality learning will happen. Only relevant for games longer than 1 day.
   public static final double QUALITY_SCORE_LEARNING_RATE = 1.0;
-
-  // public static final ImmutableList<Integer> CAMPAIGN_DURATIONS = ImmutableList.of(1, 3, 5, 8);
-  //public static final ImmutableList<Integer> CAMPAIGN_DURATIONS = ImmutableList.of(1);
-  public static final ImmutableList<Integer> CAMPAIGN_DURATIONS = ImmutableList.of(1);
-
-  public static final int TOTAL_SIMULATED_DAYS = 1;
-
+  // How many simulated days in a row.
   public static final int TOTAL_SIMULATED_GAMES = 15;
-
+  
+  /**
+   * OneDayGame parameters follow. Default Configuration.
+   
+  // How many simulated days.
+  public static final int TOTAL_SIMULATED_DAYS = 1;
+  // Total population size.
+  public static final int POPULATION_SIZE = 10000;
+  // Campaigns can last several days. This list specifies the allowable number of days.
+  public static final ImmutableList<Integer> CAMPAIGN_DURATIONS = ImmutableList.of(1);
+  */
+  /**
+   * TwoDaysOneCampaign parameters follow.
+   
+  // How many simulated days.
+  public static final int TOTAL_SIMULATED_DAYS = 2;
+  // Total population size.
+  public static final int POPULATION_SIZE = 10000;
+  // Campaigns can last several days. This list specifies the allowable number of days.
+  public static final ImmutableList<Integer> CAMPAIGN_DURATIONS = ImmutableList.of(2);
+  */
+  
+  /**
+   * TwoDaysOneCampaign parameters follow.
+   */
+  // How many simulated days.
+  public static final int TOTAL_SIMULATED_DAYS = 2;
+  // Total population size.
+  public static final int POPULATION_SIZE = 10000;
+  // Campaigns can last several days. This list specifies the allowable number of days.
+  public static final ImmutableList<Integer> CAMPAIGN_DURATIONS = ImmutableList.of(1);
+  
+  
 }
