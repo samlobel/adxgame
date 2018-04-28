@@ -27,6 +27,7 @@ import algorithms.pricing.RestrictedEnvyFreePricesLPSolution;
 import algorithms.pricing.RestrictedEnvyFreePricesLPWithReserve;
 import algorithms.pricing.error.PrincingAlgoException;
 import allocations.greedy.GreedyAllocation;
+import allocations.greedy.GreedyAllocationFactory;
 
 /**
  * Implements the Walrasian Equilibrium (WE) agent.
@@ -60,7 +61,10 @@ public class WEAgent extends SimAgent {
       // Test if there are bidders in the market with reserve.
       if (mwrp.areThereBiddersInTheMarketWithReserve()) {
         // Run allocation algorithm in the market that respect reserve.
-        MarketAllocation<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> allocForMarketWithReserve = new GreedyAllocation<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>>().Solve(mwrp.getMarketWithReservePrice());
+        // First, get the greedy allocation algorithm
+    	GreedyAllocation<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> greedyAlloc = GreedyAllocationFactory.GreedyAllocation();
+    	// Next, run the greedy allocation algorithm
+    	MarketAllocation<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> allocForMarketWithReserve = greedyAlloc.Solve(mwrp.getMarketWithReservePrice());
         // Deduce a MarketAllocation for the original market.
         MarketAllocation<Market<GameGoods, Bidder<GameGoods>>, GameGoods, Bidder<GameGoods>> allocForOriginalMarket = mwrp.deduceAllocation(allocForMarketWithReserve);
         // Run pricing algorithm for the original market and its deduced allocation.
