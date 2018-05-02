@@ -40,7 +40,7 @@ public class Sampling {
   /**
    * Different campaign reach factors.
    */
-  private static final double[] campaignReachFactor = { 0.2, 0.4, 0.6 };
+  private static final double[] campaignReachFactor = { 0.4, 0.6, 0.8 };
 
   /**
    * A unique identifier for campaigns ids.
