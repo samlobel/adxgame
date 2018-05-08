@@ -15,11 +15,11 @@ public class Parameters {
   // The rate at which quality learning will happen. Only relevant for games longer than 1 day.
   public static final double QUALITY_SCORE_LEARNING_RATE = 1.0;
   // How many simulated days in a row.
-  public static final int TOTAL_SIMULATED_GAMES = 15;
+  public static final int TOTAL_SIMULATED_GAMES = 10;
   
   /**
    * OneDayGame parameters follow. Default Configuration.
-   */
+   
   // How many simulated days.
   public static final int TOTAL_SIMULATED_DAYS = 1;
   // Total population size.
@@ -27,6 +27,7 @@ public class Parameters {
   // Campaigns can last several days. This list specifies the allowable number of days.
   public static final ImmutableList<Integer> CAMPAIGN_DURATIONS = ImmutableList.of(1);
 
+   */
   /**
    * TwoDaysOneCampaign parameters follow.
    
@@ -39,14 +40,13 @@ public class Parameters {
   */
   
   /**
-   * TwoDaysOneCampaign parameters follow.
-   
+   * TwoDaysTwoCampaigns parameters follow.
+   */
   // How many simulated days.
   public static final int TOTAL_SIMULATED_DAYS = 2;
   // Total population size.
   public static final int POPULATION_SIZE = 10000;
   // Campaigns can last several days. This list specifies the allowable number of days.
   public static final ImmutableList<Integer> CAMPAIGN_DURATIONS = ImmutableList.of(1);
-  */
   
 }
