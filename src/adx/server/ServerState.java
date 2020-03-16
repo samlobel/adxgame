@@ -315,7 +315,7 @@ public class ServerState {
    */
   public List<Campaign> generateCampaignsOpportunities() throws AdXException {
     if (!this.campaignsForAuction.containsKey(this.currentDay + 1)) {
-      List<Campaign> listOfCampaigns = Sampling.sampleCampaingList(this.currentDay + 1, Parameters.NUMBER_AUCTION_CAMPAINGS);
+      List<Campaign> listOfCampaigns = Sampling.sampleCampaingList(this.currentDay + 1, Parameters.get_NUMBER_AUCTION_CAMPAINGS());
       this.campaignsForAuction.put(this.currentDay + 1, listOfCampaigns);
     } else {
       throw new AdXException("[x] Already sample campaign opportunities for day: " + (this.currentDay + 1));

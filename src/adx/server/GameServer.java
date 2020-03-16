@@ -25,8 +25,10 @@ public class GameServer extends GameServerAbstract {
   /**
    * Constructor.
    * 
-   * @param port - on which the server will run.
-   * @throws IOException in case the server could not be started.
+   * @param port
+   *          - on which the server will run.
+   * @throws IOException
+   *           in case the server could not be started.
    * @throws AdXException
    */
   public GameServer(int port) throws IOException, AdXException {
@@ -42,14 +44,15 @@ public class GameServer extends GameServerAbstract {
     // First order of business is to accept connections for a fixed amount of time
     Instant deadlineForNewPlayers = Instant.now().plusSeconds(10);
     Logging.log("[-] Accepting connections until " + deadlineForNewPlayers);
-    while (Instant.now().isBefore(deadlineForNewPlayers));
+    while (Instant.now().isBefore(deadlineForNewPlayers))
+      ;
     // Do not accept any new agents beyond deadline. Play with present agents.
     this.acceptingNewPlayers = false;
     this.serverState.initStatistics();
     // Check if there is at least one agent to play the game.
     if (this.namesToConnections.size() > 0) {
-      while (this.gameNumber < Parameters.TOTAL_SIMULATED_GAMES + 1) {
-        Instant endTime = Instant.now().plusSeconds(Parameters.SECONDS_DURATION_DAY);
+      while (this.gameNumber < Parameters.get_TOTAL_SIMULATED_GAMES() + 1) {
+        Instant endTime = Instant.now().plusSeconds(Parameters.get_SECONDS_DURATION_DAY());
         this.setUpGame();
         this.sendEndOfDayMessage();
         int day = 0;
@@ -71,7 +74,7 @@ public class GameServer extends GameServerAbstract {
                 }
               }
             }
-            endTime = Instant.now().plusSeconds(Parameters.SECONDS_DURATION_DAY);
+            endTime = Instant.now().plusSeconds(Parameters.get_SECONDS_DURATION_DAY());
             day++;
             this.sendEndOfDayMessage();
           }
@@ -114,10 +117,12 @@ public class GameServer extends GameServerAbstract {
 
   /**
    * Send the end of day message to all agents.
+   * 
+   * @throws AdXException
    */
-  protected synchronized void sendEndOfDayMessage() {
+  protected synchronized void sendEndOfDayMessage() throws AdXException {
     Logging.log("[-] Sending end of day message. ");
-    Instant timeEndOfDay = Instant.now().plusSeconds(Parameters.SECONDS_DURATION_DAY);
+    Instant timeEndOfDay = Instant.now().plusSeconds(Parameters.get_SECONDS_DURATION_DAY());
     this.serverState.currentDayEnd = timeEndOfDay;
     List<Campaign> listOfCampaigns = null;
     try {
@@ -128,11 +133,8 @@ public class GameServer extends GameServerAbstract {
     for (Entry<String, Connection> agent : this.namesToConnections.entrySet()) {
       String agentName = agent.getKey();
       try {
-        agent.getValue()
-            .sendTCP(
-                new EndOfDayMessage(this.serverState.getCurrentDay() + 1, timeEndOfDay.toString(), this.serverState.getDailySummaryStatistic(agentName),
-                    listOfCampaigns, this.serverState.getWonCampaigns(agentName), this.serverState.getQualitScore(agentName), this.serverState
-                        .getProfit(agentName)));
+        agent.getValue().sendTCP(new EndOfDayMessage(this.serverState.getCurrentDay() + 1, timeEndOfDay.toString(), this.serverState.getDailySummaryStatistic(agentName), listOfCampaigns, this.serverState.getWonCampaigns(agentName),
+            this.serverState.getQualitScore(agentName), this.serverState.getProfit(agentName)));
       } catch (AdXException e) {
         Logging.log("[x] Error sending the end of day message -> " + e);
       }
@@ -147,6 +149,12 @@ public class GameServer extends GameServerAbstract {
    */
   public static void main(String[] args) throws AdXException {
     try {
+      // Initialize the parameters of the game. 
+      // args[0] should be the location of the .ini file.
+      // args[1] should be the type of game: ONE-DAY-ONE-CAMPAIGN, TWO-DAYS-ONE-CAMPAIGN, or TWO-DAYS-TWO-CAMPAIGNS.
+      System.out.println("Running from .ini file in " + args[0]);
+      System.out.println("Type of game " + args[1]);
+      Parameters.populateParameters(args[0], args[1]);
       // Try to initialize the server.
       new GameServer(9898).runAdXGame();
     } catch (IOException e) {

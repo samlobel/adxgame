@@ -45,7 +45,7 @@ public class SimpleOneDayAgent extends OneDayAgent {
    * @param args
    */
   public static void main(String[] args) {
-    SimpleOneDayAgent agent = new SimpleOneDayAgent("localhost", 9898);
+    SimpleOneDayAgent agent = new SimpleOneDayAgent("agents.cs.brown.edu", 9898);
     agent.connect("Agent2");
   }
 }

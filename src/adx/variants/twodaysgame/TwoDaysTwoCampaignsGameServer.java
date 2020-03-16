@@ -34,14 +34,15 @@ public class TwoDaysTwoCampaignsGameServer extends GameServer {
     // First order of business is to accept connections for a fixed amount of time
     Instant deadlineForNewPlayers = Instant.now().plusSeconds(10);
     Logging.log("[-] Accepting connections until " + deadlineForNewPlayers);
-    while (Instant.now().isBefore(deadlineForNewPlayers));
+    while (Instant.now().isBefore(deadlineForNewPlayers))
+      ;
     // Do not accept any new agents beyond deadline. Play with present agents.
     this.acceptingNewPlayers = false;
     this.serverState.initStatistics();
     // Check if there is at least one agent to play the game.
     if (this.namesToConnections.size() > 0) {
-      while (this.gameNumber < Parameters.TOTAL_SIMULATED_GAMES + 1) {
-        Instant endTime = Instant.now().plusSeconds(Parameters.SECONDS_DURATION_DAY);
+      while (this.gameNumber < Parameters.get_TOTAL_SIMULATED_GAMES() + 1) {
+        Instant endTime = Instant.now().plusSeconds(Parameters.get_SECONDS_DURATION_DAY());
         this.setUpGame();
         this.sendEndOfDayMessage();
         int day = 0;
@@ -66,7 +67,7 @@ public class TwoDaysTwoCampaignsGameServer extends GameServer {
                 }
               }
             }
-            endTime = Instant.now().plusSeconds(Parameters.SECONDS_DURATION_DAY);
+            endTime = Instant.now().plusSeconds(Parameters.get_SECONDS_DURATION_DAY());
             day++;
             this.sendEndOfDayMessage();
           }
@@ -83,8 +84,7 @@ public class TwoDaysTwoCampaignsGameServer extends GameServer {
         Sampling.resetUniqueCampaignId();
       }
       Logging.log("\nGame ended, played " + (this.gameNumber - 1) + " games, final results are: ");
-      Logging.log(Printer.getNiceProfitTable(
-          this.serverState.getStatistics().orderProfits(this.serverState.getAverageAcumProfitOverAllGames(this.gameNumber - 1).entrySet()), -1));
+      Logging.log(Printer.getNiceProfitTable(this.serverState.getStatistics().orderProfits(this.serverState.getAverageAcumProfitOverAllGames(this.gameNumber - 1).entrySet()), -1));
       this.gameServer.stop();
     } else {
       Logging.log("[x] There are no players, stopping the server at " + Instant.now());

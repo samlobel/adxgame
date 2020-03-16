@@ -187,7 +187,7 @@ public class Statistics {
             totalReachSoFar - todayEffectiveReach, c.getReach())) * c.getBudget() - todayCost;
         if (c.getEndDay() == day) {
           // The campaign ended today, update the quality score.
-          qualityScore = (1 - Parameters.QUALITY_SCORE_LEARNING_RATE) * qualityScore + Parameters.QUALITY_SCORE_LEARNING_RATE
+          qualityScore = (1 - Parameters.get_QUALITY_SCORE_LEARNING_RATE()) * qualityScore + Parameters.get_QUALITY_SCORE_LEARNING_RATE()
               * this.computeEffectiveReachRatio(totalReachSoFar, c.getReach());
         }
       }

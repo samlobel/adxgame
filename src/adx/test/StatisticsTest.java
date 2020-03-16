@@ -35,7 +35,7 @@ public class StatisticsTest {
     c.setBudget(100.0);
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.FEMALE), 90, 0.0);
     // This test only works with QUALITY_SCORE_LEARNING_RATE of 0.6
-    assertEquals(Parameters.QUALITY_SCORE_LEARNING_RATE, 0.6, 0.00000001);
+    assertEquals(Parameters.get_QUALITY_SCORE_LEARNING_RATE(), 0.6, 0.00000001);
     assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement1(), new Double(0.9261666020749232));
   }
 
@@ -50,7 +50,7 @@ public class StatisticsTest {
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.FEMALE), 90, 0.0);
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.FEMALE), 90, 0.0);
     // This test only works with QUALITY_SCORE_LEARNING_RATE of 0.6
-    assertEquals(Parameters.QUALITY_SCORE_LEARNING_RATE, 0.6, 0.00000001);
+    assertEquals(Parameters.get_QUALITY_SCORE_LEARNING_RATE(), 0.6, 0.00000001);
     assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement1(), new Double(1.1630636924254625));
 
   }
@@ -67,7 +67,7 @@ public class StatisticsTest {
     c1.setBudget(200.0);
 
     // This test only works with QUALITY_SCORE_LEARNING_RATE of 0.6
-    assertEquals(Parameters.QUALITY_SCORE_LEARNING_RATE, 0.6, 0.00000001);
+    assertEquals(Parameters.get_QUALITY_SCORE_LEARNING_RATE(), 0.6, 0.00000001);
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.FEMALE), 100, 0.0);
     statistics.getStatisticsAds().addStatistic(1, "agent0", 2, new Query(MarketSegment.FEMALE), 200, 0.0);
     assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement1(), new Double(0.9999673448059072));
@@ -88,7 +88,7 @@ public class StatisticsTest {
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.FEMALE), 0, 0.0);
     statistics.getStatisticsAds().addStatistic(1, "agent0", 2, new Query(MarketSegment.FEMALE), 200, 0.0);
     // This test only works with QUALITY_SCORE_LEARNING_RATE of 0.6
-    assertEquals(Parameters.QUALITY_SCORE_LEARNING_RATE, 0.6, 0.00000001);
+    assertEquals(Parameters.get_QUALITY_SCORE_LEARNING_RATE(), 0.6, 0.00000001);
     assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement1(), new Double(0.7599766748613623));
 
   }
@@ -107,7 +107,7 @@ public class StatisticsTest {
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.FEMALE), 100, 0.0);
     statistics.getStatisticsAds().addStatistic(1, "agent0", 2, new Query(MarketSegment.FEMALE), 0, 0.0);
     // This test only works with QUALITY_SCORE_LEARNING_RATE of 0.6
-    assertEquals(Parameters.QUALITY_SCORE_LEARNING_RATE, 0.6, 0.00000001);
+    assertEquals(Parameters.get_QUALITY_SCORE_LEARNING_RATE(), 0.6, 0.00000001);
     assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement1(), new Double(0.39999066994454496));
 
   }
