@@ -162,7 +162,6 @@ public class GameServer extends GameServerAbstract {
     try {
       System.out.println("GameServer");
       GameServer.initParams(args);
-      // Try to initialize the server.
       new GameServer(9898).runAdXGame();
     } catch (IOException | AdXException e) {
       Logging.log("Error initializing the server --> ");

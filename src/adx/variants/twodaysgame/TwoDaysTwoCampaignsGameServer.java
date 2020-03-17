@@ -117,7 +117,6 @@ public class TwoDaysTwoCampaignsGameServer extends GameServer {
    */
   public static void main(String[] args) {
     try {
-      // Try to initialize the server.
       System.out.println("TwoDaysTwoCampaigns Game");
       GameServer.initParams(args);
       new TwoDaysTwoCampaignsGameServer(9898).runAdXGame();
