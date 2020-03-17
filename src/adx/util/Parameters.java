@@ -18,6 +18,9 @@ import adx.exceptions.AdXException;
  */
 public class Parameters {
 
+  // Number of seconds to wait for new players once the server starts.
+  private static int SECONDS_WAIT_PLAYERS;
+
   // A flag to indicate whether the parameters have been read from the .ini file.
   private static boolean initialized = false;
 
@@ -54,6 +57,17 @@ public class Parameters {
     if (!Parameters.initialized) {
       throw new AdXException("Parameters not initialized");
     }
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return
+   * @throws AdXException
+   */
+  public static int get_SECONDS_WAIT_PLAYERS() throws AdXException {
+    Parameters.safeguard();
+    return Parameters.SECONDS_WAIT_PLAYERS;
   }
 
   /**
@@ -152,6 +166,7 @@ public class Parameters {
       Ini ini = new Ini(new File(ini_file_location));
 
       // Global parameters
+      Parameters.SECONDS_WAIT_PLAYERS = Integer.parseInt(ini.get("PARAMETERS").get("SECONDS_WAIT_PLAYERS"));
       Parameters.SECONDS_DURATION_DAY = Integer.parseInt(ini.get("PARAMETERS").get("SECONDS_DURATION_DAY"));
       Parameters.NUMBER_AUCTION_CAMPAINGS = Integer.parseInt(ini.get("PARAMETERS").get("NUMBER_AUCTION_CAMPAINGS"));
       Parameters.QUALITY_SCORE_LEARNING_RATE = Double.parseDouble(ini.get("PARAMETERS").get("QUALITY_SCORE_LEARNING_RATE"));
