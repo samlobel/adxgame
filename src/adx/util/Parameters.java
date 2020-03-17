@@ -22,7 +22,7 @@ public class Parameters {
   private static boolean initialized = false;
 
   // Allowable games.
-  private static final ImmutableSet<String> allowableGames = ImmutableSet.of("ONE-DAY-ONE-CAMPAIGN", "TWO-DAYS-ONE-CAMPAIGN", "TWO-DAYS-TWO-CAMPAIGNS");
+  public static final ImmutableSet<String> allowableGames = ImmutableSet.of("ONE-DAY-ONE-CAMPAIGN", "TWO-DAYS-ONE-CAMPAIGN", "TWO-DAYS-TWO-CAMPAIGNS");
 
   // Number of real-time seconds for a simulated day.
   private static int SECONDS_DURATION_DAY;
