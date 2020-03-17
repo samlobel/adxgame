@@ -115,11 +115,13 @@ public class TwoDaysTwoCampaignsGameServer extends GameServer {
    * @param args
    * @throws AdXException
    */
-  public static void main(String[] args) throws AdXException {
+  public static void main(String[] args) {
     try {
       // Try to initialize the server.
+      System.out.println("TwoDaysTwoCampaigns Game");
+      GameServer.initParams(args);
       new TwoDaysTwoCampaignsGameServer(9898).runAdXGame();
-    } catch (IOException e) {
+    } catch (IOException | AdXException e) {
       Logging.log("Error initializing the server --> ");
       e.printStackTrace();
       System.exit(-1);

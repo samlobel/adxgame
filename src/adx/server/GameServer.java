@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.esotericsoftware.kryonet.Connection;
+
 import adx.exceptions.AdXException;
 import adx.messages.EndOfDayMessage;
 import adx.structures.Campaign;
@@ -12,8 +14,6 @@ import adx.util.Logging;
 import adx.util.Parameters;
 import adx.util.Printer;
 import adx.util.Sampling;
-
-import com.esotericsoftware.kryonet.Connection;
 
 /**
  * A concrete implementation of a game server.
@@ -44,8 +44,7 @@ public class GameServer extends GameServerAbstract {
     // First order of business is to accept connections for a fixed amount of time
     Instant deadlineForNewPlayers = Instant.now().plusSeconds(10);
     Logging.log("[-] Accepting connections until " + deadlineForNewPlayers);
-    while (Instant.now().isBefore(deadlineForNewPlayers))
-      ;
+    while (Instant.now().isBefore(deadlineForNewPlayers));
     // Do not accept any new agents beyond deadline. Play with present agents.
     this.acceptingNewPlayers = false;
     this.serverState.initStatistics();
@@ -141,26 +140,31 @@ public class GameServer extends GameServerAbstract {
     }
   }
 
+  public static void initParams(String[] args) throws AdXException, IOException {
+    if (args.length != 2) {
+      throw new AdXException("To run an AdX game you need to pass two parameters. (1) the locaiton of the .ini file, and (2) the type of game from options" + Parameters.allowableGames);
+    }
+    // Initialize the parameters of the game.
+    // args[0] should be the location of the .ini file.
+    // args[1] should be the type of game: ONE-DAY-ONE-CAMPAIGN, TWO-DAYS-ONE-CAMPAIGN, or TWO-DAYS-TWO-CAMPAIGNS.
+    System.out.println("Running from .ini file in " + args[0]);
+    System.out.println("Type of game " + args[1]);
+    Parameters.populateParameters(args[0], args[1]);
+  }
+
   /**
    * Main server method.
    * 
    * @param args
    * @throws AdXException
    */
-  public static void main(String[] args) throws AdXException {
+  public static void main(String[] args) {
     try {
-      if (args.length != 2) {
-        throw new AdXException("To run an AdX game you need to pass two parameters. (1) the locaiton of the .ini file, and (2) the type of game from options" + Parameters.allowableGames);
-      }
-      // Initialize the parameters of the game.
-      // args[0] should be the location of the .ini file.
-      // args[1] should be the type of game: ONE-DAY-ONE-CAMPAIGN, TWO-DAYS-ONE-CAMPAIGN, or TWO-DAYS-TWO-CAMPAIGNS.
-      System.out.println("Running from .ini file in " + args[0]);
-      System.out.println("Type of game " + args[1]);
-      Parameters.populateParameters(args[0], args[1]);
+      System.out.println("GameServer");
+      GameServer.initParams(args);
       // Try to initialize the server.
       new GameServer(9898).runAdXGame();
-    } catch (IOException e) {
+    } catch (IOException | AdXException e) {
       Logging.log("Error initializing the server --> ");
       e.printStackTrace();
       System.exit(-1);

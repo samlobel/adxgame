@@ -51,8 +51,8 @@ public class SimpleTwoDaysTwoCampaingsAgent extends TwoDaysTwoCampaignsAgent {
    * @param args
    */
   public static void main(String[] args) {
-    SimpleTwoDaysTwoCampaingsAgent agent = new SimpleTwoDaysTwoCampaingsAgent("localhost", 9898);
-    agent.connect("Agent1");
+    SimpleTwoDaysTwoCampaingsAgent agent = new SimpleTwoDaysTwoCampaingsAgent("agents.cs.brown.edu", 9898);
+    agent.connect("Agent2");
   }
 
 }
