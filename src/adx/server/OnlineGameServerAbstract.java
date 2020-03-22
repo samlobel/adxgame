@@ -24,7 +24,7 @@ import com.esotericsoftware.kryonet.Server;
  * 
  * @author Enrique Areyan Viqueira
  */
-abstract public class GameServerAbstract {
+abstract public class OnlineGameServerAbstract {
 
   /**
    * Server Kryo object.
@@ -59,7 +59,7 @@ abstract public class GameServerAbstract {
    * @throws IOException
    * @throws AdXException 
    */
-  public GameServerAbstract(int port) throws IOException, AdXException {
+  public OnlineGameServerAbstract(int port) throws IOException, AdXException {
 
     Logging.log("[-] Server Initialized at " + Instant.now());
     this.namesToConnections = new ConcurrentHashMap<String, Connection>();

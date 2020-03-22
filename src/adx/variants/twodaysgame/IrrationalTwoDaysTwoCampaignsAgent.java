@@ -3,6 +3,7 @@ package adx.variants.twodaysgame;
 import java.util.HashSet;
 import java.util.Set;
 
+import adx.agent.OnlineAgent;
 import adx.exceptions.AdXException;
 import adx.structures.MarketSegment;
 import adx.structures.SimpleBidEntry;
@@ -14,8 +15,8 @@ import adx.structures.SimpleBidEntry;
  */
 public class IrrationalTwoDaysTwoCampaignsAgent extends TwoDaysTwoCampaignsAgent {
 
-  public IrrationalTwoDaysTwoCampaignsAgent(String host, int port) {
-    super(host, port);
+  public IrrationalTwoDaysTwoCampaignsAgent() {
+    super();
   }
 
   @Override
@@ -50,8 +51,8 @@ public class IrrationalTwoDaysTwoCampaignsAgent extends TwoDaysTwoCampaignsAgent
    * @param args
    */
   public static void main(String[] args) {
-    IrrationalTwoDaysTwoCampaignsAgent agent = new IrrationalTwoDaysTwoCampaignsAgent("localhost", 9898);
-    agent.connect("irrational");
+    OnlineAgent agent = new OnlineAgent("localhost", 9898, new IrrationalTwoDaysTwoCampaignsAgent());
+    agent.connect("irrational", "123456");
   }
   
 }

@@ -3,6 +3,7 @@ package adx.variants.onedaygame;
 import java.util.HashSet;
 import java.util.Set;
 
+import adx.agent.OnlineAgent;
 import adx.exceptions.AdXException;
 import adx.structures.SimpleBidEntry;
 import adx.util.Logging;
@@ -20,8 +21,8 @@ public class SimpleOneDayAgent extends OneDayAgent {
    * @param host
    * @param port
    */
-  public SimpleOneDayAgent(String host, int port) {
-    super(host, port);
+  public SimpleOneDayAgent() {
+    super();
   }
 
   @Override
@@ -45,7 +46,7 @@ public class SimpleOneDayAgent extends OneDayAgent {
    * @param args
    */
   public static void main(String[] args) {
-    SimpleOneDayAgent agent = new SimpleOneDayAgent("agents.cs.brown.edu", 9898);
-    agent.connect("Agent2");
+    OnlineAgent agent = new OnlineAgent("localhost", 9898, new SimpleOneDayAgent());
+    agent.connect("Agent2", "123456");
   }
 }

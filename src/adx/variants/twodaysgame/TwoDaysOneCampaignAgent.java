@@ -1,7 +1,9 @@
 package adx.variants.twodaysgame;
 
-import adx.agent.Agent;
+import adx.agent.AgentLogic;
+import adx.agent.OnlineAgent;
 import adx.messages.EndOfDayMessage;
+import adx.structures.BidBundle;
 import adx.structures.Campaign;
 import adx.util.Logging;
 import adx.util.Pair;
@@ -12,7 +14,7 @@ import adx.util.Printer;
  * 
  * @author Enrique Areyan Viqueira
  */
-abstract public class TwoDaysOneCampaignAgent extends Agent {
+abstract public class TwoDaysOneCampaignAgent extends AgentLogic {
 
   /**
    * In this game agents have only one campaign.
@@ -31,22 +33,12 @@ abstract public class TwoDaysOneCampaignAgent extends Agent {
    * @param host
    * @param port
    */
-  public TwoDaysOneCampaignAgent(String host, int port) {
-    super(host, port);
-  }
-
-  /**
-   * Connects the agent and registers its name. For simplicity, the password is fixed here.
-   * 
-   * @param name
-   * @param password
-   */
-  protected void connect(String login) {
-    super.connect(login, "123456");
+  public TwoDaysOneCampaignAgent() {
+    super();
   }
 
   @Override
-  protected void handleEndOfDayMessage(EndOfDayMessage endOfDayMessage) {
+  protected BidBundle handleEndOfDayMessage(EndOfDayMessage endOfDayMessage) {
     int currentDay = endOfDayMessage.getDay();
     if (currentDay == 1) {
       Logging.log("\n[-] Playing a new game!");
@@ -56,7 +48,7 @@ abstract public class TwoDaysOneCampaignAgent extends Agent {
       Logging.log("[-] End of Day 1, bid.");
       TwoDaysBidBundle bidBundleDay1 = this.getBidBundle(1);
       if (bidBundleDay1 != null) {
-        this.getClient().sendTCP(bidBundleDay1);
+        return bidBundleDay1;
       } else {
         Logging.log("[-] WARNING! the bid bundle for day 1 was null!, nothing was sent to the server");
       }
@@ -70,7 +62,7 @@ abstract public class TwoDaysOneCampaignAgent extends Agent {
       Logging.log("[-] End of Day 2, bid.");
       TwoDaysBidBundle bidBundleDay2 = this.getBidBundle(2);
       if (bidBundleDay2 != null) {
-        this.getClient().sendTCP(bidBundleDay2);
+        return bidBundleDay2;
       } else {
         Logging.log("[-] WARNING! the bid bundle for day 2 was null!, nothing was sent to the server");
       }
@@ -80,6 +72,7 @@ abstract public class TwoDaysOneCampaignAgent extends Agent {
       Logging.log("[-] Final Profit: " + endOfDayMessage.getCumulativeProfit());
       Logging.log("[-] Final Quality Score: " + endOfDayMessage.getQualityScore());
     }
+    return null;
   }
 
   /**

@@ -1,7 +1,9 @@
 package adx.variants.onedaygame;
 
-import adx.agent.Agent;
+import adx.agent.AgentLogic;
+import adx.agent.OnlineAgent;
 import adx.messages.EndOfDayMessage;
+import adx.structures.BidBundle;
 import adx.structures.Campaign;
 import adx.util.Logging;
 import adx.util.Printer;
@@ -11,7 +13,7 @@ import adx.util.Printer;
  * 
  * @author Enrique Areyan Viqueira
  */
-abstract public class OneDayAgent extends Agent {
+abstract public class OneDayAgent extends AgentLogic {
 
   /**
    * In this game agents have only one campaign
@@ -24,31 +26,22 @@ abstract public class OneDayAgent extends Agent {
    * @param host
    * @param port
    */
-  public OneDayAgent(String host, int port) {
-    super(host, port);
-  }
-
-  /**
-   * Connects the agent and registers its name. For simplicity, the password is fixed here.
-   * 
-   * @param name
-   * @param password
-   */
-  protected void connect(String login) {
-    super.connect(login, "123456");
+  public OneDayAgent() {
+    super();
   }
 
   @Override
-  protected void handleEndOfDayMessage(EndOfDayMessage endOfDayMessage) {
+  protected BidBundle handleEndOfDayMessage(EndOfDayMessage endOfDayMessage) {
     int currentDay = endOfDayMessage.getDay();
     if (currentDay == 1) {
       this.myCampaign = endOfDayMessage.getCampaignsWon().get(0);
       Logging.log("\n[-] Playing a new game!");
       Logging.log("[-] My campaign: " + this.myCampaign);
-      this.getClient().sendTCP(this.getBidBundle());
+      return this.getBidBundle();
     } else {
       Logging.log("[-] Statistics: " + Printer.getNiceStatsTable(endOfDayMessage.getStatistics()));
       Logging.log("[-] Final Profit: " + endOfDayMessage.getCumulativeProfit());
+      return null;
     }
   }
 

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.time.Instant;
 
 import adx.exceptions.AdXException;
-import adx.server.GameServer;
+import adx.server.OnlineGameServer;
 import adx.structures.Campaign;
 import adx.util.Logging;
 import adx.util.Parameters;
@@ -16,7 +16,7 @@ import adx.util.Sampling;
  * 
  * @author Enrique Areyan Viqueira
  */
-public class TwoDaysTwoCampaignsGameServer extends GameServer {
+public class TwoDaysTwoCampaignsGameServer extends OnlineGameServer {
 
   /**
    * Constructor.
@@ -117,7 +117,7 @@ public class TwoDaysTwoCampaignsGameServer extends GameServer {
   public static void main(String[] args) {
     try {
       System.out.println("TwoDaysTwoCampaigns Game");
-      GameServer.initParams(args);
+      OnlineGameServer.initParams(args);
       new TwoDaysTwoCampaignsGameServer(9898).runAdXGame();
     } catch (IOException | AdXException e) {
       Logging.log("Error initializing the server --> ");

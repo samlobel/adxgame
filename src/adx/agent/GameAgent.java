@@ -24,7 +24,7 @@ import adx.util.Printer;
  * 
  * @author Enrique Areyan Viqueira
  */
-public class GameAgent extends Agent {
+public class GameAgent extends AgentLogic {
 
   /**
    * Current simulated day.
@@ -51,20 +51,13 @@ public class GameAgent extends Agent {
   protected Map<Integer, Pair<Integer, Double>> statistics;
 
   /**
-   * Empty constructor. For testing purposes only.
-   */
-  public GameAgent() {
-    this.init();
-  }
-
-  /**
    * Constructor.
    * 
    * @param host - on which the agent will try to connect.
    * @param port - the agent will use for the connection.
    */
-  public GameAgent(String host, int port) {
-    super(host, port);
+  public GameAgent() {
+    super();
     this.init();
   }
 
@@ -114,7 +107,7 @@ public class GameAgent extends Agent {
    * Parse the end of day message.
    */
   @Override
-  public void handleEndOfDayMessage(EndOfDayMessage endOfDayMessage) {
+  public BidBundle handleEndOfDayMessage(EndOfDayMessage endOfDayMessage) {
     Logging.log("[-] handleEndOfDayMessage " + endOfDayMessage);
     Logging.log("[-] Current time = " + Instant.now());
     try {
@@ -126,14 +119,15 @@ public class GameAgent extends Agent {
       }
       this.currentQualityScore = endOfDayMessage.getQualityScore();
       BidBundle bidBundle = this.getAdBid();
-      if (bidBundle != null && this.getClient() != null && this.getClient().isConnected()) {
-        this.getClient().sendTCP(bidBundle);
+      if (bidBundle != null) {
+        return bidBundle;
       }
     } catch (AdXException e) {
       Logging.log("[x] Something went wrong getting the bid bundle for day " + endOfDayMessage.getDay() + " -> " + e.getMessage());
     }
     Logging.log("[-] All my campaigns: " + Printer.printNiceListMyCampaigns(this.myCampaigns));
     Logging.log("[-] Statistics: " + this.statistics);
+    return null;
   }
 
   /**
@@ -187,7 +181,7 @@ public class GameAgent extends Agent {
    * @param args
    */
   public static void main(String[] args) {
-    GameAgent agent = new GameAgent("localhost", 9898);
+    OnlineAgent agent = new OnlineAgent("localhost", 9898, new GameAgent());
     agent.connect("agent0", "123456");
   }
 

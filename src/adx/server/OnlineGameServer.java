@@ -20,7 +20,7 @@ import adx.util.Sampling;
  * 
  * @author Enrique Areyan Viqueira
  */
-public class GameServer extends GameServerAbstract {
+public class OnlineGameServer extends OnlineGameServerAbstract {
 
   /**
    * Constructor.
@@ -31,7 +31,7 @@ public class GameServer extends GameServerAbstract {
    *           in case the server could not be started.
    * @throws AdXException
    */
-  public GameServer(int port) throws IOException, AdXException {
+  public OnlineGameServer(int port) throws IOException, AdXException {
     super(port);
   }
 
@@ -161,8 +161,8 @@ public class GameServer extends GameServerAbstract {
   public static void main(String[] args) {
     try {
       System.out.println("GameServer");
-      GameServer.initParams(args);
-      new GameServer(9898).runAdXGame();
+      OnlineGameServer.initParams(args);
+      new OnlineGameServer(9898).runAdXGame();
     } catch (IOException | AdXException e) {
       Logging.log("Error initializing the server --> ");
       e.printStackTrace();
