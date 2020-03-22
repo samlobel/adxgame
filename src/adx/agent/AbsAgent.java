@@ -48,7 +48,7 @@ public abstract class AbsAgent {
 			break;
 		case 1:
 			// In this case the agent can play
-			this.logic.agentName = this.agentName;
+			this.logic.agentName = this.agentName = connectServerMessage.getAgentName();
 			Logging.log("[-] Agent: " + this.agentName + " is in the game!");
 			break;
 		default:
