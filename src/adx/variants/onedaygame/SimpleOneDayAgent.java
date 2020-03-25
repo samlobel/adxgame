@@ -5,6 +5,7 @@ import java.util.Set;
 
 import adx.agent.OnlineAgent;
 import adx.exceptions.AdXException;
+import adx.structures.Campaign;
 import adx.structures.SimpleBidEntry;
 import adx.util.Logging;
 
@@ -27,13 +28,14 @@ public class SimpleOneDayAgent extends OneDayAgent {
 
   @Override
   protected OneDayBidBundle getBidBundle() {
+	Campaign myCampaign = this.getCampaign();
     try {
       // Bidding only on the exact market segment of the campaign.
       Set<SimpleBidEntry> bidEntries = new HashSet<SimpleBidEntry>();
-      bidEntries.add(new SimpleBidEntry(this.myCampaign.getMarketSegment(), this.myCampaign.getBudget() / (double) this.myCampaign.getReach(), this.myCampaign.getBudget()));
+      bidEntries.add(new SimpleBidEntry(myCampaign.getMarketSegment(), myCampaign.getBudget() / (double) myCampaign.getReach(), myCampaign.getBudget()));
       Logging.log("[-] bidEntries = " + bidEntries);
       // The bid bundle indicates the campaign id, the limit across all auctions, and the bid entries.
-      return new OneDayBidBundle(this.myCampaign.getId(), this.myCampaign.getBudget(), bidEntries);
+      return new OneDayBidBundle(myCampaign.getId(), myCampaign.getBudget(), bidEntries);
     } catch (AdXException e) {
       Logging.log("[x] Something went wrong getting the bid bundle: " + e.getMessage());
       return null;

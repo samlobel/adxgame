@@ -95,12 +95,13 @@ abstract public class OnlineGameServerAbstract {
   protected synchronized boolean areAgentCredentialsValid(String agentName, String agentPassword) {
     // For development purposes, this map contains the allowable agents
     // along with their passwords. This should be obtained from a database.
-    HashMap<String, String> agentsInfo = new HashMap<String, String>();
-    // Dummies
-    for (int i = 1; i < 21; i++) {
-      agentsInfo.put("Agent" + i, "123456");
-    }
-    return agentsInfo.containsKey(agentName) && agentsInfo.get(agentName).equals(agentPassword);
+//    HashMap<String, String> agentsInfo = new HashMap<String, String>();
+//    // Dummies
+//    for (int i = 1; i < 21; i++) {
+//      agentsInfo.put("Agent" + i, "123456");
+//    }
+//    return agentsInfo.containsKey(agentName) && agentsInfo.get(agentName).equals(agentPassword);
+	  return true;
   }
   
   /**

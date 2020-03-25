@@ -22,6 +22,10 @@ public abstract class AbsAgent {
 	
 	protected abstract void connect(String name, String password);
 	
+	public void connect(String name) {
+		this.connect(name, "");
+	}
+	
 	/**
 	 * This method hanldes the ACK message.
 	 * 

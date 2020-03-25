@@ -18,7 +18,7 @@ abstract public class OneDayAgent extends AgentLogic {
   /**
    * In this game agents have only one campaign
    */
-  protected Campaign myCampaign;
+  private Campaign myCampaign;
 
   /**
    * Constructor.
@@ -43,6 +43,10 @@ abstract public class OneDayAgent extends AgentLogic {
       Logging.log("[-] Final Profit: " + endOfDayMessage.getCumulativeProfit());
       return null;
     }
+  }
+  
+  protected Campaign getCampaign() {
+	  return myCampaign;
   }
 
   /**
