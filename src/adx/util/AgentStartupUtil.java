@@ -16,5 +16,6 @@ public class AgentStartupUtil {
 	
 	public static void testOffline(AgentLogic logic, OfflineGameServerAbstract server) {
 		new OfflineAgent(server, logic).connect("test_agent");
+		while (true) {}
 	}
 }
