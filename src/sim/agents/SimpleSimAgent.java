@@ -1,4 +1,4 @@
-package adx.sim.agents;
+package sim.agents;
 
 import java.util.HashSet;
 import java.util.Set;

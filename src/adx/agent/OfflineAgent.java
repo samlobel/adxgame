@@ -19,8 +19,6 @@ import adx.util.Startup;
  */
 public class OfflineAgent extends AbsAgent {
 
-	protected String agentName = null;
-
 	private OfflineGameServerAbstract server;
 
 	/**

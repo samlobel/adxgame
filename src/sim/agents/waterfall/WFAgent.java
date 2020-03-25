@@ -1,4 +1,4 @@
-package adx.sim.agents.waterfall;
+package sim.agents.waterfall;
 
 import java.util.HashSet;
 import java.util.Set;

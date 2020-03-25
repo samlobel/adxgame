@@ -1,4 +1,4 @@
-package adx.sim.agents.WE;
+package sim.sim.agents.WE;
 
 import ilog.concert.IloException;
 
@@ -19,6 +19,7 @@ import adx.sim.agents.GameGoods;
 import adx.sim.agents.SimAgent;
 import adx.sim.agents.SimAgentModel;
 import adx.sim.agents.SimAgentModel.MarketModel;
+import adx.sim.agents.WE.GameMarketWithReserve;
 import adx.structures.BidBundle;
 import adx.structures.SimpleBidEntry;
 import adx.util.Logging;

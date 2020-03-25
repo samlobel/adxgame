@@ -1,4 +1,4 @@
-package adx.sim.agents.WE;
+package sim.sim.agents.WE;
 
 import java.util.ArrayList;
 

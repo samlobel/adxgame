@@ -1,4 +1,4 @@
-package adx.sim.agents;
+package sim.agents;
 
 import java.util.ArrayList;
 import java.util.HashMap;

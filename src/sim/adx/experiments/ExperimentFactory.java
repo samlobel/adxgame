@@ -1,12 +1,13 @@
-package adx.experiments;
+package sim.adx.experiments;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import adx.experiments.Experiment;
 import adx.sim.agents.SimAgent;
 import adx.sim.agents.SimpleSimAgent;
-import adx.sim.agents.WE.WEAgent;
 import adx.sim.agents.waterfall.WFAgent;
+import sim.sim.agents.WE.WEAgent;
 
 /**
  * Factory class to create experiments.
