@@ -3,6 +3,7 @@ package adx.util;
 import adx.agent.AgentLogic;
 import adx.agent.OfflineAgent;
 import adx.agent.OnlineAgent;
+import adx.exceptions.AdXException;
 import adx.server.OfflineGameServerAbstract;
 
 public class AgentStartupUtil {
@@ -14,8 +15,8 @@ public class AgentStartupUtil {
 		new OnlineAgent(host, port, logic).connect(name);
 	}
 	
-	public static void testOffline(AgentLogic logic, OfflineGameServerAbstract server) {
+	public static void testOffline(AgentLogic logic, OfflineGameServerAbstract server) throws AdXException {
 		new OfflineAgent(server, logic).connect("test_agent");
-		while (true) {}
+		server.runAdXGame();
 	}
 }
