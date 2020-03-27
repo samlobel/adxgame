@@ -31,7 +31,7 @@ public class SimpleBidEntry extends BidEntry {
   
   @Override
   public String toString() {
-    return "OneDayBidEntry = [query = " + this.query + ", bid = " + bid + ", limit = " + this.limit + "]";
+    return "SimpleBidEntry = [query = " + this.query + ", bid = " + bid + ", limit = " + this.limit + "]";
   }
 
 }

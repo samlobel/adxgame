@@ -1,11 +1,14 @@
 package adx.agent;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import adx.messages.ACKMessage;
 import adx.messages.ConnectServerMessage;
 import adx.messages.EndOfDayMessage;
 import adx.util.Logging;
+import adx.util.Pair;
 import adx.util.Startup;
 
 import com.esotericsoftware.kryonet.Client;
@@ -19,12 +22,20 @@ import com.esotericsoftware.kryonet.Listener;
  */
 public abstract class Agent {
 
+  /**
+   * Name of the agent
+   */
   protected String agentName = null;
 
   /**
    * Kryo object to communicate with server.
    */
   private final Client client;
+
+  /**
+   * Keeps the statistics.
+   */
+  protected Map<Integer, Pair<Integer, Double>> statistics;
 
   /**
    * Constructor. Initializes with a null client.
@@ -140,6 +151,25 @@ public abstract class Agent {
       Logging.log("[-] ACK Message, all ok, " + message.getMessage());
     } else {
       Logging.log("[x] ACK Message, error, " + message.getMessage());
+    }
+  }
+
+  /**
+   * Update statistics from server.
+   * 
+   * @param statistics
+   */
+  public void updateStatistics(Map<Integer, Pair<Integer, Double>> statistics) {
+    if (statistics != null) {
+      for (Entry<Integer, Pair<Integer, Double>> x : statistics.entrySet()) {
+        if (this.statistics.containsKey(x.getKey())) {
+          Pair<Integer, Double> currentStats = this.statistics.get(x.getKey());
+          Pair<Integer, Double> newStats = new Pair<Integer, Double>(currentStats.getElement1() + x.getValue().getElement1(), currentStats.getElement2() + x.getValue().getElement2());
+          this.statistics.put(x.getKey(), newStats);
+        } else {
+          this.statistics.put(x.getKey(), x.getValue());
+        }
+      }
     }
   }
 
