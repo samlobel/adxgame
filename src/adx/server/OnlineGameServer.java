@@ -141,14 +141,15 @@ public class OnlineGameServer extends OnlineGameServerAbstract {
   }
 
   public static void initParams(String[] args) throws AdXException, IOException {
-    if (args.length != 2) {
-      throw new AdXException("To run an AdX game you need to pass two parameters. (1) the locaiton of the .ini file, and (2) the type of game from options" + Parameters.allowableGames);
+    if (args.length != 3) {
+      throw new AdXException("To run an AdX game you need to pass three parameters. (1) the locaiton of the .ini file, (2) the type of game from options, (3) port" + Parameters.allowableGames);
     }
     // Initialize the parameters of the game.
     // args[0] should be the location of the .ini file.
     // args[1] should be the type of game: ONE-DAY-ONE-CAMPAIGN, TWO-DAYS-ONE-CAMPAIGN, or TWO-DAYS-TWO-CAMPAIGNS.
     System.out.println("Running from .ini file in " + args[0]);
     System.out.println("Type of game " + args[1]);
+    System.out.println("Port " + args[2]);
     Parameters.populateParameters(args[0], args[1]);
   }
 
@@ -162,7 +163,7 @@ public class OnlineGameServer extends OnlineGameServerAbstract {
     try {
       System.out.println("GameServer");
       OnlineGameServer.initParams(args);
-      new OnlineGameServer(9898).runAdXGame();
+      new OnlineGameServer(Integer.parseInt(args[2])).runAdXGame();
     } catch (IOException | AdXException e) {
       Logging.log("Error initializing the server --> ");
       e.printStackTrace();
