@@ -6,6 +6,7 @@
 /Users/Jake/Desktop/Brown/adxgame/src/adx/messages/EndOfDayMessage.java
 /Users/Jake/Desktop/Brown/adxgame/src/adx/statistics/Statistics.java
 /Users/Jake/Desktop/Brown/adxgame/src/adx/variants/twodaysgame/IrrationalTwoDaysOneCampaignAgent.java
+/Users/Jake/Desktop/Brown/adxgame/src/adx/util/AgentStartupUtil.java
 /Users/Jake/Desktop/Brown/adxgame/src/adx/server/ServerState.java
 /Users/Jake/Desktop/Brown/adxgame/src/adx/exceptions/AdXException.java
 /Users/Jake/Desktop/Brown/adxgame/src/adx/variants/twodaysgame/SimpleTwoDaysTwoCampaingsAgent.java
