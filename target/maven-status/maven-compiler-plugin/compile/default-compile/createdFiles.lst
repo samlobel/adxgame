@@ -20,6 +20,7 @@ adx/auctions/CampaignAuctions$CompareCampaignsBids.class
 adx/test/GameAgentTest.class
 adx/variants/twodaysgame/SimpleTwoDaysOneCampaignAgent.class
 adx/statistics/StatisticsCampaigns.class
+adx/util/AgentStartupUtil.class
 adx/agent/OfflineAgent.class
 adx/agent/OnlineAgent.class
 adx/test/AllTests.class

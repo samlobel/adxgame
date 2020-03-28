@@ -8,7 +8,7 @@
 	<build>
 		<resources>
 			<resource>
-				<directory>src/main/resources</directory>
+				<directory>config</directory>
 			</resource>
 		</resources>
 		<plugins>
