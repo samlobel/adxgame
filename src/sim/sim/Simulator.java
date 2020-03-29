@@ -6,6 +6,7 @@ import java.util.List;
 import adx.exceptions.AdXException;
 import adx.server.ServerState;
 import adx.sim.agents.SimAgent;
+import adx.statistics.EffectiveReach;
 import adx.statistics.Statistics;
 import adx.structures.BidBundle;
 import adx.structures.Campaign;
@@ -105,7 +106,7 @@ public class Simulator {
     // Run auctions
     // Logging.log("[Simulator]: run auctions with reserve = " + this.reserve);
     this.serverState.runAdAuctions(this.reserve, this.numberOfImpressions);
-    this.serverState.updateDailyStatistics();
+    this.serverState.updateDailyStatistics(EffectiveReach.SIGMOIDAL);
     // Report results
     // this.serverState.printServerState();
     // Logging.log(this.serverState.getStatistics().getStatisticsAds().printNiceAdStatisticsTable());

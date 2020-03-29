@@ -11,6 +11,7 @@ import java.util.Set;
 import adx.auctions.AdAuctions;
 import adx.auctions.CampaignAuctions;
 import adx.exceptions.AdXException;
+import adx.statistics.EffectiveReach;
 import adx.statistics.Statistics;
 import adx.structures.BidBundle;
 import adx.structures.BidEntry;
@@ -247,8 +248,8 @@ public class ServerState {
    * @param day
    * @throws AdXException
    */
-  public void updateDailyStatistics() throws AdXException {
-    this.statistics.updateDailyStatistics(this.currentDay);
+  public void updateDailyStatistics(EffectiveReach reachType) throws AdXException {
+    this.statistics.updateDailyStatistics(this.currentDay, reachType);
   }
 
   /**

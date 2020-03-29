@@ -5,6 +5,7 @@ import java.time.Instant;
 
 import adx.exceptions.AdXException;
 import adx.server.OnlineGameServer;
+import adx.statistics.EffectiveReach;
 import adx.structures.Campaign;
 import adx.util.Logging;
 import adx.util.Parameters;
@@ -56,7 +57,7 @@ public class TwoDaysTwoCampaignsGameServer extends OnlineGameServer {
               synchronized (this) {
                 try {
                   this.serverState.runAdAuctions();
-                  this.serverState.updateDailyStatistics();
+                  this.serverState.updateDailyStatistics(EffectiveReach.SIGMOIDAL);
                   if (day == 0) {
                     // Once the first day is done, distribute campaigns for the second day.
                     this.distributeSecondCampaigns();

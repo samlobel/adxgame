@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Connection;
 
 import adx.exceptions.AdXException;
 import adx.messages.EndOfDayMessage;
+import adx.statistics.EffectiveReach;
 import adx.structures.Campaign;
 import adx.util.Logging;
 import adx.util.Parameters;
@@ -67,7 +68,7 @@ public class OnlineGameServer extends OnlineGameServerAbstract {
                 try {
                   this.serverState.runAdAuctions();
                   this.serverState.runCampaignAuctions();
-                  this.serverState.updateDailyStatistics();
+                  this.serverState.updateDailyStatistics(EffectiveReach.LINEAR);
                 } catch (AdXException e) {
                   Logging.log("[x] Error running some auction -> " + e.getMessage());
                 }
@@ -89,9 +90,11 @@ public class OnlineGameServer extends OnlineGameServerAbstract {
         this.serverState.initStatistics();
         Sampling.resetUniqueCampaignId();
       }
+      this.gameServer.stop();
+      Instant endTime = Instant.now().plusSeconds(Parameters.get_SECONDS_DURATION_DAY());
+      while (!Instant.now().isAfter(endTime)) {}
       Logging.log("\nGame ended, played " + (this.gameNumber - 1) + " games, final results are: ");
       Logging.log(Printer.getNiceProfitTable(this.serverState.getStatistics().orderProfits(this.serverState.getAverageAcumProfitOverAllGames(this.gameNumber - 1).entrySet()), -1));
-      this.gameServer.stop();
     } else {
       Logging.log("[x] There are no players, stopping the server at " + Instant.now());
       this.gameServer.stop();

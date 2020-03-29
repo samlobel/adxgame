@@ -7,6 +7,7 @@ import java.util.HashSet;
 import org.junit.Test;
 
 import adx.exceptions.AdXException;
+import adx.statistics.EffectiveReach;
 import adx.statistics.Statistics;
 import adx.structures.Campaign;
 import adx.structures.MarketSegment;
@@ -28,7 +29,7 @@ public class StatisticsTest {
   @Test
   public void testComputeQualityScore0() throws AdXException {
     Statistics statistics = StatisticsTest.getStatistics();
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement1(), new Double(1.0));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement1(), new Double(1.0));
 
     Campaign c = new Campaign(1, 1, 1, MarketSegment.FEMALE, 100);
     statistics.getStatisticsCampaign().registerCampaign(0, c, "agent0");
@@ -36,7 +37,7 @@ public class StatisticsTest {
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.FEMALE), 90, 0.0);
     // This test only works with QUALITY_SCORE_LEARNING_RATE of 0.6
     assertEquals(Parameters.get_QUALITY_SCORE_LEARNING_RATE(), 0.6, 0.00000001);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement1(), new Double(0.9261666020749232));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement1(), new Double(0.9261666020749232));
   }
 
   @Test
@@ -51,7 +52,7 @@ public class StatisticsTest {
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.FEMALE), 90, 0.0);
     // This test only works with QUALITY_SCORE_LEARNING_RATE of 0.6
     assertEquals(Parameters.get_QUALITY_SCORE_LEARNING_RATE(), 0.6, 0.00000001);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement1(), new Double(1.1630636924254625));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement1(), new Double(1.1630636924254625));
 
   }
 
@@ -70,7 +71,7 @@ public class StatisticsTest {
     assertEquals(Parameters.get_QUALITY_SCORE_LEARNING_RATE(), 0.6, 0.00000001);
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.FEMALE), 100, 0.0);
     statistics.getStatisticsAds().addStatistic(1, "agent0", 2, new Query(MarketSegment.FEMALE), 200, 0.0);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement1(), new Double(0.9999673448059072));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement1(), new Double(0.9999673448059072));
 
   }
 
@@ -89,7 +90,7 @@ public class StatisticsTest {
     statistics.getStatisticsAds().addStatistic(1, "agent0", 2, new Query(MarketSegment.FEMALE), 200, 0.0);
     // This test only works with QUALITY_SCORE_LEARNING_RATE of 0.6
     assertEquals(Parameters.get_QUALITY_SCORE_LEARNING_RATE(), 0.6, 0.00000001);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement1(), new Double(0.7599766748613623));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement1(), new Double(0.7599766748613623));
 
   }
 
@@ -108,14 +109,14 @@ public class StatisticsTest {
     statistics.getStatisticsAds().addStatistic(1, "agent0", 2, new Query(MarketSegment.FEMALE), 0, 0.0);
     // This test only works with QUALITY_SCORE_LEARNING_RATE of 0.6
     assertEquals(Parameters.get_QUALITY_SCORE_LEARNING_RATE(), 0.6, 0.00000001);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement1(), new Double(0.39999066994454496));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement1(), new Double(0.39999066994454496));
 
   }
 
   @Test
   public void testComputeProfit0() throws AdXException {
     Statistics statistics = StatisticsTest.getStatistics();
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement2(), new Double(0.0));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement2(), new Double(0.0));
 
     Campaign c0 = new Campaign(1, 1, 1, MarketSegment.FEMALE, 100);
     Campaign c1 = new Campaign(2, 1, 1, MarketSegment.FEMALE, 200);
@@ -127,10 +128,10 @@ public class StatisticsTest {
 
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.FEMALE), 100, 0.0);
     statistics.getStatisticsAds().addStatistic(1, "agent0", 2, new Query(MarketSegment.FEMALE), 100, 0.0);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement2(), new Double(144.1513113566575));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement2(), new Double(144.1513113566575));
 
     statistics.getStatisticsAds().addStatistic(1, "agent0", 2, new Query(MarketSegment.FEMALE), 100, 0.0);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement2(), new Double(299.9883374306812));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement2(), new Double(299.9883374306812));
   }
 
   @Test
@@ -147,7 +148,7 @@ public class StatisticsTest {
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.FEMALE), 80, 85.25);
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.MALE), 80, 85.25);
     statistics.getStatisticsAds().addStatistic(1, "agent0", 2, new Query(MarketSegment.MALE_HIGH_INCOME), 80, 85.25);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement2(), new Double(-114.94367301687879));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement2(), new Double(-114.94367301687879));
   }
 
   @Test
@@ -165,10 +166,10 @@ public class StatisticsTest {
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.MALE), 80, 85.25);
     statistics.getStatisticsAds().addStatistic(1, "agent0", 2, new Query(MarketSegment.MALE_HIGH_INCOME), 80, 85.25);
 
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement2(), new Double(-114.94367301687879));
-    statistics.updateDailyStatistics(1);
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement2(), new Double(-114.94367301687879));
+    statistics.updateDailyStatistics(1, EffectiveReach.SIGMOIDAL);
     statistics.getStatisticsAds().addStatistic(2, "agent0", 2, new Query(MarketSegment.FEMALE), 60, 85.25);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(2, "agent0").getElement2(), new Double(-114.94367301687879 - 85.25));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(2, "agent0", EffectiveReach.SIGMOIDAL).getElement2(), new Double(-114.94367301687879 - 85.25));
     // Logging.log(statistics.getStatisticsAds().printNiceSummaryTable());
   }
 
@@ -180,23 +181,23 @@ public class StatisticsTest {
     c1.setBudget(3500.0);
 
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.FEMALE_YOUNG_HIGH_INCOME), 150, 0.0);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement2(), new Double(121.4532557060372));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement2(), new Double(121.4532557060372));
 
     statistics.getStatisticsAds().addStatistic(1, "agent0", 1, new Query(MarketSegment.MALE), 9999, 99.9);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0").getElement2(), new Double(121.4532557060372 - 99.9));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(1, "agent0", EffectiveReach.SIGMOIDAL).getElement2(), new Double(121.4532557060372 - 99.9));
 
-    statistics.updateDailyStatistics(1);
+    statistics.updateDailyStatistics(1, EffectiveReach.SIGMOIDAL);
 
     statistics.getStatisticsAds().addStatistic(2, "agent0", 1, new Query(MarketSegment.MALE), 9999, 99.9);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(2, "agent0").getElement2(), new Double(121.4532557060372 - 99.9 - 99.9));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(2, "agent0", EffectiveReach.SIGMOIDAL).getElement2(), new Double(121.4532557060372 - 99.9 - 99.9));
 
     statistics.getStatisticsAds().addStatistic(2, "agent0", 1, new Query(MarketSegment.MALE_YOUNG_LOW_INCOME), 623, 0.0);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(2, "agent0").getElement2(), new Double(2078.516182293361));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(2, "agent0", EffectiveReach.SIGMOIDAL).getElement2(), new Double(2078.516182293361));
 
-    statistics.updateDailyStatistics(2);
+    statistics.updateDailyStatistics(2, EffectiveReach.SIGMOIDAL);
 
     statistics.getStatisticsAds().addStatistic(3, "agent0", 1, new Query(MarketSegment.FEMALE_OLD), 789, 24.0);
-    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(3, "agent0").getElement2(), new Double(2078.516182293361 - 24.0));
+    assertEquals(statistics.computeQualityScoreAndCumulativeProfit(3, "agent0", EffectiveReach.SIGMOIDAL).getElement2(), new Double(2078.516182293361 - 24.0));
 
     // Logging.log(statistics.getStatisticsAds().printNiceSummaryTable());
     // Logging.log(statistics.getStatisticsAds().printNiceAdStatisticsTable());

@@ -10,6 +10,7 @@ import com.esotericsoftware.kryonet.Connection;
 import adx.agent.OfflineAgent;
 import adx.exceptions.AdXException;
 import adx.messages.EndOfDayMessage;
+import adx.statistics.EffectiveReach;
 import adx.structures.Campaign;
 import adx.util.Logging;
 import adx.util.Parameters;
@@ -66,7 +67,7 @@ public class OfflineGameServer extends OfflineGameServerAbstract {
 							try {
 								this.serverState.runAdAuctions();
 								this.serverState.runCampaignAuctions();
-								this.serverState.updateDailyStatistics();
+								this.serverState.updateDailyStatistics(EffectiveReach.LINEAR);
 							} catch (AdXException e) {
 								Logging.log("[x] Error running some auction -> " + e.getMessage());
 							}
