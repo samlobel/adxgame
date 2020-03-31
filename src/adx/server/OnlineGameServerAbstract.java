@@ -111,7 +111,7 @@ abstract public class OnlineGameServerAbstract {
    * @param agentConnection
    * @throws Exception
    */
-  protected void handleJoinGameMessage(ConnectServerMessage joinGameMessage, Connection agentConnection) throws Exception {
+  protected synchronized void handleJoinGameMessage(ConnectServerMessage joinGameMessage, Connection agentConnection) throws Exception {
     if (!this.acceptingNewPlayers) {
       joinGameMessage.setServerResponse("Not accepting agents");
       joinGameMessage.setStatusCode(3);
@@ -150,7 +150,7 @@ abstract public class OnlineGameServerAbstract {
    * @param bidBundle
    * @param connection
    */
-  protected void handleBidBundleMessage(BidBundle bidBundle, Connection connection) {
+  protected synchronized void handleBidBundleMessage(BidBundle bidBundle, Connection connection) {
     Logging.log("[-] Received the following bid bundle: \n\t " + bidBundle + ", from " + this.connectionsToNames.get(connection));
     Pair<Boolean, String> bidBundleAccept = this.serverState.addBidBundle(bidBundle.getDay(), this.connectionsToNames.get(connection), bidBundle);
     if (bidBundleAccept.getElement1()) {
