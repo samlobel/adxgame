@@ -41,7 +41,7 @@ public class OnlineGameServer extends OnlineGameServerAbstract {
    * 
    * @throws AdXException
    */
-  protected void runAdXGame() throws AdXException {
+  public void runAdXGame() throws AdXException {
     // First order of business is to accept connections for a fixed amount of time
     Instant deadlineForNewPlayers = Instant.now().plusSeconds(Parameters.get_SECONDS_WAIT_PLAYERS());
     Logging.log("[-] Accepting connections until " + deadlineForNewPlayers);

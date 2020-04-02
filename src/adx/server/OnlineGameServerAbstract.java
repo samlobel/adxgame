@@ -164,6 +164,6 @@ abstract public class OnlineGameServerAbstract {
    * Runs the game. Must be implemented by the extending class.
    * @throws AdXException 
    */
-  abstract protected void runAdXGame() throws AdXException;
+  abstract public void runAdXGame() throws AdXException;
   
 }
