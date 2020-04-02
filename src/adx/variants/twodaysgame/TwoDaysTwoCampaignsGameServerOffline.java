@@ -43,7 +43,6 @@ public class TwoDaysTwoCampaignsGameServerOffline extends OfflineGameServer {
 		// Check if there is at least one agent to play the game.
 		if (this.namesToConnections.size() > 0) {
 			while (this.gameNumber < Parameters.get_TOTAL_SIMULATED_GAMES() + 1) {
-				Instant endTime = Instant.now().plusSeconds(Parameters.get_SECONDS_DURATION_DAY());
 				this.setUpGame();
 				this.sendEndOfDayMessage();
 				int day = 0;
@@ -68,7 +67,6 @@ public class TwoDaysTwoCampaignsGameServerOffline extends OfflineGameServer {
 							}
 						}
 					}
-					endTime = Instant.now().plusSeconds(Parameters.get_SECONDS_DURATION_DAY());
 					day++;
 					this.sendEndOfDayMessage();
 				}
