@@ -1,6 +1,5 @@
 package adx.util;
 
-import java.time.Instant;
 import java.util.Map;
 
 import adx.agent.AgentLogic;
@@ -13,10 +12,6 @@ public class AgentStartupUtil {
 	public static void startOnline(AgentLogic logic, String[] args, String name) {
 		String host = args[0];
 		int port = Integer.parseInt(args[1]);
-		
-		if (name == "") {
-			name = "agent_" + Instant.now().toString();
-		}
 		
 		new OnlineAgent(host, port, logic).connect(name);
 	}

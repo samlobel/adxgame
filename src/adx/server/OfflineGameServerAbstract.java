@@ -89,7 +89,7 @@ abstract public class OfflineGameServerAbstract {
 //      agentsInfo.put("Agent" + i, "123456");
 //    }
 //    return agentsInfo.containsKey(agentName) && agentsInfo.get(agentName).equals(agentPassword);
-	  return true;
+	  return agentName.length() > 0;
   }
   
   /**
@@ -99,7 +99,7 @@ abstract public class OfflineGameServerAbstract {
    * @param agentConnection
    * @throws Exception
    */
-  protected void handleJoinGameMessage(ConnectServerMessage joinGameMessage, OfflineAgent agentConnection) throws Exception {
+  protected synchronized void handleJoinGameMessage(ConnectServerMessage joinGameMessage, OfflineAgent agentConnection) throws Exception {
     if (!this.acceptingNewPlayers) {
       joinGameMessage.setServerResponse("Not accepting agents");
       joinGameMessage.setStatusCode(3);

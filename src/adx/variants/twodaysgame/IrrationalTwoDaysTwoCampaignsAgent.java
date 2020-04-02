@@ -34,9 +34,9 @@ public class IrrationalTwoDaysTwoCampaignsAgent extends TwoDaysTwoCampaignsAgent
       simpleBidEntries.add(new SimpleBidEntry(MarketSegment.MALE_YOUNG_LOW_INCOME, irrationalBid, Double.MAX_VALUE));
       int campaignId;
       if (day == 1) {
-        campaignId = this.firstCampaign.getId();
+        campaignId = this.getFirstCampaign().getId();
       } else {
-        campaignId = this.secondCampaign.getId();
+        campaignId = this.getSecondCampaign().getId();
       }
       return new TwoDaysBidBundle(day, campaignId, Double.MAX_VALUE, simpleBidEntries);
     } catch (AdXException e) {

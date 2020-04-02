@@ -25,12 +25,12 @@ public class SimpleTwoDaysTwoCampaingsAgent extends TwoDaysTwoCampaignsAgent {
     try {
       Campaign c = null;
       if (day == 1) {
-        Logging.log("[-] Bid for first campaign which is: " + this.firstCampaign);
-        c = this.firstCampaign;
+        Logging.log("[-] Bid for first campaign which is: " + this.getFirstCampaign());
+        c = this.getFirstCampaign();
 
       } else if (day == 2) {
-        Logging.log("[-] Bid for second campaign which is: " + this.secondCampaign);
-        c = this.secondCampaign;
+        Logging.log("[-] Bid for second campaign which is: " + this.getSecondCampaign());
+        c = this.getSecondCampaign();
       } else {
         throw new AdXException("[x] Bidding for invalid day " + day + ", bids in this game are only for day 1 or 2.");
       }

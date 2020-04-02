@@ -101,7 +101,7 @@ abstract public class OnlineGameServerAbstract {
 //      agentsInfo.put("Agent" + i, "123456");
 //    }
 //    return agentsInfo.containsKey(agentName) && agentsInfo.get(agentName).equals(agentPassword);
-	  return true;
+	  return agentName.length() > 0;
   }
   
   /**

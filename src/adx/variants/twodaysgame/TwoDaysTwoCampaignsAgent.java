@@ -18,12 +18,12 @@ abstract public class TwoDaysTwoCampaignsAgent extends AgentLogic {
   /**
    * Campaign of day 1
    */
-  protected Campaign firstCampaign;
+  private Campaign firstCampaign;
 
   /**
    * Campaign of day 2
    */
-  protected Campaign secondCampaign;
+  private Campaign secondCampaign;
 
   /**
    * Constructor.
@@ -72,6 +72,14 @@ abstract public class TwoDaysTwoCampaignsAgent extends AgentLogic {
       Logging.log("[-] Final Quality Score: " + endOfDayMessage.getQualityScore());
     }
     return null;
+  }
+  
+  protected Campaign getFirstCampaign() {
+	  return this.firstCampaign;
+  }
+  
+  protected Campaign getSecondCampaign() {
+	  return this.secondCampaign;
   }
 
   /**
