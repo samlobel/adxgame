@@ -89,7 +89,11 @@ abstract public class OfflineGameServerAbstract {
 //      agentsInfo.put("Agent" + i, "123456");
 //    }
 //    return agentsInfo.containsKey(agentName) && agentsInfo.get(agentName).equals(agentPassword);
-	  return agentName.length() > 0;
+	  if (agentName.length() == 0) {
+		  Logging.log("WARNING: trying to enter agent with no name. Connection will be rejected.");
+		  return false;
+	  }
+	  return true;
   }
   
   /**
