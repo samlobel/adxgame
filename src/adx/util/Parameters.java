@@ -175,7 +175,14 @@ public class Parameters {
 
       // Game-specific parameters.
       Parameters.TOTAL_SIMULATED_DAYS = Integer.parseInt(ini.get(type_of_game).get("TOTAL_SIMULATED_DAYS"));
-      Parameters.CAMPAIGN_DURATIONS = ImmutableList.of(Integer.parseInt(ini.get(type_of_game).get("CAMPAIGN_DURATIONS")));
+
+      // Compute an immutable list of integers corresponding to the allowable duration of campaigns.
+      String[] possibleCampaingsDurations = ini.get(type_of_game).get("CAMPAIGN_DURATIONS").split(",");
+      Integer[] temp = new Integer[possibleCampaingsDurations.length];
+      for (int i = 0; i < possibleCampaingsDurations.length; i++) {
+        temp[i] = Integer.parseInt(possibleCampaingsDurations[i]);
+      }
+      Parameters.CAMPAIGN_DURATIONS = ImmutableList.copyOf(temp);
 
       // Mark the parameters as initialized, thus implementing the singleton pattern.
       Parameters.initialized = true;
