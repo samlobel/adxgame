@@ -2,9 +2,14 @@ package adx.variants.ndaysgame;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
+import java.util.Map.Entry;
+
+import com.esotericsoftware.kryonet.Connection;
 
 import adx.exceptions.AdXException;
-import adx.server.GameServer;
+import adx.messages.EndOfDayMessage;
+import adx.server.OnlineGameServer;
 import adx.statistics.EffectiveReach;
 import adx.structures.Campaign;
 import adx.util.Logging;
@@ -17,7 +22,7 @@ import adx.util.Sampling;
  * 
  * @author Enrique Areyan Viqueira
  */
-public class NDaysNCampaignsGameServer extends GameServer {
+public class NDaysNCampaignsGameServer extends OnlineGameServer {
 
   /**
    * Constructor.
@@ -31,7 +36,7 @@ public class NDaysNCampaignsGameServer extends GameServer {
   }
 
   @Override
-  protected void runAdXGame() throws AdXException {
+  public void runAdXGame() throws AdXException {
     // First order of business is to accept connections for a fixed amount of time
     Instant deadlineForNewPlayers = Instant.now().plusSeconds(Parameters.get_SECONDS_WAIT_PLAYERS());
     Logging.log("[-] Accepting connections until " + deadlineForNewPlayers);
@@ -57,8 +62,8 @@ public class NDaysNCampaignsGameServer extends GameServer {
               synchronized (this) {
                 try {
                   this.serverState.runAdAuctions();
+                  this.serverState.runCampaignAuctions();
                   this.serverState.updateDailyStatistics(EffectiveReach.SIGMOIDAL);
-                  this.distributeCampaigns(day + 1);
                 } catch (AdXException e) {
                   Logging.log("[x] Error running some auction -> " + e.getMessage());
                 }
@@ -90,24 +95,6 @@ public class NDaysNCampaignsGameServer extends GameServer {
   }
 
   /**
-   * This is the main difference of this game. On each day, a new campaign is given to each agent based on their performance so far.
-   * 
-   * @throws AdXException
-   */
-  protected void distributeCampaigns(int day) throws AdXException {
-    Logging.log("[-] Distribute new campaings.");
-    // Distribute Campaigns to each agent based on their current QS.
-    for (String agent : this.connectionsToNames.values()) {
-      Logging.log("\t\t Sending a new campaign to " + agent + " with QS = " + this.serverState.getQualitScore(agent));
-      Campaign c = Sampling.sampleCampaign(day);
-      // To avoid potential problem with the campaign object, the budget is at least 0.1.
-      c.setBudget(Math.max(0.1, c.getReach() * this.serverState.getQualitScore(agent)));
-      Logging.log("\t\t\t" + c);
-      this.serverState.registerCampaign(c, agent);
-    }
-  }
-
-  /**
    * Main server method.
    * 
    * @param args
@@ -116,7 +103,7 @@ public class NDaysNCampaignsGameServer extends GameServer {
   public static void main(String[] args) {
     try {
       System.out.println("NDaysNCampaigns Game");
-      GameServer.initParams(args);
+      OnlineGameServer.initParams(args);
       new NDaysNCampaignsGameServer(9898).runAdXGame();
     } catch (IOException | AdXException e) {
       Logging.log("Error initializing the server --> ");

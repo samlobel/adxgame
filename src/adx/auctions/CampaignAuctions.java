@@ -105,7 +105,7 @@ public class CampaignAuctions {
         }
         Double qualityScore = qualityScores.get(agentName);
         if (bidValue >= (campaign.getReach() * 0.1) && bidValue <= campaign.getReach()) {
-          bids.add(new Pair<String, Double>(agentName, bidValue / qualityScore));
+          bids.add(new Pair<String, Double>(agentName, bidValue / Math.max(qualityScore, 0.1)));
         }
       }
     }

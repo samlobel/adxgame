@@ -1,5 +1,6 @@
 package adx.variants.ndaysgame;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,12 +30,12 @@ public class SimpleNDaysNCampaignAgent extends NDaysNCampaignsAgent {
     try {
       // Bidding only on the exact market segment of the campaign.
       Set<SimpleBidEntry> bidEntries = new HashSet<SimpleBidEntry>();
-      Campaign campaign = this.myCampaigns.get(day);
+      Campaign campaign = new ArrayList<>(this.getActiveCampaigns()).get(0);
       bidEntries.add(new SimpleBidEntry(campaign.getMarketSegment(), campaign.getBudget() / (double) campaign.getReach(), campaign.getBudget()));
       Logging.log("[-] bidEntries = " + bidEntries);
 
       // The bid bundle indicates the campaign id, the limit across all auctions, and the bid entries.
-      return new NDaysBidBundle(this.currentDay, campaign.getId(), campaign.getBudget(), bidEntries);
+      return new NDaysBidBundle(this.getDay(), campaign.getId(), campaign.getBudget(), bidEntries);
     } catch (AdXException e) {
       Logging.log("[x] Something went wrong getting the bid bundle: " + e.getMessage());
       return null;
