@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import adx.exceptions.AdXException;
@@ -49,18 +48,23 @@ public class GameAgent extends AgentLogic {
    * Keeps the statistics.
    */
   protected Map<Integer, Pair<Integer, Double>> statistics;
-
+  
   /**
    * Constructor.
    * 
-   * @param host - on which the agent will try to connect.
-   * @param port - the agent will use for the connection.
+   * @param host
+   *               on which the agent will try to connect.
+   * @param port
+   *               the agent will use for the connection.
    */
   public GameAgent() {
     super();
     this.init();
   }
 
+  /**
+   * Initialize structures needed for the agent to work.
+   */
   public void init() {
     this.myCampaigns = new ArrayList<Campaign>();
     this.statistics = new HashMap<Integer, Pair<Integer, Double>>();
@@ -81,26 +85,6 @@ public class GameAgent extends AgentLogic {
       }
     }
     return activeCampaigns;
-  }
-
-  /**
-   * Update statistics from server.
-   * 
-   * @param statistics
-   */
-  public void updateStatistics(Map<Integer, Pair<Integer, Double>> statistics) {
-    if (statistics != null) {
-      for (Entry<Integer, Pair<Integer, Double>> x : statistics.entrySet()) {
-        if (this.statistics.containsKey(x.getKey())) {
-          Pair<Integer, Double> currentStats = this.statistics.get(x.getKey());
-          Pair<Integer, Double> newStats = new Pair<Integer, Double>(currentStats.getElement1() + x.getValue().getElement1(), currentStats.getElement2()
-              + x.getValue().getElement2());
-          this.statistics.put(x.getKey(), newStats);
-        } else {
-          this.statistics.put(x.getKey(), x.getValue());
-        }
-      }
-    }
   }
 
   /**
@@ -151,9 +135,9 @@ public class GameAgent extends AgentLogic {
    * Produces and sends a bidbundle for the given day.
    * 
    * @param day
-   *          - the day for which we want a bid bundle
+   *              the day for which we want a bid bundle
    * @throws AdXException
-   *           in case something went wrong creating the bid bundle.
+   *                        in case something went wrong creating the bid bundle.
    */
   public BidBundle getAdBid() throws AdXException {
     // Get the list of active campaigns for this day.
