@@ -29,7 +29,7 @@ public class CampaignAuctions {
    * @return
    * @throws AdXException
    */
-  public static Pair<Double, List<Pair<String, Double>>> winnerDetermination(List<Pair<String, Double>> bids) throws AdXException {
+  public static Pair<String, Double> winnerDetermination(List<Pair<String, Double>> bids) throws AdXException {
     if (bids == null) {
       throw new AdXException("Cannot run a campaign auction with null bids.");
     }
@@ -37,17 +37,29 @@ public class CampaignAuctions {
       throw new AdXException("Cannot run a campaign auction with no bids.");
     }
     Collections.sort(bids, CampaignAuctions.campaignBidsComparator);
-    List<Pair<String, Double>> winnersList = new ArrayList<Pair<String, Double>>();
+    List<String> winnersList = new ArrayList<>();
     double winningBid = bids.get(0).getElement2();
     for (Pair<String, Double> agentBid : bids) {
       if (agentBid.getElement2() == winningBid) {
-        winnersList.add(agentBid);
+        winnersList.add(agentBid.getElement1());
       } else {
         break;
       }
     }
-    double winningCost = (bids.size() == 1) ? Double.MAX_VALUE : bids.get(1).getElement2();
-    return new Pair<Double, List<Pair<String, Double>>>(winningCost, winnersList);
+    if (winnersList.isEmpty()) {
+    	return null;
+    }
+    Collections.shuffle(winnersList);
+    String winner = winnersList.get(0);
+    double winningCost = Double.MAX_VALUE;
+    for (int i = 1; i < bids.size(); i++) {
+    	Pair<String, Double> agentBid = bids.get(i);
+    	if (!agentBid.getElement1().equals(winner)) {
+    		winningCost = agentBid.getElement2();
+    		break;
+    	}
+    }
+    return new Pair<String, Double>(winner, winningCost);
   }
 
   /**
@@ -58,15 +70,11 @@ public class CampaignAuctions {
    * @throws AdXException
    */
   public static Pair<String, Double> runCampaignAuction(List<Pair<String, Double>> bids) throws AdXException {
-    Pair<Double, List<Pair<String, Double>>> winnersPair = CampaignAuctions.winnerDetermination(bids);
-    List<Pair<String, Double>> winners = winnersPair.getElement2();
-    Double winningCost = winnersPair.getElement1();
-    if (winners.size() <= 0) {
+    Pair<String, Double> result = CampaignAuctions.winnerDetermination(bids);
+    if (result == null) {
       throw new AdXException("There must be at least one campaign auction winner");
-    } else {
-      Collections.shuffle(winners);
-      return new Pair<String, Double>(winners.get(0).getElement1(), winningCost);
     }
+    return result;
   }
 
   /**
@@ -77,7 +85,7 @@ public class CampaignAuctions {
    * @param bidBundles
    * @throws AdXException
    */
-  public static List<Pair<String, Double>> filterBids(Campaign campaign, Map<String, BidBundle> bidBundles, Map<String, Double> qualityScores) throws AdXException {
+  public static List<Pair<String, Double>> filterToEffectiveBids(Campaign campaign, Map<String, BidBundle> bidBundles, Map<String, Double> qualityScores) throws AdXException {
     if (campaign.getId() <= 0) {
       throw new AdXException("The id of a campaign must be a positive integer");
     }
@@ -96,9 +104,8 @@ public class CampaignAuctions {
           throw new AdXException("Unable to find quality score for agent " + agentName);
         }
         Double qualityScore = qualityScores.get(agentName);
-        //Logging.log("\t\t\t For agent: " + agentName + ", with quality: " + qualityScore + ", campaign bid must be in range [" + ((campaign.getReach() * 0.1) / qualityScore) + "," + (qualityScore * campaign.getReach()) + "], received bid = " + bidValue);
-        if (bidValue >= ((campaign.getReach() * 0.1) / qualityScore) && bidValue <= (qualityScore * campaign.getReach())) {
-          bids.add(new Pair<String, Double>(agentName, bidValue));
+        if (bidValue >= (campaign.getReach() * 0.1) && bidValue <= campaign.getReach()) {
+          bids.add(new Pair<String, Double>(agentName, bidValue / qualityScore));
         }
       }
     }

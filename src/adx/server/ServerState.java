@@ -1,6 +1,8 @@
 package adx.server;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -333,18 +335,22 @@ public class ServerState {
     // Logging.log("[-] Try to run campaign auction for day " + this.currentDay);
     List<Campaign> campaignsForAuction = this.campaignsForAuction.get(this.currentDay);
     for (Campaign campaign : campaignsForAuction) {
-      // Logging.log("\t\t [-] Campaign = " + campaign);
-      List<Pair<String, Double>> filteredBids = CampaignAuctions.filterBids(campaign, this.bidBundles.row(this.currentDay),
+      List<Pair<String, Double>> filteredBids = CampaignAuctions.filterToEffectiveBids(campaign, this.bidBundles.row(this.currentDay),
           this.statistics.getQualityScores(this.currentDay - 1));
-      // Logging.log("\t\t [-] Filtered bids = " + filteredBids);
       if (filteredBids.size() > 0) {
         Pair<String, Double> winner = CampaignAuctions.runCampaignAuction(filteredBids);
-        // Logging.log("\t\t\t [-] Winner!!! = " + winner.getElement1());
         this.registerCampaign(campaign, winner.getElement1());
         if (winner.getElement2() == Double.MAX_VALUE) {
-          campaign.setBudget(campaign.getReach());
+        	double qLow = 1.0;
+        	List<Double> allQS = new ArrayList<>(this.statistics.getQualityScores(this.currentDay - 1).values());
+        	Collections.sort(allQS);
+        	for (int i = 0; i < 3; i++) {
+        		qLow += allQS.get(Math.min(i, allQS.size() - 1));
+        	}
+        	qLow /= 3;
+          campaign.setBudget(qLow * campaign.getReach() * winner.getElement2());
         } else {
-          campaign.setBudget(winner.getElement2());
+          campaign.setBudget(this.statistics.getQualityScore(this.currentDay - 1, winner.getElement1()) * winner.getElement2());
         }
       }
     }

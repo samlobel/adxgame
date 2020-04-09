@@ -177,6 +177,8 @@ public class Statistics {
     double qualityScore = this.getQualityScore(day - 1, agent);
     Double yesterdaysProfit = this.getProfit(day - 1, agent);
     double todaysProfit = 0.0;
+    int newQs = 0;
+    double newQsVal = 0.0;
     if (campaigns != null && campaigns.size() > 0) {
       for (Campaign c : campaigns) {
         int totalReachSoFar = this.adsStatisticsHandler.getSummaryStatistic(agent, c.getId()).getElement1();
@@ -187,10 +189,15 @@ public class Statistics {
             totalReachSoFar - todayEffectiveReach, c.getReach(), reachType)) * c.getBudget() - todayCost;
         if (c.getEndDay() == day) {
           // The campaign ended today, update the quality score.
-          qualityScore = (1 - Parameters.get_QUALITY_SCORE_LEARNING_RATE()) * qualityScore + Parameters.get_QUALITY_SCORE_LEARNING_RATE()
-              * this.computeEffectiveReachRatio(totalReachSoFar, c.getReach(), reachType);
+        	newQs++;
+        	newQsVal += this.computeEffectiveReachRatio(totalReachSoFar, c.getReach(), reachType);
         }
       }
+    }
+    if (newQs > 0) {
+    	newQsVal /= newQs;
+    	qualityScore = (1 - Parameters.get_QUALITY_SCORE_LEARNING_RATE()) * qualityScore
+    			+ Parameters.get_QUALITY_SCORE_LEARNING_RATE() * newQsVal;
     }
     return new Pair<Double, Double>(qualityScore, yesterdaysProfit + todaysProfit);
   }
