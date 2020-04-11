@@ -2,6 +2,7 @@ package adx.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.ini4j.Ini;
 import org.ini4j.InvalidFileFormatException;
@@ -163,7 +164,17 @@ public class Parameters {
         throw new AdXException("The type of game " + type_of_game + " is not among the valid options " + Parameters.allowableGames);
       }
       // Read the .ini file.
-      Ini ini = new Ini(new File(ini_file_location));
+      InputStream strm = Parameters.class.getClassLoader().getResourceAsStream(ini_file_location);
+		Ini ini;
+		try {
+			if (strm != null) {
+				ini = new Ini(strm);
+			} else {
+				ini = new Ini(new File(ini_file_location));
+			}
+		} catch (Exception e) {
+			ini = new Ini(new File(ini_file_location));
+		}
 
       // Global parameters
       Parameters.SECONDS_WAIT_PLAYERS = Integer.parseInt(ini.get("PARAMETERS").get("SECONDS_WAIT_PLAYERS"));

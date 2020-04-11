@@ -99,6 +99,11 @@ abstract public class NDaysNCampaignsAgent extends AgentLogic {
 	protected double getCumulativeProfit() {
 		return this.profit;
 	}
+	
+	protected static double effectiveReach(int x, int R) {
+		// Here's the quality score function if you want to use it
+		return (2.0 / 4.08577) * (Math.atan(4.08577 * ((x + 0.0) / R) - 3.08577) - Math.atan(-3.08577));
+	}
 
 	/**
 	 * Parse the end of day message.
