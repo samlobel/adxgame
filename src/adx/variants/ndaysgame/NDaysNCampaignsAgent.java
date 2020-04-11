@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import adx.agent.Agent;
 import adx.agent.AgentLogic;
 import adx.exceptions.AdXException;
 import adx.messages.EndOfDayMessage;
