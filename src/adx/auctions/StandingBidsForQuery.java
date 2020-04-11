@@ -127,8 +127,9 @@ public class StandingBidsForQuery {
         Iterator<Pair<String, BidEntry>> bidsListIterator = this.standingBids.iterator();
         Pair<String, BidEntry> currentBidder = null;
         // Keep adding bidders to the winnerList as long as their bids match the winning bid.
+        
         while ((bidsListIterator.hasNext()) && ((currentBidder = bidsListIterator.next()) != null) && currentBidder.getElement2().getBid() == winningBid) {
-          winnerList.add(currentBidder);
+        	winnerList.add(currentBidder);
         }
         // At this point we should have at least one bidder or something went wrong.
         if (winnerList.size() == 0) {

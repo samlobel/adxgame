@@ -34,7 +34,7 @@ public class AdAuctions {
     for (Entry<String, BidBundle> agentBid : bidBundles.entrySet()) {
       for (BidEntry bidEntry : agentBid.getValue().getBidEntries()) {
         // Check if the query matches.
-        if (bidEntry.getQuery().matchesQuery(query)) {
+        if (bidEntry.getQuery().matchesQuery(query) && Double.isFinite(bidEntry.getBid())) {
           bids.add(new Pair<String, BidEntry>(agentBid.getKey(), bidEntry));
         }
       }

@@ -104,6 +104,18 @@ abstract public class NDaysNCampaignsAgent extends AgentLogic {
 		// Here's the quality score function if you want to use it
 		return (2.0 / 4.08577) * (Math.atan(4.08577 * ((x + 0.0) / R) - 3.08577) - Math.atan(-3.08577));
 	}
+	
+	protected boolean isValidCampaignBid(Campaign c, double bid) {
+		return this.getActiveCampaigns().contains(c) && bid >= 0.1 * c.getReach() && bid <= c.getReach();
+	}
+	
+	protected double clipCampaignBid(Campaign c, double bid) {
+		return Math.max(0.1 * c.getReach(), Math.min(c.getReach(), bid));
+	}
+	
+	protected double effectiveCampaignBid(double bid) {
+		return bid / this.getQualityScore();
+	}
 
 	/**
 	 * Parse the end of day message.
