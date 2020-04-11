@@ -119,7 +119,7 @@ public class TwoDaysTwoCampaignsGameServer extends OnlineGameServer {
     try {
       System.out.println("TwoDaysTwoCampaigns Game");
       OnlineGameServer.initParams(args);
-      new TwoDaysTwoCampaignsGameServer(9898).runAdXGame();
+      new TwoDaysTwoCampaignsGameServer(Integer.parseInt(args[2])).runAdXGame();
     } catch (IOException | AdXException e) {
       Logging.log("Error initializing the server --> ");
       e.printStackTrace();

@@ -1,6 +1,7 @@
 package adx.variants.ndaysgame;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -68,7 +69,7 @@ abstract public class NDaysNCampaignsAgent extends AgentLogic {
 		return this.currentQualityScore.doubleValue();
 	}
 
-	protected int getDay() {
+	protected int getCurrentDay() {
 		return this.currentDay;
 	}
 
@@ -77,15 +78,23 @@ abstract public class NDaysNCampaignsAgent extends AgentLogic {
 	}
 
 	protected Set<Campaign> getActiveCampaigns() {
-		return new HashSet<>(this.myCampaigns);
+		return Collections.unmodifiableSet(this.myCampaigns);
 	}
 
-	protected int reachAchieved(Campaign c) {
+	protected int getCumulativeReach(Campaign c) {
 		Pair<Integer, Double> stats = this.statistics.getOrDefault(c.getId(), null);
 		if (stats == null) {
-			return -1;
+			return 0;
 		}
 		return stats.getElement1().intValue();
+	}
+	
+	protected double getCumulativeCost(Campaign c) {
+		Pair<Integer, Double> stats = this.statistics.getOrDefault(c.getId(), null);
+		if (stats == null) {
+			return 0.0;
+		}
+		return stats.getElement2().doubleValue();
 	}
 
 	protected double getCumulativeProfit() {
@@ -100,11 +109,11 @@ abstract public class NDaysNCampaignsAgent extends AgentLogic {
 		// Check if this is the start of a new game and initialize the agent.
 		if (endOfDayMessage.getDay() == 1) {
 			this.init();
+			this.onNewGame();
 			this.currentGame++;
 			Logging.log("\n\n[-] Starting a new Game, game #" + this.currentGame);
 		}
 		Logging.log("[-] handleEndOfDayMessage " + this.nDaysEndOfMessageString(endOfDayMessage));
-		Logging.log("[-] Current time = " + Instant.now());
 		// Read the EOD message and update the state of the agent.
 		this.currentDay = endOfDayMessage.getDay();
 		this.updateStatistics(endOfDayMessage.getStatistics());
@@ -112,18 +121,37 @@ abstract public class NDaysNCampaignsAgent extends AgentLogic {
 
 		// Remove inactive campaigns. Insert won campaigns.
 		this.myCampaigns.removeIf(campaign -> campaign.getEndDay() < this.currentDay);
-		this.myCampaigns.addAll(endOfDayMessage.getCampaignsWon());
+		if (endOfDayMessage.getCampaignsWon() != null) {
+			this.myCampaigns.addAll(endOfDayMessage.getCampaignsWon());
+		}
 
 		// Store the current quality score.
 		this.currentQualityScore = endOfDayMessage.getQualityScore();
-
+		
 		// Get the bid bundle and send it to the server.
-		NDaysBidBundle bidBundle = this.getBidBundle(this.currentDay);
-		if (bidBundle != null) {
-			Logging.log("[-] Statistics: " + this.statistics);
-			return bidBundle;
+		Map<Campaign, Double> campaignBids;
+		try {
+			campaignBids = this.getCampaignBids(Collections.unmodifiableSet(new HashSet<>(endOfDayMessage.getCampaignsForAuction())));
+		} catch (AdXException e1) {
+			// TODO Auto-generated catch block
+			campaignBids = null;
+			e1.printStackTrace();
 		}
-		return null;
+		Set<NDaysAdBidBundle> adBids;
+		try {
+			adBids = this.getAdBids();
+		} catch (AdXException e1) {
+			adBids = null;
+			e1.printStackTrace();
+		}
+		if (adBids == null) {
+			adBids = new HashSet<>();
+		}
+		try {
+			return new NDaysBidBundle(this.currentDay, adBids, campaignBids);
+		} catch (AdXException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -147,6 +175,10 @@ abstract public class NDaysNCampaignsAgent extends AgentLogic {
 	 * 
 	 * @return the agent's bid bundle.
 	 */
-	abstract protected NDaysBidBundle getBidBundle(int day);
+	abstract protected Set<NDaysAdBidBundle> getAdBids() throws AdXException;
+	
+	abstract protected Map<Campaign, Double> getCampaignBids(Set<Campaign> campaignsForAuction) throws AdXException;
+	
+	abstract protected void onNewGame();
 
 }

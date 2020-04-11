@@ -7,6 +7,7 @@ import java.util.Set;
 
 import adx.exceptions.AdXException;
 import adx.structures.BidEntry;
+import adx.structures.Campaign;
 import adx.structures.SimpleBidEntry;
 
 /**
@@ -43,6 +44,17 @@ public class BidBundleHelper {
       bidEntries.add(new BidEntry(campaignId, oneDayBidEntry.getQuery(), oneDayBidEntry.getBid(), oneDayBidEntry.getLimit()));
     }
     return bidEntries;
+  }
+  
+  public static Map<Integer, Double> createCampaignBids(Map<Campaign, Double> bids) {
+	  if (bids == null) {
+		  return null;
+	  }
+	  Map<Integer, Double> result = new HashMap<>();
+	  for (Map.Entry<Campaign, Double> ent : bids.entrySet()) {
+		  result.put(ent.getKey().getId(), ent.getValue());
+	  }
+	  return result;
   }
 
 }

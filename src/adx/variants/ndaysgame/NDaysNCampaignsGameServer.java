@@ -104,7 +104,7 @@ public class NDaysNCampaignsGameServer extends OnlineGameServer {
     try {
       System.out.println("NDaysNCampaigns Game");
       OnlineGameServer.initParams(args);
-      new NDaysNCampaignsGameServer(9898).runAdXGame();
+      new NDaysNCampaignsGameServer(Integer.parseInt(args[2])).runAdXGame();
     } catch (IOException | AdXException e) {
       Logging.log("Error initializing the server --> ");
       e.printStackTrace();

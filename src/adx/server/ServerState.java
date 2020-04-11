@@ -319,6 +319,13 @@ public class ServerState {
   public List<Campaign> generateCampaignsOpportunities() throws AdXException {
     if (!this.campaignsForAuction.containsKey(this.currentDay + 1)) {
       List<Campaign> listOfCampaigns = Sampling.sampleCampaingList(this.currentDay + 1, Parameters.get_NUMBER_AUCTION_CAMPAINGS());
+      listOfCampaigns.removeIf(campaign -> {
+		try {
+			return campaign.getEndDay() > Parameters.get_TOTAL_SIMULATED_DAYS();
+		} catch (AdXException e) {
+			return false;
+		}
+	});
       this.campaignsForAuction.put(this.currentDay + 1, listOfCampaigns);
     } else {
       throw new AdXException("[x] Already sample campaign opportunities for day: " + (this.currentDay + 1));
@@ -341,14 +348,14 @@ public class ServerState {
         Pair<String, Double> winner = CampaignAuctions.runCampaignAuction(filteredBids);
         this.registerCampaign(campaign, winner.getElement1());
         if (winner.getElement2() == Double.MAX_VALUE) {
-        	double qLow = 1.0;
+        	double qLow = 0.0;
         	List<Double> allQS = new ArrayList<>(this.statistics.getQualityScores(this.currentDay - 1).values());
         	Collections.sort(allQS);
         	for (int i = 0; i < 3; i++) {
         		qLow += allQS.get(Math.min(i, allQS.size() - 1));
         	}
         	qLow /= 3;
-          campaign.setBudget(qLow * campaign.getReach() * winner.getElement2());
+          campaign.setBudget(qLow * campaign.getReach() * this.statistics.getQualityScore(this.currentDay - 1, winner.getElement1()));
         } else {
           campaign.setBudget(this.statistics.getQualityScore(this.currentDay - 1, winner.getElement1()) * winner.getElement2());
         }
