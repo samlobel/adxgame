@@ -33,7 +33,7 @@ public class Tier1NDaysNCampaignsAgent extends NDaysNCampaignsAgent {
 
 		for (Campaign c : this.getActiveCampaigns()) {
 			SimpleBidEntry entry = new SimpleBidEntry(c.getMarketSegment(),
-					Math.max(0.1, (c.getReach() - this.getCumulativeReach(c)) / (c.getBudget() - this.getCumulativeCost(c))),
+					Math.max(0.1,  (c.getBudget() - this.getCumulativeCost(c)) / (c.getReach() - this.getCumulativeReach(c))),
 					Math.max(1.0, c.getBudget() - this.getCumulativeCost(c)));
 			NDaysAdBidBundle bundle = new NDaysAdBidBundle(c.getId(), Math.max(1.0, c.getBudget() - this.getCumulativeCost(c)),
 					Sets.newHashSet(entry));
