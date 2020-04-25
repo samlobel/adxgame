@@ -106,7 +106,7 @@ abstract public class NDaysNCampaignsAgent extends AgentLogic {
 	}
 	
 	protected boolean isValidCampaignBid(Campaign c, double bid) {
-		return this.getActiveCampaigns().contains(c) && bid >= 0.1 * c.getReach() && bid <= c.getReach();
+		return bid >= 0.1 * c.getReach() && bid <= c.getReach();
 	}
 	
 	protected double clipCampaignBid(Campaign c, double bid) {
