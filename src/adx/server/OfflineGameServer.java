@@ -67,7 +67,7 @@ public class OfflineGameServer extends OfflineGameServerAbstract {
 							try {
 								this.serverState.runAdAuctions();
 								this.serverState.runCampaignAuctions();
-								this.serverState.updateDailyStatistics(EffectiveReach.LINEAR);
+								this.serverState.updateDailyStatistics(Parameters.EFFECTIVE_REACH_TYPE);
 							} catch (AdXException e) {
 								Logging.log("[x] Error running some auction -> " + e.getMessage());
 							}

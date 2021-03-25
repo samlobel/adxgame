@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import adx.exceptions.AdXException;
+import adx.statistics.EffectiveReach;
 
 /**
  * Class with all the parameters of the game.
@@ -48,6 +49,9 @@ public class Parameters {
 
   // Campaigns can last several days. This list specifies the allowable number of days.
   public static ImmutableList<Integer> CAMPAIGN_DURATIONS;
+  
+  // Type of effective reach
+  public static EffectiveReach EFFECTIVE_REACH_TYPE;
 
   /**
    * Checks if the parameters have been initialized. Throws exception in the negative case.
@@ -147,6 +151,11 @@ public class Parameters {
     Parameters.safeguard();
     return Parameters.CAMPAIGN_DURATIONS;
   }
+  
+  public static EffectiveReach get_EFFECTIVE_REACH_TYPE() throws AdXException {
+	  Parameters.safeguard();
+	  return Parameters.EFFECTIVE_REACH_TYPE;
+  }
 
   /**
    * Populate parameters from .ini file.
@@ -186,6 +195,7 @@ public class Parameters {
 
       // Game-specific parameters.
       Parameters.TOTAL_SIMULATED_DAYS = Integer.parseInt(ini.get(type_of_game).get("TOTAL_SIMULATED_DAYS"));
+      Parameters.EFFECTIVE_REACH_TYPE = EffectiveReach.ofString(ini.get(type_of_game).get("EFFECTIVE_REACH_TYPE"));
 
       // Compute an immutable list of integers corresponding to the allowable duration of campaigns.
       String[] possibleCampaingsDurations = ini.get(type_of_game).get("CAMPAIGN_DURATIONS").split(",");
