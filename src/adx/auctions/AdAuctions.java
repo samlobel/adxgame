@@ -11,6 +11,7 @@ import adx.exceptions.AdXException;
 import adx.statistics.Statistics;
 import adx.structures.BidBundle;
 import adx.structures.BidEntry;
+import adx.structures.Campaign;
 import adx.structures.MarketSegment;
 import adx.structures.Query;
 import adx.util.Pair;
@@ -29,18 +30,21 @@ public class AdAuctions {
    * @return
    * @throws AdXException
    */
-  public static List<Pair<String, BidEntry>> filterBids(Query query, Map<String, BidBundle> bidBundles) throws AdXException {
-    List<Pair<String, BidEntry>> bids = new ArrayList<Pair<String, BidEntry>>();
-    for (Entry<String, BidBundle> agentBid : bidBundles.entrySet()) {
-      for (BidEntry bidEntry : agentBid.getValue().getBidEntries()) {
-        // Check if the query matches.
-        if (bidEntry.getQuery().matchesQuery(query) && Double.isFinite(bidEntry.getBid())) {
-          bids.add(new Pair<String, BidEntry>(agentBid.getKey(), bidEntry));
-        }
-      }
-    }
-    return bids;
-  }
+  public static List<Pair<String, BidEntry>> filterBids(Query query, Map<String, BidBundle> bidBundles, Statistics statistics) throws AdXException {
+		
+	    List<Pair<String, BidEntry>> bids = new ArrayList<Pair<String, BidEntry>>();
+	    for (Entry<String, BidBundle> agentBid : bidBundles.entrySet()) {
+	      for (BidEntry bidEntry : agentBid.getValue().getBidEntries()) {
+	    	  Campaign c = statistics.getStatisticsCampaign().getCampaign(bidEntry.getCampaignId());
+	    	  boolean marketSegmentValidForCampaign = MarketSegment.marketSegmentSubset(c.getMarketSegment(), bidEntry.getQuery().getMarketSegment());
+	        // Check if the query matches.
+	        if (bidEntry.getQuery().matchesQuery(query) && Double.isFinite(bidEntry.getBid()) && marketSegmentValidForCampaign) {
+	          bids.add(new Pair<String, BidEntry>(agentBid.getKey(), bidEntry));
+	        }
+	      }
+	    }
+	    return bids;
+	  }
 
   /**
    * Given a map Agent -> BidBundle, returns a map Campaign Id -> Limit
@@ -113,7 +117,7 @@ public class AdAuctions {
     Map<Query, StandingBidsForQuery> allQueriesStandingBids = new HashMap<Query, StandingBidsForQuery>();
     for (MarketSegment marketSegment : Sampling.segmentsToSample.keySet()) {
       Query query = new Query(marketSegment);
-      allQueriesStandingBids.put(query, new StandingBidsForQuery(day, query, AdAuctions.filterBids(query, bidBundles), reserve, statistics.getStatisticsBids()));
+      allQueriesStandingBids.put(query, new StandingBidsForQuery(day, query, AdAuctions.filterBids(query, bidBundles, statistics), reserve, statistics.getStatisticsBids()));
     }
     // Logging.log(allQueriesStandingBids);
     // Sample user population.

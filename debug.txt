@@ -1,0 +1,179 @@
+day: 1
+statistics: {}
+campaigns: [Campaign 3 = [startDay = 1, endDay = 3, Segment = YOUNG_LOW_INCOME, Reach = 3434, Budget = 3434.0]]
+bundles: [
+	 NDaysBidBundle:
+		SimpleBidEntry = [query = MALE_OLD_HIGH_INCOME, bid = 5.0, limit = 100000.0]
+		SimpleBidEntry = [query = MALE_YOUNG_HIGH_INCOME, bid = 5.0, limit = 100000.0]
+		SimpleBidEntry = [query = MALE_OLD_LOW_INCOME, bid = 5.0, limit = 100000.0]
+		SimpleBidEntry = [query = FEMALE_OLD_HIGH_INCOME, bid = 5.0, limit = 100000.0]
+		SimpleBidEntry = [query = FEMALE_YOUNG_HIGH_INCOME, bid = 5.0, limit = 100000.0]
+		SimpleBidEntry = [query = FEMALE_OLD_LOW_INCOME, bid = 5.0, limit = 100000.0]]
+queries:{FEMALE_OLD_LOW_INCOME=
+	(me, [Campaign id = 3, query = FEMALE_OLD_LOW_INCOME, bid = 5.0, limit = 100000.0])
+, FEMALE_YOUNG_HIGH_INCOME=
+	(me, [Campaign id = 3, query = FEMALE_YOUNG_HIGH_INCOME, bid = 5.0, limit = 100000.0])
+, MALE_OLD_LOW_INCOME=
+	(me, [Campaign id = 3, query = MALE_OLD_LOW_INCOME, bid = 5.0, limit = 100000.0])
+, MALE_YOUNG_HIGH_INCOME=
+	(me, [Campaign id = 3, query = MALE_YOUNG_HIGH_INCOME, bid = 5.0, limit = 100000.0])
+, MALE_YOUNG_LOW_INCOME=
+, FEMALE_YOUNG_LOW_INCOME=
+, MALE_OLD_HIGH_INCOME=
+	(me, [Campaign id = 3, query = MALE_OLD_HIGH_INCOME, bid = 5.0, limit = 100000.0])
+, FEMALE_OLD_HIGH_INCOME=
+	(me, [Campaign id = 3, query = FEMALE_OLD_HIGH_INCOME, bid = 5.0, limit = 100000.0])
+}
+q:FEMALE_OLD_LOW_INCOME
+b: 
+	(me, [Campaign id = 3, query = FEMALE_OLD_LOW_INCOME, bid = 5.0, limit = 100000.0])
+
+6156   6184   0.0   0.0
+day: 2
+statistics: {3=(6156, 0.0)}
+campaigns: [Campaign 3 = [startDay = 1, endDay = 3, Segment = YOUNG_LOW_INCOME, Reach = 3434, Budget = 3434.0]]
+bundles: []
+queries:{FEMALE_OLD_LOW_INCOME=
+, FEMALE_YOUNG_HIGH_INCOME=
+, MALE_OLD_LOW_INCOME=
+, MALE_YOUNG_HIGH_INCOME=
+, MALE_YOUNG_LOW_INCOME=
+, FEMALE_YOUNG_LOW_INCOME=
+, MALE_OLD_HIGH_INCOME=
+, FEMALE_OLD_HIGH_INCOME=
+}
+q:MALE_YOUNG_LOW_INCOME
+b: 
+
+day: 3
+statistics: {3=(6156, 0.0)}
+campaigns: [Campaign 3 = [startDay = 1, endDay = 3, Segment = YOUNG_LOW_INCOME, Reach = 3434, Budget = 3434.0]]
+bundles: []
+queries:{FEMALE_OLD_LOW_INCOME=
+, FEMALE_YOUNG_HIGH_INCOME=
+, MALE_OLD_LOW_INCOME=
+, MALE_YOUNG_HIGH_INCOME=
+, MALE_YOUNG_LOW_INCOME=
+, FEMALE_YOUNG_LOW_INCOME=
+, MALE_OLD_HIGH_INCOME=
+, FEMALE_OLD_HIGH_INCOME=
+}
+q:MALE_OLD_HIGH_INCOME
+b: 
+
+day: 4
+statistics: {3=(6156, 0.0)}
+campaigns: []
+bundles: []
+queries:{FEMALE_OLD_LOW_INCOME=
+, FEMALE_YOUNG_HIGH_INCOME=
+, MALE_OLD_LOW_INCOME=
+, MALE_YOUNG_HIGH_INCOME=
+, MALE_YOUNG_LOW_INCOME=
+, FEMALE_YOUNG_LOW_INCOME=
+, MALE_OLD_HIGH_INCOME=
+, FEMALE_OLD_HIGH_INCOME=
+}
+q:FEMALE_OLD_LOW_INCOME
+b: 
+
+day: 5
+statistics: {3=(6156, 0.0)}
+campaigns: []
+bundles: []
+queries:{FEMALE_OLD_LOW_INCOME=
+, FEMALE_YOUNG_HIGH_INCOME=
+, MALE_OLD_LOW_INCOME=
+, MALE_YOUNG_HIGH_INCOME=
+, MALE_YOUNG_LOW_INCOME=
+, FEMALE_YOUNG_LOW_INCOME=
+, MALE_OLD_HIGH_INCOME=
+, FEMALE_OLD_HIGH_INCOME=
+}
+q:FEMALE_YOUNG_LOW_INCOME
+b: 
+
+day: 6
+statistics: {3=(6156, 0.0)}
+campaigns: []
+bundles: []
+queries:{FEMALE_OLD_LOW_INCOME=
+, FEMALE_YOUNG_HIGH_INCOME=
+, MALE_OLD_LOW_INCOME=
+, MALE_YOUNG_HIGH_INCOME=
+, MALE_YOUNG_LOW_INCOME=
+, FEMALE_YOUNG_LOW_INCOME=
+, MALE_OLD_HIGH_INCOME=
+, FEMALE_OLD_HIGH_INCOME=
+}
+q:MALE_OLD_HIGH_INCOME
+b: 
+
+day: 7
+statistics: {3=(6156, 0.0)}
+campaigns: []
+bundles: []
+queries:{FEMALE_OLD_LOW_INCOME=
+, FEMALE_YOUNG_HIGH_INCOME=
+, MALE_OLD_LOW_INCOME=
+, MALE_YOUNG_HIGH_INCOME=
+, MALE_YOUNG_LOW_INCOME=
+, FEMALE_YOUNG_LOW_INCOME=
+, MALE_OLD_HIGH_INCOME=
+, FEMALE_OLD_HIGH_INCOME=
+}
+q:MALE_OLD_LOW_INCOME
+b: 
+
+day: 8
+statistics: {3=(6156, 0.0)}
+campaigns: []
+bundles: []
+queries:{FEMALE_OLD_LOW_INCOME=
+, FEMALE_YOUNG_HIGH_INCOME=
+, MALE_OLD_LOW_INCOME=
+, MALE_YOUNG_HIGH_INCOME=
+, MALE_YOUNG_LOW_INCOME=
+, FEMALE_YOUNG_LOW_INCOME=
+, MALE_OLD_HIGH_INCOME=
+, FEMALE_OLD_HIGH_INCOME=
+}
+q:MALE_YOUNG_LOW_INCOME
+b: 
+
+day: 9
+statistics: {3=(6156, 0.0)}
+campaigns: []
+bundles: []
+queries:{FEMALE_OLD_LOW_INCOME=
+, FEMALE_YOUNG_HIGH_INCOME=
+, MALE_OLD_LOW_INCOME=
+, MALE_YOUNG_HIGH_INCOME=
+, MALE_YOUNG_LOW_INCOME=
+, FEMALE_YOUNG_LOW_INCOME=
+, MALE_OLD_HIGH_INCOME=
+, FEMALE_OLD_HIGH_INCOME=
+}
+q:MALE_OLD_LOW_INCOME
+b: 
+
+day: 10
+statistics: {3=(6156, 0.0)}
+campaigns: []
+bundles: []
+queries:{FEMALE_OLD_LOW_INCOME=
+, FEMALE_YOUNG_HIGH_INCOME=
+, MALE_OLD_LOW_INCOME=
+, MALE_YOUNG_HIGH_INCOME=
+, MALE_YOUNG_LOW_INCOME=
+, FEMALE_YOUNG_LOW_INCOME=
+, MALE_OLD_HIGH_INCOME=
+, FEMALE_OLD_HIGH_INCOME=
+}
+q:FEMALE_OLD_HIGH_INCOME
+b: 
+
+day: 11
+statistics: {3=(6156, 0.0)}
+campaigns: []
+bundles: []
