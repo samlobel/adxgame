@@ -1,0 +1,143 @@
+\documentclass[letterpaper,11pt]{article}
+
+% Encoding
+\usepackage[utf8]{inputenc}
+
+% Page structure
+\usepackage{geometry}
+\geometry{margin=2.54cm}
+\usepackage[skins]{tcolorbox}
+%\geometry{top=1.54cm}
+
+% Titles
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape}
+
+% Headers and Footers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+% Graphics, figures and plots
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{pgfplots}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{changepage}
+
+% Etc
+\usepackage{hyperref}
+
+% Bibliography
+\usepackage[numbers]{natbib}
+
+%%%%%%%%%%
+% Math
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amscd}
+\usepackage{eurosym}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\usepackage{bm} % defines a com­mand \bm which makes its ar­gu­ment bold
+\usepackage{bbm}
+
+\usepackage{enumitem, hyperref}
+\makeatletter
+\def\namedlabel#1#2{\begingroup
+    #2%
+    \def\@currentlabel{#2}%
+    \phantomsection\label{#1}\endgroup
+}
+\makeatother
+
+%%%% Mathematical Environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{note}[theorem]{Note}
+\newtheorem{case}[theorem]{Case}
+
+%%%%%%%%%%
+% Pseudocode
+\usepackage[ruled]{algorithm2e}
+%\usepackage{algpseudocode}
+%\usepackage{verbatim}
+
+%%%%%%%%%%
+% Operators
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\Exp}{\mathbb{E}}
+\DeclareMathOperator*{\Var}{\text{Var}}
+\DeclareMathOperator*{\Cov}{\text{Cov}}
+
+%%%%%%%%%%
+% Paired -- \command* will automatically resize
+\DeclarePairedDelimiter\paren{(}{)}           % (parentheses)
+\DeclarePairedDelimiter\ang{\langle}{\rangle} % <angle brackets>
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}   % |absolute value|
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}  % ||norm||
+\DeclarePairedDelimiter\bkt{[}{]}             % [brackets]
+\DeclarePairedDelimiter\set{\{}{\}}           % {braces}
+
+%%%%%%%%%%
+% Macros
+% Bidders
+\newcommand{\bidders}[1][]{N}
+\newcommand{\numbidders}[1][]{n}
+% Goods
+\newcommand{\goods}[1][]{G}
+\newcommand{\numgoods}[1][]{g}
+% Allocations
+\newcommand{\alloc}[1][]{x_{#1}}
+\newcommand{\allocvec}[1][]{\mathbf{\alloc}}
+\newcommand{\intalloc}[1][]{{\hat{\alloc}}_{#1}}
+\newcommand{\intallocvec}[1][]{\mathbf{\intalloc}}
+% Valuations
+\newcommand{\val}[1][]{v_{#1}}
+\newcommand{\valvec}[1][]{\mathbf{\val}_{#1}}
+\newcommand{\valz}[1][]{z_{#1}}
+\newcommand{\valzvec}[1][]{\mathbf{\valz}_{#1}}
+\newcommand{\valspace}[1][]{T_{#1}}
+\newcommand{\valspacesize}[1][]{M_{#1}}
+% Payment
+\newcommand{\payment}[1][]{p_{#1}}
+\newcommand{\paymentvec}[1][]{\mathbf{\payment}_{#1}}
+% Virtual values (continuous and discrete)
+\newcommand{\virval}[1][]{\varphi_{#1}}
+\newcommand{\virvalvec}[1][]{\mathbf{\virval}_{#1}}
+\newcommand{\virvald}[1][]{\psi_{#1}}
+\newcommand{\virvaldvec}[1][]{\mathbf{\virvald}_{#1}}
+
+\usepackage[framemethod=tikz]{mdframed}
+\definecolor{mycolor}{rgb}{0.122, 0.435, 0.698}
+\newmdenv[innerlinewidth=0.5pt, roundcorner=4pt,linecolor=mycolor,innerleftmargin=6pt,
+innerrightmargin=6pt,innertopmargin=6pt,innerbottommargin=6pt]{mybox}
+
+\newcommand{\commente}[1]{\textbf{[Enrique: #1]}}
+\newcommand{\commenta}[1]{\textbf{[Amy: #1]}}
+\newcommand{\commentb}[1]{\textbf{[Betsy: #1]}}
+
+%%%%%%%%%%
+
+\title{{\it AdX Game\/}: The Ad Exchange Game}
+
+\author{Enrique Areyan Viqueira and Amy Greenwald}
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+%%%%

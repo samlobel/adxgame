@@ -1,0 +1,55 @@
+\input{header}
+\input{commands}
+\begin{document}
+
+\maketitle
+
+\section{AdX Game}
+
+The \mydef{AdX Game} (advertisement exchange game) is an electronic game 
+where autonomous agents play the role of advertisement agencies competing 
+for advertisement contracts and impression opportunities needed to fulfill said 
+contracts and earn a profit. At a high level, the agents in the game are faced with 
+a fundamental task: compete for enough campaigns and impression opportunities 
+to make a substantial profit while maintaining a good reputation. An agent's reputation 
+is a function of its ability to keep its promises, i.e., of fulfilling campaigns it contracted.
+The agent with the most profit at the end of the game is declared the winner.
+
+\subsection{Game Elements}
+
+A \mydef{user} refers to a simulated internet user visiting a website.
+A user is either a Male or a Female, of age Young or Old, and of income Low or High .
+A \mydef{market segment} is a set of users with same characteristics and thus, 
+there are 26 possible market segments 
+(Male, Female,..., Male Young, Male Old,...., Female Old High Income).
+Upon a visit, the user generates an \mydef{impression opportunity} that is
+auctioned to all agents. An impression opportunity is characterized by the 
+\mydef{market segment} to which the user belongs.
+
+A \mydef{campaign} is a contract that defines a minimum number of impressions
+to be reached from a market segment, and a budget. If the advertiser wins enough 
+impressions of matching market segments on behalf of a campaign, then we say 
+that it fulfilled the campaign, and in this case the agent makes a profit equal to the 
+budget of the campaign minus the cost of impressions. Each agent is assigned a 
+numerical \mydef{quality score} that indicates the ability of the agent to fulfill campaigns. 
+The quality score of the campaign's owner is updated daily according to the following formula:
+
+The quality score impacts the ability of agents to participate in campaigns' auctions.
+
+\subsection{Overview}
+The AdX Game is played in 60 simulated days hereupon refer to as days. 
+Each day a fix number of \mydef{campaign opportunities} are announced to all agents
+who bid for ...
+To reduce the taxing communication between agents and the server, each agent
+submits a daily \mydef{Bid Bundle} mapping all bids to be placed on behalf of the agent
+for the current simulated day. The server then runs all auctions and report 
+results in the form of summary statistics. Agents get a detailed report on the performance
+of their campaigns only.
+
+\subsection{Campaign Auction}
+
+\subsection{Ad Auction}
+  
+\end{document}
+
+
